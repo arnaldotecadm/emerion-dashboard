@@ -4,7 +4,7 @@ import type { DashboardOutletContext } from "../dashboard/DashboardLayout";
 
 /** "Minha Conta" — account/profile management, reached via the top-right user menu. */
 function AccountPage() {
-  const { userName, userEmail } = useOutletContext<DashboardOutletContext>();
+  const { userName, userEmail, userGroups } = useOutletContext<DashboardOutletContext>();
 
   return (
     <div className="space-y-6">
@@ -15,6 +15,18 @@ function AccountPage() {
         <div>
           <h2 className="text-xl font-semibold text-[#041627]">{userName}</h2>
           {userEmail && <p className="text-sm text-[#44474c]">{userEmail}</p>}
+          {userGroups && userGroups.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2">
+              {userGroups.map((group) => (
+                <span
+                  key={group}
+                  className="px-2 py-0.5 rounded-full bg-[#e3f2fa] text-[#006397] text-[10px] font-semibold uppercase tracking-wide"
+                >
+                  {group}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
       <PlaceholderPage

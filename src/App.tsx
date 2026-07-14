@@ -38,6 +38,10 @@ function App() {
 
   const profile = auth.user?.profile;
   const userName = profile?.name ?? profile?.email ?? "there";
+  // Cognito exposes the user's group membership via the "cognito:groups" claim
+  // on the ID token (populated from the user pool's group assignments).
+  const rawGroups = profile?.["cognito:groups"];
+  const userGroups = Array.isArray(rawGroups) ? (rawGroups as string[]) : undefined;
   const handleSignOut = () => {
     auth.removeUser();
     signOutRedirect();
@@ -48,7 +52,12 @@ function App() {
       <Route
         path="/dashboard"
         element={
-          <DashboardLayout userName={userName} userEmail={profile?.email} onSignOut={handleSignOut} />
+          <DashboardLayout
+            userName={userName}
+            userEmail={profile?.email}
+            userGroups={userGroups}
+            onSignOut={handleSignOut}
+          />
         }
       >
         <Route index element={<VisaoGeralPage />} />

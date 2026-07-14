@@ -4,11 +4,12 @@ import { Link } from "react-router-dom";
 export interface UserMenuProps {
   userName: string;
   userEmail?: string;
+  userGroups?: string[];
   onSignOut: () => void;
 }
 
 /** Top-right dropdown for account/profile and workspace settings. */
-function UserMenu({ userName, userEmail, onSignOut }: UserMenuProps) {
+function UserMenu({ userName, userEmail, userGroups, onSignOut }: UserMenuProps) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const initials = userName.slice(0, 2).toUpperCase();
@@ -55,6 +56,18 @@ function UserMenu({ userName, userEmail, onSignOut }: UserMenuProps) {
           <div className="px-4 py-3 border-b border-[#eceef0]">
             <p className="text-sm font-semibold text-[#041627] truncate">{userName}</p>
             {userEmail && <p className="text-xs text-[#44474c] truncate">{userEmail}</p>}
+            {userGroups && userGroups.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-2">
+                {userGroups.map((group) => (
+                  <span
+                    key={group}
+                    className="px-2 py-0.5 rounded-full bg-[#e3f2fa] text-[#006397] text-[10px] font-semibold uppercase tracking-wide"
+                  >
+                    {group}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
           <nav className="py-1">
             <Link

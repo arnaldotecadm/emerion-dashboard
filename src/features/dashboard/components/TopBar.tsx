@@ -6,6 +6,7 @@ import HelpTip from "./HelpTip";
 export interface TopBarProps {
   userName: string;
   userEmail?: string;
+  userGroups?: string[];
   onSignOut: () => void;
 }
 
@@ -23,7 +24,7 @@ const PAGE_TITLES: Record<string, string> = {
 const DEFAULT_TITLE = "Emerion Dashboard";
 
 /** Sticky top bar showing the current page's title and the account menu. */
-function TopBar({ userName, userEmail, onSignOut }: TopBarProps) {
+function TopBar({ userName, userEmail, userGroups, onSignOut }: TopBarProps) {
   const location = useLocation();
   const title = PAGE_TITLES[location.pathname] ?? DEFAULT_TITLE;
 
@@ -33,7 +34,7 @@ function TopBar({ userName, userEmail, onSignOut }: TopBarProps) {
       <div className="flex items-center gap-4">
         <NotificationsMenu />
         <HelpTip />
-        <UserMenu userName={userName} userEmail={userEmail} onSignOut={onSignOut} />
+        <UserMenu userName={userName} userEmail={userEmail} userGroups={userGroups} onSignOut={onSignOut} />
       </div>
     </header>
   );
