@@ -13,6 +13,8 @@ export interface SalesDataset {
   totalLabel: string;
   total: number;
   previousTotal: number;
+  /** Sales target/quota for the period, used by the "Metas vs Realizado" goal card. */
+  targetTotal: number;
   points: SalesPoint[];
   /** SVG path (0-1000 x, 0-300 y viewBox) for the current-period line, precomputed for a smooth look. */
   currentPath: string;
@@ -36,6 +38,7 @@ export const VENDAS_DATASETS: Record<Granularity, SalesDataset> = {
     totalLabel: "Total de Vendas nos Últimos 7 Dias",
     total: 612_400,
     previousTotal: 578_900,
+    targetTotal: 700_000,
     currentPath: "M0,220 Q80,190 160,205 T320,150 T480,175 T640,110 T800,140 T1000,90",
     previousPath: "M0,235 Q80,225 160,240 T320,210 T480,225 T640,200 T800,215 T1000,190",
     points: [
@@ -61,6 +64,7 @@ export const VENDAS_DATASETS: Record<Granularity, SalesDataset> = {
     totalLabel: "Total de Vendas nas Últimas 8 Semanas",
     total: 1_845_300,
     previousTotal: 1_712_800,
+    targetTotal: 2_100_000,
     currentPath: "M0,210 Q100,180 200,200 T400,140 T600,165 T800,100 T1000,120",
     previousPath: "M0,225 Q100,215 200,228 T400,195 T600,205 T800,180 T1000,190",
     points: [
@@ -87,6 +91,7 @@ export const VENDAS_DATASETS: Record<Granularity, SalesDataset> = {
     totalLabel: "Total de Vendas no Período",
     total: 4_285_000,
     previousTotal: 3_825_892,
+    targetTotal: 5_000_000,
     currentPath: "M0,200 Q100,150 200,180 T400,100 T600,140 T800,60 T1000,80",
     previousPath: "M0,220 Q100,200 200,240 T400,210 T600,230 T800,190 T1000,210",
     points: [

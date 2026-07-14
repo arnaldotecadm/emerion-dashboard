@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { formatCurrency, VENDAS_DATASETS, type Granularity } from "../data/vendasTotaisData";
+import SalesChannelPanel from "../components/SalesChannelPanel";
+import TopSellersLeaderboard from "../components/TopSellersLeaderboard";
+import GoalProgressPanel from "../components/GoalProgressPanel";
 
 const GRANULARITY_OPTIONS: { value: Granularity; label: string }[] = [
   { value: "dia", label: "Dia" },
@@ -15,6 +18,8 @@ function VendasTotaisPage() {
   const variation = ((dataset.total - dataset.previousTotal) / dataset.previousTotal) * 100;
   const isPositive = variation >= 0;
   const bestPoint = dataset.points.reduce((best, point) => (point.value > best.value ? point : best));
+  const goalProgressPct = Math.min(100, Math.round((dataset.total / dataset.targetTotal) * 100));
+  const goalRemaining = Math.max(0, dataset.targetTotal - dataset.total);
 
   return (
     <div>
@@ -80,20 +85,24 @@ function VendasTotaisPage() {
             <div className="w-full border-b border-[#e6e8ea]" />
             <div className="w-full border-b border-[#e6e8ea]" />
           </div>
-          <svg className="w-full h-full overflow-visible" viewBox="0 0 1000 300" preserveAspectRatio="none">
+          <svg className="w-full h-full" viewBox="0 0 1000 360" preserveAspectRatio="none">
             <defs>
               <linearGradient id="vendasChartGradient" x1="0" x2="0" y1="0" y2="1">
                 <stop offset="5%" stopColor="#006397" stopOpacity="0.15" />
                 <stop offset="95%" stopColor="#006397" stopOpacity="0" />
               </linearGradient>
             </defs>
-            <path d={dataset.previousPath} fill="none" stroke="#c4c6cd" strokeDasharray="4" strokeWidth="2" />
-            <path
-              d={`${dataset.currentPath} L1000,300 L0,300 Z`}
-              fill="url(#vendasChartGradient)"
-              stroke="none"
-            />
-            <path d={dataset.currentPath} fill="none" stroke="#006397" strokeLinecap="round" strokeWidth="4" />
+            {/* Data is authored on a 0-300 scale; translate it down to leave clear headroom above the highest peak
+                so the curve never draws under the granularity toggle above. */}
+            <g transform="translate(0, 60)">
+              <path d={dataset.previousPath} fill="none" stroke="#c4c6cd" strokeDasharray="4" strokeWidth="2" />
+              <path
+                d={`${dataset.currentPath} L1000,300 L0,300 Z`}
+                fill="url(#vendasChartGradient)"
+                stroke="none"
+              />
+              <path d={dataset.currentPath} fill="none" stroke="#006397" strokeLinecap="round" strokeWidth="4" />
+            </g>
           </svg>
           <div className="flex justify-between mt-4 px-1 text-[11px] text-[#8192a7] font-medium uppercase tracking-tight">
             {dataset.points.map((point) => (
@@ -140,6 +149,23 @@ function VendasTotaisPage() {
           value={formatCurrency(dataset.stats.averageTicket)}
           hint="Por transação única"
         />
+      </section>
+
+      {/* Channel breakdown, top sellers leaderboard and goal-vs-actual */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+        <div className="lg:col-span-4">
+          <SalesChannelPanel />
+        </div>
+        <div className="lg:col-span-5">
+          <TopSellersLeaderboard />
+        </div>
+        <div className="lg:col-span-3">
+          <GoalProgressPanel
+            progressPct={goalProgressPct}
+            remainingLabel={formatCurrency(goalRemaining)}
+            targetLabel={formatCurrency(dataset.targetTotal)}
+          />
+        </div>
       </section>
 
       {/* Data table */}
