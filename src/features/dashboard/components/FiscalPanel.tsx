@@ -7,7 +7,7 @@ const STATE_SHARES = [
 /** Tax & fiscal summary panel: ICMS base donut and DIFAL/ICMS pending guides. */
 function FiscalPanel() {
   return (
-    <div className="bg-white p-6 rounded-xl shadow-[0px_4px_12px_rgba(26,43,60,0.05)]">
+    <div className="bg-white p-6 rounded-xl shadow-card">
       <h3 className="text-xl font-semibold text-[#041627] mb-6">Painel Fiscal &amp; Tributário</h3>
       <div className="grid grid-cols-2 gap-6">
         <div className="relative flex items-center justify-center">

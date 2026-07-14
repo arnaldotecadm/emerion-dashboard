@@ -1,18 +1,30 @@
 @import "tailwindcss";
 
+/*
+ * Design tokens shared by the public marketing pages and the authenticated
+ * dashboard, aligned with the Emerion "Brazil Sales Executive Dashboard"
+ * Material-3-inspired design system (dark navy primary, corporate blue
+ * accent, neutral surfaces). Keeping a single token set here means both
+ * areas of the app draw from the same visual language instead of diverging.
+ */
 @theme {
-  --font-headline: "Space Grotesk", sans-serif;
-  --font-display: "Space Grotesk", sans-serif;
+  --font-headline: "Inter", sans-serif;
+  --font-display: "Inter", sans-serif;
   --font-body: "Inter", sans-serif;
   --font-label: "Public Sans", sans-serif;
 
-  --color-primary: #2454ff;
-  --color-primary-50: #f0f3ff;
-  --color-primary-100: #e1e7ff;
-  --color-primary-200: #c8d3ff;
-  --color-primary-600: #2454ff;
-  --color-primary-700: #1d44cc;
-  --color-primary-800: #163399;
+  /* Primary = corporate accent blue (Stitch "secondary" token, #006397). */
+  --color-primary: #006397;
+  --color-primary-50: #eaf4fa;
+  --color-primary-100: #cce5ff;
+  --color-primary-200: #92ccff;
+  --color-primary-600: #006397;
+  --color-primary-700: #004d7a;
+  --color-primary-800: #00415f;
+
+  /* Deep navy used for headings, sidebars and high-emphasis surfaces. */
+  --color-ink: #041627;
+  --color-ink-container: #1a2b3c;
 
   --color-neutral-50: #f9fafb;
   --color-neutral-100: #f3f4f6;
@@ -24,6 +36,27 @@
   --color-neutral-700: #374151;
   --color-neutral-800: #1f2937;
   --color-neutral-900: #111827;
+
+  /* Surfaces (page/card backgrounds), matching the Stitch surface tokens. */
+  --color-canvas: #f7f9fb;
+  --color-surface-1: #f2f4f6;
+  --color-surface-2: #eceef0;
+  --color-surface-3: #e6e8ea;
+
+  /* Text and outlines pulled from the on-surface / outline tokens. */
+  --color-muted: #44474c;
+  --color-outline: #74777d;
+  --color-outline-variant: #c4c6cd;
+
+  /* Status colors used across KPI cards, alerts and badges. */
+  --color-success: #18a659;
+  --color-danger: #ba1a1a;
+  --color-danger-bg: #ffdad6;
+  --color-danger-ink: #93000a;
+
+  /* Shared elevation for cards and floating popovers/menus throughout the app. */
+  --shadow-card: 0px 4px 12px rgba(26, 43, 60, 0.05);
+  --shadow-popover: 0px 8px 24px rgba(26, 43, 60, 0.15);
 }
 
 .material-symbols-outlined {
@@ -49,55 +82,11 @@
 }
 
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
+  color-scheme: light;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
 }
 
 #root {
@@ -109,48 +98,4 @@
 
 body {
   margin: 0;
-}
-
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
 }

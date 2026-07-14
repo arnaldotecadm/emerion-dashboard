@@ -25,7 +25,7 @@ function RankingsPanel() {
   const rows = tab === "sellers" ? TOP_SELLERS : TOP_CUSTOMERS;
 
   return (
-    <div className="bg-white rounded-xl shadow-[0px_4px_12px_rgba(26,43,60,0.05)] overflow-hidden">
+    <div className="bg-white rounded-xl shadow-card overflow-hidden">
       <div className="flex border-b border-[#e6e8ea]">
         <button
           onClick={() => setTab("sellers")}

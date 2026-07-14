@@ -8,7 +8,7 @@ function AccountPage() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white p-6 rounded-xl shadow-[0px_4px_12px_rgba(26,43,60,0.05)] flex items-center gap-4">
+      <div className="bg-white p-6 rounded-xl shadow-card flex items-center gap-4">
         <div className="h-14 w-14 rounded-full bg-[#e0e3e5] flex items-center justify-center text-lg font-bold text-[#44474c]">
           {userName.slice(0, 2).toUpperCase()}
         </div>

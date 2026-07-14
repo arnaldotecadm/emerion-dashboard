@@ -3,6 +3,7 @@ import { useAuth } from "react-oidc-context";
 import LandingPage from "./pages/LandingPage";
 import DashboardLayout from "./features/dashboard/DashboardLayout";
 import VisaoGeralPage from "./features/dashboard/pages/VisaoGeralPage";
+import VendasTotaisPage from "./features/dashboard/pages/VendasTotaisPage";
 import PedidosPage from "./features/dashboard/pages/PedidosPage";
 import ClientesPage from "./features/dashboard/pages/ClientesPage";
 import VendedoresPage from "./features/dashboard/pages/VendedoresPage";
@@ -51,6 +52,7 @@ function App() {
         }
       >
         <Route index element={<VisaoGeralPage />} />
+        <Route path="vendas" element={<VendasTotaisPage />} />
         <Route path="pedidos" element={<PedidosPage />} />
         <Route path="clientes" element={<ClientesPage />} />
         <Route path="vendedores" element={<VendedoresPage />} />

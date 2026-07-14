@@ -50,7 +50,7 @@ function UserMenu({ userName, userEmail, onSignOut }: UserMenuProps) {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-[0px_8px_24px_rgba(26,43,60,0.15)] border border-[#e6e8ea] overflow-hidden z-50"
+          className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-popover border border-[#e6e8ea] overflow-hidden z-50"
         >
           <div className="px-4 py-3 border-b border-[#eceef0]">
             <p className="text-sm font-semibold text-[#041627] truncate">{userName}</p>

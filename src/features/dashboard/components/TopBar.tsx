@@ -1,4 +1,7 @@
+import { useLocation } from "react-router-dom";
 import UserMenu from "./UserMenu";
+import NotificationsMenu from "./NotificationsMenu";
+import HelpTip from "./HelpTip";
 
 export interface TopBarProps {
   userName: string;
@@ -6,34 +9,30 @@ export interface TopBarProps {
   onSignOut: () => void;
 }
 
-/** Sticky top bar with period/regional filters and the signed-in user's account menu. */
+/** Maps each dashboard route to the page title shown in the top bar. */
+const PAGE_TITLES: Record<string, string> = {
+  "/dashboard": "Visão Geral",
+  "/dashboard/vendas": "Vendas Totais",
+  "/dashboard/pedidos": "Pedidos",
+  "/dashboard/clientes": "Clientes",
+  "/dashboard/vendedores": "Vendedores",
+  "/dashboard/configuracoes": "Configurações",
+  "/dashboard/conta": "Minha Conta",
+};
+
+const DEFAULT_TITLE = "Emerion Dashboard";
+
+/** Sticky top bar showing the current page's title and the account menu. */
 function TopBar({ userName, userEmail, onSignOut }: TopBarProps) {
+  const location = useLocation();
+  const title = PAGE_TITLES[location.pathname] ?? DEFAULT_TITLE;
+
   return (
-    <header className="fixed top-0 left-0 w-full z-40 flex justify-between items-center pl-72 pr-6 h-16 bg-[#f7f9fb] shadow-[0px_4px_12px_rgba(26,43,60,0.05)]">
-      <div className="flex items-center gap-8">
-        <span className="text-2xl font-semibold text-[#041627]">Emerion Dashboard</span>
-        <nav className="hidden md:flex gap-6">
-          <a
-            className="text-[#006397] font-bold border-b-2 border-[#006397] h-16 flex items-center"
-            href="#"
-          >
-            Período
-          </a>
-          <a
-            className="text-[#44474c] hover:text-[#006397] transition-colors h-16 flex items-center"
-            href="#"
-          >
-            Regional
-          </a>
-        </nav>
-      </div>
+    <header className="fixed top-0 left-0 w-full z-40 flex justify-between items-center pl-72 pr-6 h-16 bg-[#f7f9fb] shadow-card">
+      <h1 className="text-2xl font-semibold text-[#041627]">{title}</h1>
       <div className="flex items-center gap-4">
-        <button className="p-2 text-[#44474c] hover:bg-[#eceef0] rounded-full" aria-label="Notificações">
-          <span className="material-symbols-outlined">notifications</span>
-        </button>
-        <button className="p-2 text-[#44474c] hover:bg-[#eceef0] rounded-full" aria-label="Ajuda">
-          <span className="material-symbols-outlined">help</span>
-        </button>
+        <NotificationsMenu />
+        <HelpTip />
         <UserMenu userName={userName} userEmail={userEmail} onSignOut={onSignOut} />
       </div>
     </header>

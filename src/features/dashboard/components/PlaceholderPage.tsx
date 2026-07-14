@@ -10,7 +10,7 @@ export interface PlaceholderPageProps {
  */
 function PlaceholderPage({ icon, title, description }: PlaceholderPageProps) {
   return (
-    <div className="flex flex-col items-center justify-center text-center bg-white rounded-xl shadow-[0px_4px_12px_rgba(26,43,60,0.05)] border border-dashed border-[#c4c6cd] py-24 px-8">
+    <div className="flex flex-col items-center justify-center text-center bg-white rounded-xl shadow-card border border-dashed border-[#c4c6cd] py-24 px-8">
       <div className="w-16 h-16 rounded-full bg-[#eceef0] flex items-center justify-center text-[#006397] mb-6">
         <span className="material-symbols-outlined text-3xl">{icon}</span>
       </div>

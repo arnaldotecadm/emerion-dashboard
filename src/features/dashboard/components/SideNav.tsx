@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 export interface SideNavProps {
   onSignOut: () => void;
@@ -6,6 +6,7 @@ export interface SideNavProps {
 
 const NAV_ITEMS = [
   { to: "/dashboard", icon: "dashboard", label: "Visão Geral", end: true },
+  { to: "/dashboard/vendas", icon: "trending_up", label: "Vendas Totais" },
   { to: "/dashboard/pedidos", icon: "receipt_long", label: "Pedidos" },
   { to: "/dashboard/clientes", icon: "groups", label: "Clientes" },
   { to: "/dashboard/vendedores", icon: "person_search", label: "Vendedores" },
@@ -21,10 +22,10 @@ const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
 function SideNav({ onSignOut }: SideNavProps) {
   return (
     <aside className="fixed left-0 top-0 h-full flex flex-col py-6 z-50 bg-[#041627] w-64 shadow-md">
-      <div className="px-6 mb-8 shrink-0">
+      <Link to="/dashboard" className="px-6 mb-8 shrink-0 block hover:opacity-90 transition-opacity">
         <h1 className="text-xl font-semibold leading-7 text-white">Emerion Dashboard</h1>
         <p className="text-xs font-semibold tracking-wide text-white/60">Brasil Corporate</p>
-      </div>
+      </Link>
 
       {/* Scrollable so nav items never push Suporte/Sair off-screen on short viewports */}
       <nav className="flex-1 min-h-0 overflow-y-auto space-y-1">

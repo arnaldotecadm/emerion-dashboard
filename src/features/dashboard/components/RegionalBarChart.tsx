@@ -14,7 +14,7 @@ const REGIONS: RegionBar[] = [
 /** Bar chart card comparing billed revenue vs. pending orders per region. */
 function RegionalBarChart() {
   return (
-    <div className="bg-white p-6 rounded-xl shadow-[0px_4px_12px_rgba(26,43,60,0.05)] flex flex-col h-[400px]">
+    <div className="bg-white p-6 rounded-xl shadow-card flex flex-col h-[400px]">
       <h3 className="text-xl font-semibold text-[#041627] mb-6">
         Faturamento vs. Pedidos Pendentes
       </h3>

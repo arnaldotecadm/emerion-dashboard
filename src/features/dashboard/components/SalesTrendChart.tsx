@@ -1,7 +1,7 @@
 /** Line chart card showing sales vs. quotes trend (static illustrative visualization). */
 function SalesTrendChart() {
   return (
-    <div className="bg-white p-6 rounded-xl shadow-[0px_4px_12px_rgba(26,43,60,0.05)] flex flex-col h-[400px]">
+    <div className="bg-white p-6 rounded-xl shadow-card flex flex-col h-[400px]">
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-xl font-semibold text-[#041627]">Tendência de Vendas e Orçamentos</h3>
         <div className="flex bg-[#eceef0] rounded-lg p-1">
