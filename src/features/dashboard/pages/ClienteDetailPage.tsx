@@ -1,34 +1,27 @@
 import { Link, useParams } from "react-router-dom";
-import { formatCurrency, getClienteById, riskLevelFor } from "../data/clientesData";
+import { useCustomer } from "../hooks/useCustomer";
+import { formatCpfCnpj, initialsFrom } from "../utils/format";
 import PlaceholderPage from "../components/PlaceholderPage";
 
-const STATUS_STYLES: Record<string, string> = {
-  Ativo: "bg-emerald-100 text-emerald-700",
-  Risco: "bg-[#ffdad6] text-[#93000a]",
-  Inativo: "bg-[#eceef0] text-[#8192a7]",
-};
+const BackLink = () => (
+  <Link
+    to="/dashboard/clientes"
+    className="text-[#44474c] hover:text-[#006397] flex items-center gap-2 text-sm font-medium transition-colors mb-6 w-fit"
+  >
+    <span className="material-symbols-outlined text-base">arrow_back</span>
+    Voltar para Clientes
+  </Link>
+);
 
-const ORDER_STATUS_STYLES: Record<string, string> = {
-  Faturado: "bg-emerald-100 text-emerald-700",
-  Pendente: "bg-orange-100 text-orange-700",
-  Cancelado: "bg-[#ffdad6] text-[#93000a]",
-};
-
-/** Read-only detail view for a single client, reached by clicking their row/card anywhere in "Clientes". */
+/** Read-only detail view for a single customer, backed by `GET /customer/:id`. */
 function ClienteDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const cliente = id ? getClienteById(id) : undefined;
+  const { data: cliente, loading, error, notFound } = useCustomer(id);
 
-  if (!cliente) {
+  if (notFound) {
     return (
       <div>
-        <Link
-          to="/dashboard/clientes"
-          className="text-[#44474c] hover:text-[#006397] flex items-center gap-2 text-sm font-medium transition-colors mb-6 w-fit"
-        >
-          <span className="material-symbols-outlined text-base">arrow_back</span>
-          Voltar para Clientes
-        </Link>
+        <BackLink />
         <PlaceholderPage
           icon="person_search"
           title="Cliente não encontrado"
@@ -38,175 +31,120 @@ function ClienteDetailPage() {
     );
   }
 
-  const availableCredit = cliente.creditLimit * (1 - cliente.utilizedPct / 100);
-  const isUp = cliente.trendPct > 0;
-  const isFlat = cliente.trendPct === 0;
-  const riskLevel = cliente.daysOverdue !== undefined ? riskLevelFor(cliente.daysOverdue) : undefined;
+  if (error) {
+    return (
+      <div>
+        <BackLink />
+        <div className="bg-white rounded-xl shadow-card border border-[#e6e8ea] p-10 flex flex-col items-center text-center gap-3">
+          <span className="material-symbols-outlined text-4xl text-[#ba1a1a]">error</span>
+          <h3 className="text-lg font-bold text-[#041627]">Não foi possível carregar o cliente</h3>
+          <p className="text-sm text-[#8192a7]">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading || !cliente) {
+    return (
+      <div>
+        <BackLink />
+        <div className="bg-white rounded-xl p-8 shadow-card border border-[#e6e8ea] mb-8 animate-pulse">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-xl bg-[#eceef0] shrink-0" />
+            <div className="space-y-2">
+              <div className="h-5 w-48 bg-[#eceef0] rounded-full" />
+              <div className="h-3 w-32 bg-[#eceef0] rounded-full" />
+            </div>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className="bg-white p-6 rounded-xl shadow-card border border-[#e6e8ea] animate-pulse">
+              <div className="h-3 w-20 bg-[#eceef0] rounded-full mb-3" />
+              <div className="h-5 w-28 bg-[#eceef0] rounded-full" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const isBlocked = cliente.bloqueado;
 
   return (
     <div>
-      <Link
-        to="/dashboard/clientes"
-        className="text-[#44474c] hover:text-[#006397] flex items-center gap-2 text-sm font-medium transition-colors mb-6 w-fit"
-      >
-        <span className="material-symbols-outlined text-base">arrow_back</span>
-        Voltar para Clientes
-      </Link>
+      <BackLink />
 
-      {/* Header card: identity, status, city */}
+      {/* Header card: identity + status */}
       <section className="bg-white rounded-xl p-8 shadow-card border border-[#e6e8ea] mb-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-xl bg-[#041627] text-white flex items-center justify-center font-bold text-xl shrink-0">
-              {cliente.initials}
+              {initialsFrom(cliente.nomeFantasia)}
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-2xl font-bold text-[#041627] tracking-tight">{cliente.name}</h2>
-                {cliente.vip && (
-                  <span className="px-1.5 py-0.5 bg-yellow-100 text-yellow-800 text-[10px] font-black rounded uppercase">
-                    VIP
-                  </span>
-                )}
+                <h2 className="text-2xl font-bold text-[#041627] tracking-tight">{cliente.nomeFantasia.trim()}</h2>
                 <span
-                  className={`px-2.5 py-1 text-xs font-bold rounded-full ${STATUS_STYLES[cliente.status]}`}
+                  className={`px-2.5 py-1 text-xs font-bold rounded-full ${
+                    isBlocked ? "bg-[#ffdad6] text-[#93000a]" : "bg-emerald-100 text-emerald-700"
+                  }`}
                 >
-                  {cliente.status}
+                  {isBlocked ? "Bloqueado" : "Ativo"}
                 </span>
               </div>
-              <p className="text-[#8192a7] text-sm mt-1 flex items-center gap-1">
-                <span className="material-symbols-outlined text-sm">location_on</span>
-                {cliente.city}
-              </p>
+              <p className="text-[#8192a7] text-sm mt-1">{cliente.razaoSocial}</p>
             </div>
           </div>
         </div>
       </section>
 
-      {riskLevel && (
-        <section
-          className={`p-5 rounded-xl border mb-8 flex items-center gap-4 ${
-            riskLevel === "Alto" ? "bg-[#ffdad6] border-[#ffb4ab]" : "bg-orange-50 border-orange-100"
-          }`}
-        >
-          <div
-            className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-              riskLevel === "Alto" ? "bg-[#ba1a1a] text-white" : "bg-orange-500 text-white"
-            }`}
-          >
-            <span className="material-symbols-outlined">warning</span>
+      {isBlocked && (
+        <section className="p-5 rounded-xl border mb-8 flex items-center gap-4 bg-[#ffdad6] border-[#ffb4ab]">
+          <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-[#ba1a1a] text-white">
+            <span className="material-symbols-outlined">block</span>
           </div>
           <div>
-            <h4 className={`text-sm font-bold ${riskLevel === "Alto" ? "text-[#93000a]" : "text-orange-700"}`}>
-              Risco de inadimplência — {riskLevel}
-            </h4>
-            <p className={`text-xs ${riskLevel === "Alto" ? "text-[#93000a]" : "text-orange-700"}`}>
-              Fatura vencida há {cliente.daysOverdue} dias. Recomenda-se contato imediato antes de novos pedidos.
+            <h4 className="text-sm font-bold text-[#93000a]">Cliente bloqueado</h4>
+            <p className="text-xs text-[#93000a]">
+              Este cliente está com o cadastro bloqueado. Consulte o financeiro antes de liberar novos pedidos.
             </p>
           </div>
         </section>
       )}
 
-      {/* Stat cards */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-xl shadow-card border border-[#e6e8ea]">
-          <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Receita Mensal</p>
-          <h4 className="text-2xl font-bold text-[#041627]">{formatCurrency(cliente.monthlyRevenue)}</h4>
-          <span
-            className={`flex items-center gap-1 mt-2 text-xs font-semibold ${
-              isFlat ? "text-[#8192a7]" : isUp ? "text-emerald-600" : "text-[#ba1a1a]"
-            }`}
-          >
-            <span className="material-symbols-outlined text-sm">
-              {isFlat ? "trending_flat" : isUp ? "trending_up" : "trending_down"}
-            </span>
-            {Math.abs(cliente.trendPct)}% vs. mês anterior
-          </span>
-        </div>
-
-        <div className="bg-white p-6 rounded-xl shadow-card border border-[#e6e8ea]">
-          <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Limite de Crédito</p>
-          <div className="flex items-end justify-between">
-            <h4 className="text-2xl font-bold text-[#041627]">{cliente.utilizedPct}%</h4>
-            <p className="text-xs text-[#8192a7]">
-              {formatCurrency((cliente.creditLimit * cliente.utilizedPct) / 100)} / {formatCurrency(cliente.creditLimit)}
+      {/* Registration data */}
+      <section className="bg-white rounded-xl shadow-card border border-[#e6e8ea] p-6">
+        <h3 className="font-bold text-[#041627] text-lg mb-6">Dados Cadastrais</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">ID do Cliente</p>
+            <p className="text-sm font-bold text-[#041627]">{cliente.id}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Razão Social</p>
+            <p className="text-sm font-bold text-[#041627]">{cliente.razaoSocial}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Nome Fantasia</p>
+            <p className="text-sm font-bold text-[#041627]">{cliente.nomeFantasia.trim()}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">CPF/CNPJ</p>
+            <p className="text-sm font-bold text-[#041627]">{formatCpfCnpj(cliente.cpfCnpj)}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">
+              Inscrição Estadual
             </p>
+            <p className="text-sm font-bold text-[#041627]">{cliente.inscricaoEstadual || "—"}</p>
           </div>
-          <div className="w-full bg-[#eceef0] h-2 rounded-full mt-3">
-            <div
-              className={`h-full rounded-full ${
-                cliente.utilizedPct >= 95 ? "bg-[#ba1a1a]" : cliente.utilizedPct >= 85 ? "bg-orange-500" : "bg-[#006397]"
-              }`}
-              style={{ width: `${cliente.utilizedPct}%` }}
-            />
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">
+              Regime Tributário
+            </p>
+            <p className="text-sm font-bold text-[#041627]">{cliente.regimeTributario}</p>
           </div>
-          <p className="text-[10px] text-[#8192a7] mt-2">
-            Disponível: {formatCurrency(availableCredit)}
-          </p>
-        </div>
-
-        <div className="bg-white p-6 rounded-xl shadow-card border border-[#e6e8ea]">
-          <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Última Compra</p>
-          <h4 className="text-2xl font-bold text-[#041627]">{cliente.lastPurchase}</h4>
-          <p className="text-xs text-[#8192a7] mt-2">Data do pedido mais recente registrado</p>
-        </div>
-      </section>
-
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Recent orders */}
-        <div className="lg:col-span-8 bg-white rounded-xl shadow-card border border-[#e6e8ea] overflow-hidden">
-          <div className="p-6 border-b border-[#e6e8ea]">
-            <h3 className="font-bold text-[#041627] text-lg">Pedidos Recentes</h3>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="bg-[#f7f9fb] border-b border-[#e6e8ea]">
-                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Data</th>
-                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Valor</th>
-                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#f7f9fb]">
-                {(cliente.recentOrders ?? []).map((order) => (
-                  <tr key={order.date} className="hover:bg-[#f7f9fb] transition-colors">
-                    <td className="px-6 py-4 text-sm text-[#44474c]">{order.date}</td>
-                    <td className="px-6 py-4 text-sm font-bold text-[#041627]">{formatCurrency(order.value)}</td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`px-2.5 py-1 text-xs font-bold rounded-full ${ORDER_STATUS_STYLES[order.status]}`}
-                      >
-                        {order.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Contact card */}
-        <div className="lg:col-span-4 bg-white rounded-xl shadow-card border border-[#e6e8ea] p-6">
-          <h3 className="font-bold text-[#041627] text-lg mb-4">Contato Principal</h3>
-          {cliente.contact ? (
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-[#006397]">person</span>
-                <span className="text-sm text-[#041627] font-medium">{cliente.contact.name}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-[#006397]">mail</span>
-                <span className="text-sm text-[#44474c] break-all">{cliente.contact.email}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-[#006397]">call</span>
-                <span className="text-sm text-[#44474c]">{cliente.contact.phone}</span>
-              </div>
-            </div>
-          ) : (
-            <p className="text-sm text-[#8192a7]">Nenhum contato cadastrado.</p>
-          )}
         </div>
       </section>
     </div>

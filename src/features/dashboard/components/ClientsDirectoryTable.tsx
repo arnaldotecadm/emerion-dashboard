@@ -1,30 +1,32 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CLIENTES_DIRECTORY, CLIENTES_DIRECTORY_TOTAL, formatCurrency, type ClienteStatus } from "../data/clientesData";
+import { useCustomers } from "../hooks/useCustomers";
+import { formatCpfCnpj } from "../utils/format";
 
-const STATUS_STYLES: Record<ClienteStatus, string> = {
-  Ativo: "bg-emerald-100 text-emerald-700",
-  Risco: "bg-[#ffdad6] text-[#93000a]",
-  Inativo: "bg-[#eceef0] text-[#8192a7]",
-};
+const PAGE_SIZE_OPTIONS = [10, 25, 50];
 
-const PAGE_SIZE = 8;
 
-/** Full (read-only) client directory table; each row opens the client's detail page. */
+/** Full client directory table, backed by the ERP backend's `GET /customer/all` endpoint. */
 function ClientsDirectoryTable() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
+  const { data, loading, error, page, size, setPage, setSize, refetch } = useCustomers(0, 10);
 
-  const filteredRows = useMemo(() => {
+  const visibleRows = useMemo(() => {
+    const rows = data?.content ?? [];
     const query = search.trim().toLowerCase();
-    if (!query) return CLIENTES_DIRECTORY;
+    if (!query) return rows;
 
-    return CLIENTES_DIRECTORY.filter((row) =>
-      [row.name, row.city, row.status].some((field) => field.toLowerCase().includes(query))
+    return rows.filter((row) =>
+      [row.nomeFantasia, row.razaoSocial, row.cpfCnpj].some((field) => field.toLowerCase().includes(query))
     );
-  }, [search]);
+  }, [data, search]);
 
-  const visibleRows = filteredRows.slice(0, PAGE_SIZE);
+  const totalPages = data?.totalPages ?? 0;
+  const currentPage = data?.number ?? page;
+  const totalElements = data?.totalElements ?? 0;
+  const isFirstPage = data?.first ?? true;
+  const isLastPage = data?.last ?? true;
 
   return (
     <section id="todos-clientes" className="bg-white rounded-xl shadow-card border border-[#e6e8ea] overflow-hidden">
@@ -39,111 +41,145 @@ function ClientsDirectoryTable() {
               type="text"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Buscar por nome, cidade ou status"
+              placeholder="Buscar nesta página por nome ou CNPJ"
               className="w-full pl-9 pr-3 py-2 text-sm border border-[#e6e8ea] rounded-lg text-[#44474c] focus:outline-none focus:ring-2 focus:ring-[#006397]/30 focus:border-[#006397]"
             />
           </div>
           <div className="hidden sm:flex items-center gap-2 text-sm text-[#8192a7]">
             <span>Mostrar</span>
-            <select className="border border-[#e6e8ea] rounded-lg text-sm text-[#44474c] py-1 px-2 focus:ring-[#006397] focus:border-[#006397]">
-              <option>8</option>
-              <option>25</option>
-              <option>50</option>
+            <select
+              value={size}
+              onChange={(event) => setSize(Number(event.target.value))}
+              className="border border-[#e6e8ea] rounded-lg text-sm text-[#44474c] py-1 px-2 focus:ring-[#006397] focus:border-[#006397]"
+            >
+              {PAGE_SIZE_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
             </select>
           </div>
         </div>
       </div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-left">
-          <thead>
-            <tr className="bg-[#f7f9fb] border-b border-[#e6e8ea]">
-              <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Cliente</th>
-              <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Cidade/UF</th>
-              <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
-                Limite de Crédito
-              </th>
-              <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Utilizado</th>
-              <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
-                Última Compra
-              </th>
-              <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 w-10" />
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[#f7f9fb]">
-            {visibleRows.map((row) => (
-              <tr
-                key={row.id}
-                onClick={() => navigate(`/dashboard/clientes/${row.id}`)}
-                className="hover:bg-[#f7f9fb] transition-colors cursor-pointer group"
-              >
-                <td className="px-6 py-4 font-bold text-[#041627] text-sm group-hover:text-[#006397] transition-colors">
-                  {row.name}
-                </td>
-                <td className="px-6 py-4 text-sm text-[#44474c]">{row.city}</td>
-                <td className="px-6 py-4 text-sm text-[#44474c]">{formatCurrency(row.creditLimit)}</td>
-                <td
-                  className={`px-6 py-4 text-sm font-medium ${
-                    row.utilizedPct >= 90 ? "text-[#ba1a1a]" : "text-[#041627]"
-                  }`}
-                >
-                  {row.utilizedPct}%
-                </td>
-                <td className="px-6 py-4 text-sm text-[#44474c]">{row.lastPurchase}</td>
-                <td className="px-6 py-4">
-                  <span className={`px-2.5 py-1 text-xs font-bold rounded-full ${STATUS_STYLES[row.status]}`}>
-                    {row.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <span className="material-symbols-outlined text-base text-[#c4c6cd] group-hover:text-[#006397] transition-colors">
-                    chevron_right
-                  </span>
-                </td>
-              </tr>
-            ))}
-            {visibleRows.length === 0 && (
-              <tr>
-                <td colSpan={7} className="px-6 py-10 text-center text-sm text-[#8192a7]">
-                  Nenhum cliente encontrado para "{search}".
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-      <div className="px-6 py-4 bg-[#f7f9fb] border-t border-[#e6e8ea] flex justify-between items-center">
-        <span className="text-sm text-[#8192a7]">
-          {search.trim() ? (
-            <>
-              Exibindo {visibleRows.length} de {filteredRows.length} resultado
-              {filteredRows.length === 1 ? "" : "s"}
-            </>
-          ) : (
-            <>
-              Exibindo 1-{Math.min(PAGE_SIZE, CLIENTES_DIRECTORY.length)} de{" "}
-              {CLIENTES_DIRECTORY_TOTAL.toLocaleString("pt-BR")} clientes
-            </>
-          )}
-        </span>
-        <div className="flex gap-2">
-          <button className="p-2 border border-[#e6e8ea] rounded-lg bg-white text-[#8192a7] hover:text-[#006397] transition-all">
-            <span className="material-symbols-outlined text-sm">chevron_left</span>
-          </button>
-          <button className="px-3 py-2 border border-[#006397] rounded-lg bg-[#006397] text-white text-sm font-bold">
-            1
-          </button>
-          <button className="px-3 py-2 border border-[#e6e8ea] rounded-lg bg-white text-[#44474c] hover:border-[#006397] hover:text-[#006397] text-sm font-bold transition-all">
-            2
-          </button>
-          <button className="px-3 py-2 border border-[#e6e8ea] rounded-lg bg-white text-[#44474c] hover:border-[#006397] hover:text-[#006397] text-sm font-bold transition-all">
-            3
-          </button>
-          <button className="p-2 border border-[#e6e8ea] rounded-lg bg-white text-[#44474c] hover:text-[#006397] transition-all">
-            <span className="material-symbols-outlined text-sm">chevron_right</span>
+
+      {error ? (
+        <div className="p-10 flex flex-col items-center text-center gap-3">
+          <span className="material-symbols-outlined text-4xl text-[#ba1a1a]">error</span>
+          <p className="text-sm text-[#44474c]">{error}</p>
+          <button
+            onClick={refetch}
+            className="px-4 py-2 text-sm font-semibold text-[#006397] border border-[#006397] rounded-lg hover:bg-[#006397]/5 transition-colors"
+          >
+            Tentar novamente
           </button>
         </div>
-      </div>
+      ) : (
+        <>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="bg-[#f7f9fb] border-b border-[#e6e8ea]">
+                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">ID</th>
+                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
+                    Razão Social
+                  </th>
+                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
+                    CPF/CNPJ
+                  </th>
+                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
+                    Inscrição Estadual
+                  </th>
+                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
+                    Regime Tributário
+                  </th>
+                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#f7f9fb]">
+                {loading &&
+                  Array.from({ length: size }).map((_, index) => (
+                    <tr key={`skeleton-${index}`} className="animate-pulse">
+                      {Array.from({ length: 7 }).map((__, cell) => (
+                        <td key={cell} className="px-6 py-4">
+                          <div className="h-3.5 bg-[#eceef0] rounded-full w-full max-w-[10rem]" />
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+
+                {!loading &&
+                  visibleRows.map((row) => (
+                    <tr
+                      key={row.id}
+                      onClick={() => navigate(`/dashboard/clientes/${row.id}`)}
+                      className="hover:bg-[#f7f9fb] transition-colors cursor-pointer group"
+                    >
+                      <td className="px-6 py-4 text-sm text-[#8192a7]">{row.id}</td>
+                      <td className="px-6 py-4 text-sm text-[#44474c]">{row.razaoSocial}</td>
+                      <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">
+                        {formatCpfCnpj(row.cpfCnpj)}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">
+                        {row.inscricaoEstadual}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-[#44474c]">{row.regimeTributario}</td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`px-2.5 py-1 text-xs font-bold rounded-full ${
+                            row.bloqueado ? "bg-[#ffdad6] text-[#93000a]" : "bg-emerald-100 text-emerald-700"
+                          }`}
+                        >
+                          {row.bloqueado ? "Bloqueado" : "Ativo"}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+
+                {!loading && visibleRows.length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-10 text-center text-sm text-[#8192a7]">
+                      {search
+                        ? `Nenhum cliente encontrado para "${search}" nesta página.`
+                        : "Nenhum cliente encontrado."}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="px-6 py-4 bg-[#f7f9fb] border-t border-[#e6e8ea] flex flex-col sm:flex-row justify-between items-center gap-3">
+            <span className="text-sm text-[#8192a7]">
+              {totalElements > 0
+                ? `Exibindo ${data?.numberOfElements ?? 0} de ${totalElements.toLocaleString("pt-BR")} clientes`
+                : "—"}
+            </span>
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-[#44474c]">
+                Página {totalPages === 0 ? 0 : currentPage + 1} de {totalPages}
+              </span>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setPage(Math.max(0, currentPage - 1))}
+                  disabled={isFirstPage || loading}
+                  className="p-2 border border-[#e6e8ea] rounded-lg bg-white text-[#8192a7] hover:text-[#006397] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-[#8192a7] transition-all"
+                  aria-label="Página anterior"
+                >
+                  <span className="material-symbols-outlined text-sm">chevron_left</span>
+                </button>
+                <button
+                  onClick={() => setPage(Math.min(totalPages - 1, currentPage + 1))}
+                  disabled={isLastPage || loading}
+                  className="p-2 border border-[#e6e8ea] rounded-lg bg-white text-[#8192a7] hover:text-[#006397] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-[#8192a7] transition-all"
+                  aria-label="Próxima página"
+                >
+                  <span className="material-symbols-outlined text-sm">chevron_right</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </section>
   );
 }

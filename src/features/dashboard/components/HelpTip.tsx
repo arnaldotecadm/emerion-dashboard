@@ -17,7 +17,7 @@ const DEFAULT_TIP =
   "Use o menu lateral para navegar entre as áreas do Emerion Dashboard.";
 
 const CLIENTE_DETAIL_TIP =
-  "Consulte o histórico de pedidos, limite de crédito e contato principal deste cliente. Esta visão é somente leitura.";
+  "Consulte os dados cadastrais deste cliente, como CNPJ/CPF, inscrição estadual e regime tributário. Esta visão é somente leitura.";
 
 /** Resolves the help tip for the current route, including the dynamic "/dashboard/clientes/:id" detail page. */
 function resolveTip(pathname: string): string {
