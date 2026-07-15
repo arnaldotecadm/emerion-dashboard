@@ -6,6 +6,7 @@ import VisaoGeralPage from "./features/dashboard/pages/VisaoGeralPage";
 import VendasTotaisPage from "./features/dashboard/pages/VendasTotaisPage";
 import PedidosPage from "./features/dashboard/pages/PedidosPage";
 import ClientesPage from "./features/dashboard/pages/ClientesPage";
+import ClienteDetailPage from "./features/dashboard/pages/ClienteDetailPage";
 import VendedoresPage from "./features/dashboard/pages/VendedoresPage";
 import ConfiguracoesPage from "./features/dashboard/pages/ConfiguracoesPage";
 import AccountPage from "./features/account/AccountPage";
@@ -64,6 +65,7 @@ function App() {
         <Route path="vendas" element={<VendasTotaisPage />} />
         <Route path="pedidos" element={<PedidosPage />} />
         <Route path="clientes" element={<ClientesPage />} />
+        <Route path="clientes/:id" element={<ClienteDetailPage />} />
         <Route path="vendedores" element={<VendedoresPage />} />
         <Route path="configuracoes" element={<ConfiguracoesPage />} />
         <Route path="conta" element={<AccountPage />} />

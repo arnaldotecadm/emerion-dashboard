@@ -2,6 +2,7 @@ import { useLocation } from "react-router-dom";
 import UserMenu from "./UserMenu";
 import NotificationsMenu from "./NotificationsMenu";
 import HelpTip from "./HelpTip";
+import { getClienteById } from "../data/clientesData";
 
 export interface TopBarProps {
   userName: string;
@@ -23,10 +24,23 @@ const PAGE_TITLES: Record<string, string> = {
 
 const DEFAULT_TITLE = "Emerion Dashboard";
 
+/** Resolves the page title for the current route, including the dynamic "/dashboard/clientes/:id" detail page. */
+function resolveTitle(pathname: string): string {
+  if (pathname in PAGE_TITLES) return PAGE_TITLES[pathname];
+
+  const clienteMatch = pathname.match(/^\/dashboard\/clientes\/(.+)$/);
+  if (clienteMatch) {
+    const cliente = getClienteById(clienteMatch[1]);
+    return cliente ? cliente.name : "Detalhes do Cliente";
+  }
+
+  return DEFAULT_TITLE;
+}
+
 /** Sticky top bar showing the current page's title and the account menu. */
 function TopBar({ userName, userEmail, userGroups, onSignOut }: TopBarProps) {
   const location = useLocation();
-  const title = PAGE_TITLES[location.pathname] ?? DEFAULT_TITLE;
+  const title = resolveTitle(location.pathname);
 
   return (
     <header className="fixed top-0 left-0 w-full z-40 flex justify-between items-center pl-72 pr-6 h-16 bg-[#f7f9fb] shadow-card">

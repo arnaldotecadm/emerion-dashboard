@@ -7,7 +7,7 @@ const PAGE_TIPS: Record<string, string> = {
   "/dashboard": "Clique nos cartões de KPI para abrir o detalhamento da métrica correspondente.",
   "/dashboard/vendas": "Alterne entre as visualizações por dia, semana e mês para acompanhar a evolução das vendas no período selecionado.",
   "/dashboard/pedidos": "Aqui você poderá acompanhar o status dos pedidos, faturamento e histórico completo assim que esta área estiver disponível.",
-  "/dashboard/clientes": "Aqui você poderá consultar o cadastro de clientes, limites de crédito e histórico de relacionamento assim que esta área estiver disponível.",
+  "/dashboard/clientes": "Acompanhe o risco de inadimplência, limites de crédito e o ranking dos clientes que mais geram receita.",
   "/dashboard/vendedores": "Aqui você poderá acompanhar o desempenho da equipe de vendas, metas e comissões assim que esta área estiver disponível.",
   "/dashboard/configuracoes": "Aqui você poderá ajustar preferências do workspace, integrações e permissões de equipe assim que esta área estiver disponível.",
   "/dashboard/conta": "Atualize seus dados de perfil e preferências de notificação nesta página.",
@@ -16,12 +16,22 @@ const PAGE_TIPS: Record<string, string> = {
 const DEFAULT_TIP =
   "Use o menu lateral para navegar entre as áreas do Emerion Dashboard.";
 
+const CLIENTE_DETAIL_TIP =
+  "Consulte o histórico de pedidos, limite de crédito e contato principal deste cliente. Esta visão é somente leitura.";
+
+/** Resolves the help tip for the current route, including the dynamic "/dashboard/clientes/:id" detail page. */
+function resolveTip(pathname: string): string {
+  if (pathname in PAGE_TIPS) return PAGE_TIPS[pathname];
+  if (/^\/dashboard\/clientes\/.+$/.test(pathname)) return CLIENTE_DETAIL_TIP;
+  return DEFAULT_TIP;
+}
+
 /** Top-right help button that shows a short tip about the page currently open. */
 function HelpTip() {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
-  const tip = PAGE_TIPS[location.pathname] ?? DEFAULT_TIP;
+  const tip = resolveTip(location.pathname);
 
   useEffect(() => {
     // Close the tip whenever the user navigates to a different page.
