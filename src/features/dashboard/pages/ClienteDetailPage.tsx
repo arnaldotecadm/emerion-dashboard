@@ -13,7 +13,7 @@ const BackLink = () => (
   </Link>
 );
 
-/** Read-only detail view for a single customer, backed by `GET /customer/:id`. */
+/** Read-only detail view for a single customer, backed by `GET /api/v1/customers/:id`. */
 function ClienteDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { data: cliente, loading, error, notFound } = useCustomer(id);

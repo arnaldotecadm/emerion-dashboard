@@ -6,14 +6,14 @@ import { formatCpfCnpj } from "../utils/format";
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
 
 
-/** Full client directory table, backed by the ERP backend's `GET /customer/all` endpoint. */
+/** Full client directory table, backed by the ERP backend's `GET /api/v1/customers` endpoint. */
 function ClientsDirectoryTable() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const { data, loading, error, page, size, setPage, setSize, refetch } = useCustomers(0, 10);
 
   const visibleRows = useMemo(() => {
-    const rows = data?.content ?? [];
+    const rows = data?.data ?? [];
     const query = search.trim().toLowerCase();
     if (!query) return rows;
 
@@ -22,11 +22,11 @@ function ClientsDirectoryTable() {
     );
   }, [data, search]);
 
-  const totalPages = data?.totalPages ?? 0;
-  const currentPage = data?.number ?? page;
-  const totalElements = data?.totalElements ?? 0;
-  const isFirstPage = data?.first ?? true;
-  const isLastPage = data?.last ?? true;
+  const totalPages = data?.pagination.totalPages ?? 0;
+  const currentPage = data?.pagination.page ?? page;
+  const totalElements = data?.pagination.total ?? 0;
+  const isFirstPage = currentPage <= 0;
+  const isLastPage = totalPages === 0 || currentPage >= totalPages - 1;
 
   return (
     <section id="todos-clientes" className="bg-white rounded-xl shadow-card border border-[#e6e8ea] overflow-hidden">
@@ -151,7 +151,7 @@ function ClientsDirectoryTable() {
           <div className="px-6 py-4 bg-[#f7f9fb] border-t border-[#e6e8ea] flex flex-col sm:flex-row justify-between items-center gap-3">
             <span className="text-sm text-[#8192a7]">
               {totalElements > 0
-                ? `Exibindo ${data?.numberOfElements ?? 0} de ${totalElements.toLocaleString("pt-BR")} clientes`
+                ? `Exibindo ${data?.data.length ?? 0} de ${totalElements.toLocaleString("pt-BR")} clientes`
                 : "—"}
             </span>
             <div className="flex items-center gap-3">

@@ -11,7 +11,7 @@ export default defineConfig({
     // In production, VITE_API_BASE_URL should point directly at the API host
     // and that backend must allow CORS for the deployed frontend origin.
     proxy: {
-      '/customer': {
+      '/api/v1': {
         target: 'http://localhost:8080',
         changeOrigin: true,
       },

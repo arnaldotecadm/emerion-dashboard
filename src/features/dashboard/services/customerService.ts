@@ -1,6 +1,6 @@
 import type { Customer, CustomerPage } from "../types/customer";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
+const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080"}/api/v1`;
 
 /**
  * Fetches a page of customers from the ERP backend.
@@ -8,7 +8,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080
  * @param size number of rows per page.
  */
 export async function fetchCustomers(page: number, size: number): Promise<CustomerPage> {
-  const response = await fetch(`${API_BASE_URL}/customer/all?page=${page}&size=${size}`);
+  const response = await fetch(`${API_BASE_URL}/customers?page=${page}&size=${size}`);
 
   if (!response.ok) {
     throw new Error(`Falha ao carregar clientes (HTTP ${response.status}).`);
@@ -19,7 +19,7 @@ export async function fetchCustomers(page: number, size: number): Promise<Custom
 
 /** Fetches a single customer by id from the ERP backend. */
 export async function fetchCustomerById(id: string | number): Promise<Customer> {
-  const response = await fetch(`${API_BASE_URL}/customer/${id}`);
+  const response = await fetch(`${API_BASE_URL}/customers/${id}`);
 
   if (!response.ok) {
     throw new Error(
