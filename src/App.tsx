@@ -5,9 +5,11 @@ import DashboardLayout from "./features/dashboard/DashboardLayout";
 import VisaoGeralPage from "./features/dashboard/pages/VisaoGeralPage";
 import VendasTotaisPage from "./features/dashboard/pages/VendasTotaisPage";
 import PedidosPage from "./features/dashboard/pages/PedidosPage";
+import PedidoDetailPage from "./features/dashboard/pages/PedidoDetailPage";
 import ClientesPage from "./features/dashboard/pages/ClientesPage";
 import ClienteDetailPage from "./features/dashboard/pages/ClienteDetailPage";
 import VendedoresPage from "./features/dashboard/pages/VendedoresPage";
+import VendedorDetailPage from "./features/dashboard/pages/VendedorDetailPage";
 import ConfiguracoesPage from "./features/dashboard/pages/ConfiguracoesPage";
 import NotificationDetailPage from "./features/dashboard/pages/NotificationDetailPage";
 import AccountPage from "./features/account/AccountPage";
@@ -65,9 +67,11 @@ function App() {
         <Route index element={<VisaoGeralPage />} />
         <Route path="vendas" element={<VendasTotaisPage />} />
         <Route path="pedidos" element={<PedidosPage />} />
+        <Route path="pedidos/:id" element={<PedidoDetailPage />} />
         <Route path="clientes" element={<ClientesPage />} />
         <Route path="clientes/:id" element={<ClienteDetailPage />} />
         <Route path="vendedores" element={<VendedoresPage />} />
+        <Route path="vendedores/:id" element={<VendedorDetailPage />} />
         <Route path="configuracoes" element={<ConfiguracoesPage />} />
         <Route path="notificacoes/:id" element={<NotificationDetailPage />} />
         <Route path="conta" element={<AccountPage />} />

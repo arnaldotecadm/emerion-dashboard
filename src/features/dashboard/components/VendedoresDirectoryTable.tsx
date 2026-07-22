@@ -1,15 +1,15 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCustomerOrders } from "../hooks/useCustomerOrders";
-import { formatCurrency, formatDate } from "../utils/format";
+import { useVendedores } from "../hooks/useVendedores";
+import { formatCurrency } from "../utils/format";
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
 
-/** Full order directory table, backed by the ERP backend's `GET /api/v1/customer-orders` endpoint. */
-function OrdersDirectoryTable() {
+/** Full vendedor (salesman) directory table, backed by the ERP backend's `GET /api/v1/vendedores` endpoint. */
+function VendedoresDirectoryTable() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
-  const { data, loading, error, page, size, setPage, setSize, refetch } = useCustomerOrders(0, 10);
+  const { data, loading, error, page, size, setPage, setSize, refetch } = useVendedores(0, 10);
 
   const visibleRows = useMemo(() => {
     const rows = data?.data ?? [];
@@ -17,7 +17,9 @@ function OrdersDirectoryTable() {
     if (!query) return rows;
 
     return rows.filter((row) =>
-      [row.codCli, row.nronfe ?? "", row.sitres ?? ""].some((field) => field.toLowerCase().includes(query))
+      [row.nome, row.apelido ?? "", row.cidade ?? "", row.uf ?? ""].some((field) =>
+        field.toLowerCase().includes(query)
+      )
     );
   }, [data, search]);
 
@@ -28,9 +30,9 @@ function OrdersDirectoryTable() {
   const isLastPage = totalPages === 0 || currentPage >= totalPages - 1;
 
   return (
-    <section id="todos-pedidos" className="bg-white rounded-xl shadow-card border border-[#e6e8ea] overflow-hidden">
+    <section id="todos-vendedores" className="bg-white rounded-xl shadow-card border border-[#e6e8ea] overflow-hidden">
       <div className="p-6 border-b border-[#e6e8ea] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h3 className="font-bold text-[#041627] text-lg">Todos os Pedidos</h3>
+        <h3 className="font-bold text-[#041627] text-lg">Todos os Vendedores</h3>
         <div className="flex items-center gap-3 w-full sm:w-auto">
           <div className="relative flex-1 sm:w-64">
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#8192a7] text-lg">
@@ -40,7 +42,7 @@ function OrdersDirectoryTable() {
               type="text"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Buscar nesta página por cliente, NF-e ou status"
+              placeholder="Buscar nesta página por nome, apelido ou cidade"
               className="w-full pl-9 pr-3 py-2 text-sm border border-[#e6e8ea] rounded-lg text-[#44474c] focus:outline-none focus:ring-2 focus:ring-[#006397]/30 focus:border-[#006397]"
             />
           </div>
@@ -79,11 +81,11 @@ function OrdersDirectoryTable() {
               <thead>
                 <tr className="bg-[#f7f9fb] border-b border-[#e6e8ea]">
                   <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">ID</th>
-                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Cliente</th>
-                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">NF-e</th>
-                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Data</th>
-                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Total</th>
+                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Nome</th>
+                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Contato</th>
+                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Cidade/UF</th>
+                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Saldo</th>
+                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Situação</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#f7f9fb]">
@@ -102,20 +104,33 @@ function OrdersDirectoryTable() {
                   visibleRows.map((row) => (
                     <tr
                       key={row.id}
-                      onClick={() => navigate(`/dashboard/pedidos/${row.id}`)}
+                      onClick={() => navigate(`/dashboard/vendedores/${row.id}`)}
                       className="hover:bg-[#f7f9fb] transition-colors cursor-pointer group"
                     >
                       <td className="px-6 py-4 text-sm text-[#8192a7]">{row.id}</td>
-                      <td className="px-6 py-4 text-sm text-[#44474c]">{row.codCli}</td>
-                      <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">{row.nronfe ?? "—"}</td>
-                      <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">{formatDate(row.dteres)}</td>
-                      <td className="px-6 py-4">
-                        <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-[#006397]/10 text-[#006397]">
-                          {row.sitres ?? "—"}
-                        </span>
+                      <td className="px-6 py-4 text-sm text-[#44474c]">
+                        {row.nome}
+                        {row.apelido && <span className="text-[#8192a7]"> ({row.apelido})</span>}
                       </td>
                       <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">
-                        {formatCurrency(row.totres)}
+                        {row.email ?? row.celular ?? row.telefone ?? "—"}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">
+                        {row.cidade ? `${row.cidade}${row.uf ? `/${row.uf}` : ""}` : "—"}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">
+                        {formatCurrency(row.saldo)}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`px-2.5 py-1 text-xs font-bold rounded-full ${
+                            row.situacao?.toLowerCase() === "ativo"
+                              ? "bg-emerald-100 text-emerald-700"
+                              : "bg-[#eceef0] text-[#44474c]"
+                          }`}
+                        >
+                          {row.situacao ?? "—"}
+                        </span>
                       </td>
                     </tr>
                   ))}
@@ -124,8 +139,8 @@ function OrdersDirectoryTable() {
                   <tr>
                     <td colSpan={6} className="px-6 py-10 text-center text-sm text-[#8192a7]">
                       {search
-                        ? `Nenhum pedido encontrado para "${search}" nesta página.`
-                        : "Nenhum pedido encontrado."}
+                        ? `Nenhum vendedor encontrado para "${search}" nesta página.`
+                        : "Nenhum vendedor encontrado."}
                     </td>
                   </tr>
                 )}
@@ -136,7 +151,7 @@ function OrdersDirectoryTable() {
           <div className="px-6 py-4 bg-[#f7f9fb] border-t border-[#e6e8ea] flex flex-col sm:flex-row justify-between items-center gap-3">
             <span className="text-sm text-[#8192a7]">
               {totalElements > 0
-                ? `Exibindo ${data?.data.length ?? 0} de ${totalElements.toLocaleString("pt-BR")} pedidos`
+                ? `Exibindo ${data?.data.length ?? 0} de ${totalElements.toLocaleString("pt-BR")} vendedores`
                 : "—"}
             </span>
             <div className="flex items-center gap-3">
@@ -169,4 +184,4 @@ function OrdersDirectoryTable() {
   );
 }
 
-export default OrdersDirectoryTable;
+export default VendedoresDirectoryTable;
