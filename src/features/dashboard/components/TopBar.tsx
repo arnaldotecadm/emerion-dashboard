@@ -3,6 +3,7 @@ import UserMenu from "./UserMenu";
 import NotificationsMenu from "./NotificationsMenu";
 import HelpTip from "./HelpTip";
 import { useCustomer } from "../hooks/useCustomer";
+import { getNotificationById } from "../data/notificationsData";
 
 export interface TopBarProps {
   userName: string;
@@ -31,9 +32,14 @@ function TopBar({ userName, userEmail, userGroups, onSignOut }: TopBarProps) {
   const clienteId = clienteMatch?.[1];
   const { data: cliente } = useCustomer(clienteId);
 
+  const notificacaoMatch = location.pathname.match(/^\/dashboard\/notificacoes\/(.+)$/);
+  const notificacao = getNotificationById(notificacaoMatch?.[1]);
+
   const title = clienteId
     ? (cliente?.nomeFantasia.trim() ?? "Detalhes do Cliente")
-    : (PAGE_TITLES[location.pathname] ?? DEFAULT_TITLE);
+    : notificacaoMatch
+      ? (notificacao?.name ?? "Notificação")
+      : (PAGE_TITLES[location.pathname] ?? DEFAULT_TITLE);
 
   return (
     <header className="fixed top-0 left-0 w-full z-40 flex justify-between items-center pl-72 pr-6 h-16 bg-[#f7f9fb] shadow-card">

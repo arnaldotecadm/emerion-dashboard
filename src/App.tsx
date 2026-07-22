@@ -9,6 +9,7 @@ import ClientesPage from "./features/dashboard/pages/ClientesPage";
 import ClienteDetailPage from "./features/dashboard/pages/ClienteDetailPage";
 import VendedoresPage from "./features/dashboard/pages/VendedoresPage";
 import ConfiguracoesPage from "./features/dashboard/pages/ConfiguracoesPage";
+import NotificationDetailPage from "./features/dashboard/pages/NotificationDetailPage";
 import AccountPage from "./features/account/AccountPage";
 
 function App() {
@@ -68,6 +69,7 @@ function App() {
         <Route path="clientes/:id" element={<ClienteDetailPage />} />
         <Route path="vendedores" element={<VendedoresPage />} />
         <Route path="configuracoes" element={<ConfiguracoesPage />} />
+        <Route path="notificacoes/:id" element={<NotificationDetailPage />} />
         <Route path="conta" element={<AccountPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

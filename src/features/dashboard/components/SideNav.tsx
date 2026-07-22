@@ -39,7 +39,9 @@ function SideNav({ onSignOut }: SideNavProps) {
 
       <div className="shrink-0 px-2 pt-4 mt-2 border-t border-white/10 space-y-2">
         <a
-          href="#"
+          href={`https://wa.me/351910399047?text=${encodeURIComponent("Ola, estou com uma duvida sobre o sistema")}`}
+          target="_blank"
+          rel="noopener noreferrer"
           className="group flex items-center gap-3 px-4 py-3 rounded-lg bg-white/5 text-white/80 hover:text-white hover:bg-white/15 border border-white/10 hover:border-white/20 shadow-sm transition-all"
         >
           <span className="w-8 h-8 rounded-full bg-[#006397]/30 group-hover:bg-[#006397]/50 flex items-center justify-center shrink-0 transition-colors">

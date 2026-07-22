@@ -1,54 +1,19 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Tooltip from "../../../components/Tooltip";
-
-interface NotificationItem {
-  id: string;
-  icon: string;
-  title: string;
-  description: string;
-  time: string;
-  unread?: boolean;
-}
-
-const NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: "n1",
-    icon: "credit_card_off",
-    title: "Limite de crédito excedido",
-    description: "Distribuidora Alfa Ltda. ultrapassou o teto permitido.",
-    time: "5 min atrás",
-    unread: true,
-  },
-  {
-    id: "n2",
-    icon: "receipt_long",
-    title: "Novo pedido recebido",
-    description: "Pedido #ORD-90245 aguardando aprovação.",
-    time: "22 min atrás",
-    unread: true,
-  },
-  {
-    id: "n3",
-    icon: "inventory_2",
-    title: "Estoque baixo",
-    description: "5 itens da Curva A abaixo do estoque de segurança.",
-    time: "1 h atrás",
-    unread: true,
-  },
-  {
-    id: "n4",
-    icon: "task_alt",
-    title: "Meta batida",
-    description: "Carlos Eduardo S. atingiu 105% da meta do mês.",
-    time: "3 h atrás",
-  },
-];
+import { NOTIFICATIONS } from "../data/notificationsData";
 
 /** Top-right dropdown showing the latest system notifications. */
 function NotificationsMenu() {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
   const unreadCount = NOTIFICATIONS.filter((n) => n.unread).length;
+
+  const goToNotification = (id: string) => {
+    setOpen(false);
+    navigate(`/dashboard/notificacoes/${id}`);
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -104,7 +69,12 @@ function NotificationsMenu() {
           </div>
           <div className="max-h-96 overflow-y-auto divide-y divide-[#eceef0]">
             {NOTIFICATIONS.map((item) => (
-              <div key={item.id} className="flex gap-3 px-4 py-3 hover:bg-[#f7f9fb] transition-colors">
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => goToNotification(item.id)}
+                className="w-full flex gap-3 px-4 py-3 text-left hover:bg-[#f7f9fb] transition-colors"
+              >
                 <span
                   className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
                     item.unread ? "bg-[#cce5ff] text-[#006397]" : "bg-[#eceef0] text-[#44474c]"
@@ -113,14 +83,14 @@ function NotificationsMenu() {
                   <span className="material-symbols-outlined text-lg">{item.icon}</span>
                 </span>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-[#191c1e] truncate">{item.title}</p>
+                  <p className="text-sm font-semibold text-[#191c1e] truncate">{item.name}</p>
                   <p className="text-xs text-[#44474c] line-clamp-2">{item.description}</p>
                   <p className="text-[10px] text-[#8192a7] mt-1">{item.time}</p>
                 </div>
                 {item.unread && (
                   <span className="w-2 h-2 rounded-full bg-[#006397] shrink-0 mt-1.5" aria-hidden />
                 )}
-              </div>
+              </button>
             ))}
           </div>
           <div className="px-4 py-2.5 border-t border-[#eceef0] text-center">
