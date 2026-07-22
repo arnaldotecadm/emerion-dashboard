@@ -11,6 +11,20 @@ export function formatCpfCnpj(value: string): string {
   return value;
 }
 
+/** Formats a numeric value as Brazilian Real currency (e.g. `R$ 1.234,56`). */
+export function formatCurrency(value: number | null | undefined): string {
+  if (value === null || value === undefined) return "—";
+  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+/** Formats an ISO date-time string as a short `dd/mm/aaaa` date, for display in tables. */
+export function formatDate(value: string | null | undefined): string {
+  if (!value) return "—";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+  return date.toLocaleDateString("pt-BR");
+}
+
 /** Derives a 1-2 letter avatar initial from a company/trade name. */
 export function initialsFrom(name: string): string {
   const words = name.trim().split(/\s+/).filter(Boolean);

@@ -1,6 +1,5 @@
 import type { Customer, CustomerPage } from "../types/customer";
-
-const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080"}/api/v1`;
+import { API_BASE_URL } from "./apiConfig";
 
 /**
  * Fetches a page of customers from the ERP backend.
