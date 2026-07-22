@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCustomerOrders } from "../hooks/useCustomerOrders";
+import { useCustomerNamesByExternalId } from "../hooks/useCustomerNamesByExternalId";
 import { formatCurrency, formatDate } from "../utils/format";
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
@@ -10,6 +11,7 @@ function OrdersDirectoryTable() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const { data, loading, error, page, size, setPage, setSize, refetch } = useCustomerOrders(0, 10);
+  const customerNames = useCustomerNamesByExternalId(data?.data.map((row) => row.codCli) ?? []);
 
   const visibleRows = useMemo(() => {
     const rows = data?.data ?? [];
@@ -17,9 +19,11 @@ function OrdersDirectoryTable() {
     if (!query) return rows;
 
     return rows.filter((row) =>
-      [row.codCli, row.nronfe ?? "", row.sitres ?? ""].some((field) => field.toLowerCase().includes(query))
+      [row.codCli, customerNames.get(row.codCli) ?? "", row.nronfe ?? "", row.sitres ?? ""].some((field) =>
+        field.toLowerCase().includes(query)
+      )
     );
-  }, [data, search]);
+  }, [data, search, customerNames]);
 
   const totalPages = data?.pagination.totalPages ?? 0;
   const currentPage = data?.pagination.page ?? page;
@@ -106,7 +110,9 @@ function OrdersDirectoryTable() {
                       className="hover:bg-[#f7f9fb] transition-colors cursor-pointer group"
                     >
                       <td className="px-6 py-4 text-sm text-[#8192a7]">{row.id}</td>
-                      <td className="px-6 py-4 text-sm text-[#44474c]">{row.codCli}</td>
+                      <td className="px-6 py-4 text-sm text-[#44474c]">
+                        {customerNames.get(row.codCli) ?? row.codCli}
+                      </td>
                       <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">{row.nronfe ?? "—"}</td>
                       <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">{formatDate(row.dteres)}</td>
                       <td className="px-6 py-4">

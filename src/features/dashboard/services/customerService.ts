@@ -31,3 +31,18 @@ export async function fetchCustomerById(id: string | number): Promise<Customer> 
   return (await response.json()) as Customer;
 }
 
+/** Fetches a single customer by its ERP `externalId` (aka `codCli`) from the ERP backend. */
+export async function fetchCustomerByExternalId(externalId: string): Promise<Customer> {
+  const response = await fetch(`${API_BASE_URL}/customers/by-external-id/${externalId}`);
+
+  if (!response.ok) {
+    throw new Error(
+      response.status === 404 || response.status === 500
+        ? "Cliente não encontrado."
+        : `Falha ao carregar o cliente (HTTP ${response.status}).`
+    );
+  }
+
+  return (await response.json()) as Customer;
+}
+

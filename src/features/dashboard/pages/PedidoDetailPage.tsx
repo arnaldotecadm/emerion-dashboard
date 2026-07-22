@@ -1,5 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import { useCustomerOrder } from "../hooks/useCustomerOrder";
+import { useCustomerByExternalId } from "../hooks/useCustomerByExternalId";
 import { formatCurrency, formatDate } from "../utils/format";
 import PlaceholderPage from "../components/PlaceholderPage";
 
@@ -17,6 +18,7 @@ const BackLink = () => (
 function PedidoDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { data: pedido, loading, error, notFound } = useCustomerOrder(id);
+  const { data: cliente, loading: clienteLoading } = useCustomerByExternalId(pedido?.codCli);
 
   if (notFound) {
     return (
@@ -92,7 +94,17 @@ function PedidoDetailPage() {
                 )}
               </div>
               <p className="text-[#8192a7] text-sm mt-1">
-                Cliente {pedido.codCli} · {formatDate(pedido.dteres)}
+                Cliente{" "}
+                {clienteLoading ? (
+                  "carregando..."
+                ) : cliente ? (
+                  <Link to={`/dashboard/clientes/${cliente.id}`} className="text-[#006397] hover:underline">
+                    {cliente.nomeFantasia.trim()}
+                  </Link>
+                ) : (
+                  pedido.codCli
+                )}{" "}
+                · {formatDate(pedido.dteres)}
               </p>
             </div>
           </div>
@@ -109,7 +121,17 @@ function PedidoDetailPage() {
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Cliente (codCli)</p>
-            <p className="text-sm font-bold text-[#041627]">{pedido.codCli}</p>
+            <p className="text-sm font-bold text-[#041627]">
+              {clienteLoading ? (
+                "Carregando..."
+              ) : cliente ? (
+                <Link to={`/dashboard/clientes/${cliente.id}`} className="text-[#006397] hover:underline">
+                  {cliente.nomeFantasia.trim()} ({pedido.codCli})
+                </Link>
+              ) : (
+                pedido.codCli
+              )}
+            </p>
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">CNPJ da Empresa</p>
