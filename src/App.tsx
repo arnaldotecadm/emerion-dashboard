@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
 import LandingPage from "./pages/LandingPage";
@@ -15,9 +16,16 @@ import ProdutoDetailPage from "./features/dashboard/pages/ProdutoDetailPage";
 import ConfiguracoesPage from "./features/dashboard/pages/ConfiguracoesPage";
 import NotificationDetailPage from "./features/dashboard/pages/NotificationDetailPage";
 import AccountPage from "./features/account/AccountPage";
+import { setAuthToken } from "./features/dashboard/services/apiConfig";
 
 function App() {
   const auth = useAuth();
+
+  // Keeps the ERP API client's JWT in sync with the Cognito session, so every
+  // request carries a valid `Authorization: Bearer` header for the backend to validate.
+  useEffect(() => {
+    setAuthToken(auth.user?.access_token ?? null);
+  }, [auth.user]);
 
   const signOutRedirect = () => {
     const clientId = "395rpr7l5274ei0ivbjm6l2ptd";

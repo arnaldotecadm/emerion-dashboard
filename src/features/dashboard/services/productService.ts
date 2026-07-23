@@ -1,5 +1,5 @@
 import type { Product, ProductPage } from "../types/product";
-import { API_BASE_URL } from "./apiConfig";
+import { API_BASE_URL, apiFetch } from "./apiConfig";
 
 /**
  * Fetches a page of products from the ERP backend.
@@ -7,7 +7,7 @@ import { API_BASE_URL } from "./apiConfig";
  * @param size number of rows per page.
  */
 export async function fetchProducts(page: number, size: number): Promise<ProductPage> {
-  const response = await fetch(`${API_BASE_URL}/products?page=${page}&size=${size}`);
+  const response = await apiFetch(`${API_BASE_URL}/products?page=${page}&size=${size}`);
 
   if (!response.ok) {
     throw new Error(`Falha ao carregar produtos (HTTP ${response.status}).`);
@@ -18,7 +18,7 @@ export async function fetchProducts(page: number, size: number): Promise<Product
 
 /** Fetches a single product by id from the ERP backend. */
 export async function fetchProductById(id: string | number): Promise<Product> {
-  const response = await fetch(`${API_BASE_URL}/products/${id}`);
+  const response = await apiFetch(`${API_BASE_URL}/products/${id}`);
 
   if (!response.ok) {
     throw new Error(
@@ -33,7 +33,7 @@ export async function fetchProductById(id: string | number): Promise<Product> {
 
 /** Fetches a single product by its ERP `externalId` from the ERP backend. */
 export async function fetchProductByExternalId(externalId: string): Promise<Product> {
-  const response = await fetch(`${API_BASE_URL}/products/by-external-id/${externalId}`);
+  const response = await apiFetch(`${API_BASE_URL}/products/by-external-id/${externalId}`);
 
   if (!response.ok) {
     throw new Error(

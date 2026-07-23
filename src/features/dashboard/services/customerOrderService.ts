@@ -1,5 +1,5 @@
 import type { CustomerOrder, CustomerOrderPage } from "../types/customerOrder";
-import { API_BASE_URL } from "./apiConfig";
+import { API_BASE_URL, apiFetch } from "./apiConfig";
 
 /**
  * Fetches a page of customer orders from the ERP backend.
@@ -18,7 +18,7 @@ export async function fetchCustomerOrders(
   if (codCli) params.set("codCli", codCli);
   if (sitres) params.set("sitres", sitres);
 
-  const response = await fetch(`${API_BASE_URL}/customer-orders?${params.toString()}`);
+  const response = await apiFetch(`${API_BASE_URL}/customer-orders?${params.toString()}`);
 
   if (!response.ok) {
     throw new Error(`Falha ao carregar pedidos (HTTP ${response.status}).`);
@@ -29,7 +29,7 @@ export async function fetchCustomerOrders(
 
 /** Fetches a single customer order by id from the ERP backend. */
 export async function fetchCustomerOrderById(id: string | number): Promise<CustomerOrder> {
-  const response = await fetch(`${API_BASE_URL}/customer-orders/${id}`);
+  const response = await apiFetch(`${API_BASE_URL}/customer-orders/${id}`);
 
   if (!response.ok) {
     throw new Error(

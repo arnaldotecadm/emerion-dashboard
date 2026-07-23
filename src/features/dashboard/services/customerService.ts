@@ -1,5 +1,5 @@
 import type { Customer, CustomerPage } from "../types/customer";
-import { API_BASE_URL } from "./apiConfig";
+import { API_BASE_URL, apiFetch } from "./apiConfig";
 
 /**
  * Fetches a page of customers from the ERP backend.
@@ -7,7 +7,7 @@ import { API_BASE_URL } from "./apiConfig";
  * @param size number of rows per page.
  */
 export async function fetchCustomers(page: number, size: number): Promise<CustomerPage> {
-  const response = await fetch(`${API_BASE_URL}/customers?page=${page}&size=${size}`);
+  const response = await apiFetch(`${API_BASE_URL}/customers?page=${page}&size=${size}`);
 
   if (!response.ok) {
     throw new Error(`Falha ao carregar clientes (HTTP ${response.status}).`);
@@ -18,7 +18,7 @@ export async function fetchCustomers(page: number, size: number): Promise<Custom
 
 /** Fetches a single customer by id from the ERP backend. */
 export async function fetchCustomerById(id: string | number): Promise<Customer> {
-  const response = await fetch(`${API_BASE_URL}/customers/${id}`);
+  const response = await apiFetch(`${API_BASE_URL}/customers/${id}`);
 
   if (!response.ok) {
     throw new Error(
@@ -33,7 +33,7 @@ export async function fetchCustomerById(id: string | number): Promise<Customer> 
 
 /** Fetches a single customer by its ERP `externalId` (aka `codCli`) from the ERP backend. */
 export async function fetchCustomerByExternalId(externalId: string): Promise<Customer> {
-  const response = await fetch(`${API_BASE_URL}/customers/by-external-id/${externalId}`);
+  const response = await apiFetch(`${API_BASE_URL}/customers/by-external-id/${externalId}`);
 
   if (!response.ok) {
     throw new Error(

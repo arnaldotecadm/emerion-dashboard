@@ -1,5 +1,5 @@
 import type { Vendedor, VendedorPage } from "../types/vendedor";
-import { API_BASE_URL } from "./apiConfig";
+import { API_BASE_URL, apiFetch } from "./apiConfig";
 
 /**
  * Fetches a page of vendedores (salesmen) from the ERP backend.
@@ -18,7 +18,7 @@ export async function fetchVendedores(
   if (nome) params.set("nome", nome);
   if (situacao) params.set("situacao", situacao);
 
-  const response = await fetch(`${API_BASE_URL}/vendedores?${params.toString()}`);
+  const response = await apiFetch(`${API_BASE_URL}/vendedores?${params.toString()}`);
 
   if (!response.ok) {
     throw new Error(`Falha ao carregar vendedores (HTTP ${response.status}).`);
@@ -29,7 +29,7 @@ export async function fetchVendedores(
 
 /** Fetches a single vendedor by id from the ERP backend. */
 export async function fetchVendedorById(id: string | number): Promise<Vendedor> {
-  const response = await fetch(`${API_BASE_URL}/vendedores/${id}`);
+  const response = await apiFetch(`${API_BASE_URL}/vendedores/${id}`);
 
   if (!response.ok) {
     throw new Error(
