@@ -159,7 +159,7 @@ function PedidoDetailPage() {
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">CNPJ da Empresa</p>
-            <p className="text-sm font-bold text-[#041627]">{pedido.cnpjEmpresa || "—"}</p>
+            <p className="text-sm font-bold text-[#041627]">{pedido.cpfCnpj || "—"}</p>
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">NF-e</p>

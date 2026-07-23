@@ -63,6 +63,7 @@ export interface CustomerOrder {
   /** Owning customer's externalId (codCli), matching `Customer.externalId`. */
   codCli: string;
   cnpjEmpresa: string | null;
+  cpfCnpj: string | null;
   nronfe: string | null;
   dteres: string;
   sitres: string | null;
