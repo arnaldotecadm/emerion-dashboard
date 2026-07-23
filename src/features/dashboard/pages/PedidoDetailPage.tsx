@@ -1,8 +1,9 @@
+import { Fragment, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useCustomerOrder } from "../hooks/useCustomerOrder";
 import { useCustomerByExternalId } from "../hooks/useCustomerByExternalId";
 import { useProductsByExternalId } from "../hooks/useProductsByExternalId";
-import { formatCurrency, formatDate } from "../utils/format";
+import { formatCurrency, formatDate, formatPercent } from "../utils/format";
 import PlaceholderPage from "../components/PlaceholderPage";
 
 const BackLink = () => (
@@ -15,12 +16,33 @@ const BackLink = () => (
   </Link>
 );
 
+/** Small label/value pair used within the item's expanded fiscal detail panel. */
+const DetailField = ({ label, value }: { label: string; value: string }) => (
+  <div>
+    <p className="text-[10px] font-semibold text-[#8192a7] mb-0.5 uppercase tracking-wider">{label}</p>
+    <p className="text-xs font-semibold text-[#041627]">{value}</p>
+  </div>
+);
+
 /** Read-only detail view for a single customer order, backed by `GET /api/v1/customer-orders/:id`. */
 function PedidoDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { data: pedido, loading, error, notFound } = useCustomerOrder(id);
   const { data: cliente, loading: clienteLoading } = useCustomerByExternalId(pedido?.codCli);
   const productIds = useProductsByExternalId(pedido?.itens.map((item) => item.produto) ?? []);
+  const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set());
+
+  const toggleItem = (index: number) => {
+    setExpandedItems((current) => {
+      const next = new Set(current);
+      if (next.has(index)) {
+        next.delete(index);
+      } else {
+        next.add(index);
+      }
+      return next;
+    });
+  };
 
   if (notFound) {
     return (
@@ -183,6 +205,7 @@ function PedidoDetailPage() {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-[#f7f9fb] border-b border-[#e6e8ea]">
+                <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider w-10"></th>
                 <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Produto</th>
                 <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
                   Descrição
@@ -201,32 +224,193 @@ function PedidoDetailPage() {
             <tbody className="divide-y divide-[#f7f9fb]">
               {pedido.itens.map((item, index) => {
                 const productId = productIds.get(item.produto);
+                const isExpanded = expandedItems.has(index);
                 return (
-                  <tr key={`${item.produto}-${index}`} className="hover:bg-[#f7f9fb] transition-colors">
-                    <td className="px-6 py-4 text-sm font-semibold text-[#041627]">
-                      {productId ? (
-                        <Link to={`/dashboard/produtos/${productId}`} className="text-[#006397] hover:underline">
-                          {item.produto}
-                        </Link>
-                      ) : (
-                        item.produto
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-[#44474c]">{item.descricao || "—"}</td>
-                    <td className="px-6 py-4 text-sm text-[#44474c]">{item.quantidade}</td>
-                    <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">
-                      {formatCurrency(item.valorUnitario)}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">
-                      {formatCurrency(item.valorTotal)}
-                    </td>
-                  </tr>
+                  <Fragment key={`${item.produto}-${index}`}>
+                    <tr className="hover:bg-[#f7f9fb] transition-colors">
+                      <td
+                        onClick={() => toggleItem(index)}
+                        className="px-6 py-4 text-[#8192a7] cursor-pointer"
+                        aria-label={isExpanded ? "Recolher detalhes do item" : "Expandir detalhes do item"}
+                      >
+                        <span
+                          className={`material-symbols-outlined text-lg transition-transform ${
+                            isExpanded ? "rotate-90" : ""
+                          }`}
+                        >
+                          chevron_right
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm font-semibold text-[#041627]">
+                        {productId ? (
+                          <Link to={`/dashboard/produtos/${productId}`} className="text-[#006397] hover:underline">
+                            {item.produto}
+                          </Link>
+                        ) : (
+                          <span title="Produto não encontrado no catálogo cadastrado">{item.produto}</span>
+                        )}
+                      </td>
+                      <td
+                        onClick={() => toggleItem(index)}
+                        className="px-6 py-4 text-sm text-[#44474c] cursor-pointer"
+                      >
+                        {item.descricao || "—"}
+                      </td>
+                      <td onClick={() => toggleItem(index)} className="px-6 py-4 text-sm text-[#44474c] cursor-pointer">
+                        {item.quantidade}
+                      </td>
+                      <td
+                        onClick={() => toggleItem(index)}
+                        className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap cursor-pointer"
+                      >
+                        {formatCurrency(item.valorUnitario)}
+                      </td>
+                      <td
+                        onClick={() => toggleItem(index)}
+                        className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap cursor-pointer"
+                      >
+                        {formatCurrency(item.valorTotal)}
+                      </td>
+                    </tr>
+
+                    {isExpanded && (
+                      <tr className="bg-[#f7f9fb]">
+                        <td colSpan={6} className="px-6 py-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                            <div className="bg-white rounded-lg border border-[#e6e8ea] p-4">
+                              <h4 className="text-xs font-bold text-[#041627] uppercase tracking-wider mb-3">
+                                ICMS
+                              </h4>
+                              <div className="grid grid-cols-2 gap-3">
+                                <DetailField label="Base" value={formatCurrency(item.icmsBase)} />
+                                <DetailField label="Alíquota" value={formatPercent(item.icmsAliquota)} />
+                                <DetailField label="Valor" value={formatCurrency(item.icmsValor)} />
+                                <DetailField label="Redução de Base" value={formatCurrency(item.icmsReducaoBase)} />
+                              </div>
+                            </div>
+
+                            <div className="bg-white rounded-lg border border-[#e6e8ea] p-4">
+                              <h4 className="text-xs font-bold text-[#041627] uppercase tracking-wider mb-3">
+                                ICMS Substituição Tributária
+                              </h4>
+                              <div className="grid grid-cols-2 gap-3">
+                                <DetailField label="Base" value={formatCurrency(item.icmsSubstituicaoBase)} />
+                                <DetailField
+                                  label="Alíquota"
+                                  value={formatPercent(item.icmsSubstituicaoAliquota)}
+                                />
+                                <DetailField label="Valor" value={formatCurrency(item.icmsSubstituicaoValor)} />
+                                <DetailField label="Margem" value={formatPercent(item.icmsSubstituicaoMargem)} />
+                                <DetailField
+                                  label="Redução de Base"
+                                  value={formatCurrency(item.icmsSubstituicaoReducaoBase)}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="bg-white rounded-lg border border-[#e6e8ea] p-4">
+                              <h4 className="text-xs font-bold text-[#041627] uppercase tracking-wider mb-3">IPI</h4>
+                              <div className="grid grid-cols-2 gap-3">
+                                <DetailField label="Base" value={formatCurrency(item.ipiBase)} />
+                                <DetailField label="Alíquota" value={formatPercent(item.ipiAliquota)} />
+                                <DetailField label="Valor" value={formatCurrency(item.ipiValor)} />
+                                <DetailField label="CST" value={item.ipiCst || "—"} />
+                                <DetailField label="Classificação" value={item.ipiClassificacao || "—"} />
+                              </div>
+                            </div>
+
+                            <div className="bg-white rounded-lg border border-[#e6e8ea] p-4">
+                              <h4 className="text-xs font-bold text-[#041627] uppercase tracking-wider mb-3">PIS</h4>
+                              <div className="grid grid-cols-2 gap-3">
+                                <DetailField label="Base" value={formatCurrency(item.pisBase)} />
+                                <DetailField label="Alíquota" value={formatPercent(item.pisAliquota)} />
+                                <DetailField label="Valor" value={formatCurrency(item.pisValor)} />
+                                <DetailField label="CST" value={item.pisCst || "—"} />
+                              </div>
+                            </div>
+
+                            <div className="bg-white rounded-lg border border-[#e6e8ea] p-4">
+                              <h4 className="text-xs font-bold text-[#041627] uppercase tracking-wider mb-3">
+                                COFINS
+                              </h4>
+                              <div className="grid grid-cols-2 gap-3">
+                                <DetailField label="Base" value={formatCurrency(item.cofinsBase)} />
+                                <DetailField label="Alíquota" value={formatPercent(item.cofinsAliquota)} />
+                                <DetailField label="Valor" value={formatCurrency(item.cofinsValor)} />
+                                <DetailField label="CST" value={item.cofinsCst || "—"} />
+                              </div>
+                            </div>
+
+                            <div className="bg-white rounded-lg border border-[#e6e8ea] p-4">
+                              <h4 className="text-xs font-bold text-[#041627] uppercase tracking-wider mb-3">
+                                Valores Adicionais
+                              </h4>
+                              <div className="grid grid-cols-2 gap-3">
+                                <DetailField label="Desconto" value={formatCurrency(item.descontoValor)} />
+                                <DetailField label="Frete" value={formatCurrency(item.freteValor)} />
+                                <DetailField label="Seguro" value={formatCurrency(item.seguroValor)} />
+                                <DetailField label="Outras Despesas" value={formatCurrency(item.outrasDespesasValor)} />
+                                <DetailField label="Total Tributado" value={formatCurrency(item.totalItemTributado)} />
+                                <DetailField label="Tot. Renegociado" value={formatCurrency(item.totRen)} />
+                                <DetailField label="Tot. Ge2" value={formatCurrency(item.totGe2)} />
+                              </div>
+                            </div>
+
+                            <div className="bg-white rounded-lg border border-[#e6e8ea] p-4">
+                              <h4 className="text-xs font-bold text-[#041627] uppercase tracking-wider mb-3">
+                                Referências
+                              </h4>
+                              <div className="grid grid-cols-2 gap-3">
+                                <DetailField label="Cód. Unidade" value={item.codUnd || "—"} />
+                                <DetailField label="Cód. CLP" value={item.codClp || "—"} />
+                                <DetailField label="Cód. ST1" value={item.codSt1 || "—"} />
+                                <DetailField label="Cód. CFO" value={item.codCfo || "—"} />
+                                <DetailField
+                                  label="Pedido de Compra do Cliente"
+                                  value={item.pedidoCompraCliente || "—"}
+                                />
+                                <DetailField
+                                  label="Item do Pedido de Compra"
+                                  value={item.itemPedidoCompraCliente?.toString() ?? "—"}
+                                />
+                                <DetailField label="Seq. Re2" value={item.seqRe2.toString()} />
+                                <DetailField label="Nro. Re2" value={item.nroRe2?.toString() ?? "—"} />
+                              </div>
+                            </div>
+
+                            <div className="bg-white rounded-lg border border-[#e6e8ea] p-4">
+                              <h4 className="text-xs font-bold text-[#041627] uppercase tracking-wider mb-3">
+                                Situação
+                              </h4>
+                              <div className="grid grid-cols-2 gap-3">
+                                <DetailField label="Validado" value={item.flgVal || "—"} />
+                                <DetailField label="Pacote" value={item.flgPac || "—"} />
+                                <DetailField label="Liberado" value={item.flgLib || "—"} />
+                                <DetailField label="Vlu. Re2" value={formatCurrency(item.vluRe2)} />
+                                <DetailField label="Dsc. Re2" value={formatCurrency(item.dscRe2)} />
+                                <DetailField label="Dsr. Re2" value={formatCurrency(item.dsrRe2)} />
+                              </div>
+                            </div>
+
+                            {item.observacao && (
+                              <div className="bg-white rounded-lg border border-[#e6e8ea] p-4 md:col-span-2 xl:col-span-3">
+                                <h4 className="text-xs font-bold text-[#041627] uppercase tracking-wider mb-2">
+                                  Observação
+                                </h4>
+                                <p className="text-xs text-[#44474c]">{item.observacao}</p>
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
                 );
               })}
 
               {pedido.itens.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-6 py-10 text-center text-sm text-[#8192a7]">
+                  <td colSpan={6} className="px-6 py-10 text-center text-sm text-[#8192a7]">
                     Nenhum item registrado para este pedido.
                   </td>
                 </tr>

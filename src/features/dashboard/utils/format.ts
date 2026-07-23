@@ -17,6 +17,12 @@ export function formatCurrency(value: number | null | undefined): string {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
+/** Formats a decimal aliquot/percentage value (e.g. `18` → `18%`). */
+export function formatPercent(value: number | null | undefined): string {
+  if (value === null || value === undefined) return "—";
+  return `${value.toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%`;
+}
+
 /** Formats an ISO date-time string as a short `dd/mm/aaaa` date, for display in tables. */
 export function formatDate(value: string | null | undefined): string {
   if (!value) return "—";
