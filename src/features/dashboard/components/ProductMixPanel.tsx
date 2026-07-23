@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { Link } from "react-router-dom";
 import { useProducts } from "../hooks/useProducts";
 import { formatCurrency } from "../utils/format";
 
@@ -18,6 +19,7 @@ function ProductMixPanel() {
     return products.map((product, index) => {
       const pct = ((product.preco ?? 0) / total) * 100;
       const slice = {
+        id: product.id,
         label: product.nome,
         preco: product.preco,
         pct,
@@ -72,12 +74,16 @@ function ProductMixPanel() {
           </div>
           <div className="space-y-2">
             {slices.map((slice) => (
-              <div key={slice.label} className="flex items-center gap-2">
+              <Link
+                key={slice.label}
+                to={`/dashboard/produtos/${slice.id}`}
+                className="flex items-center gap-2 group hover:opacity-80 transition-opacity"
+              >
                 <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: slice.color }} />
-                <span className="text-[11px] font-medium text-[#44474c]">
+                <span className="text-[11px] font-medium text-[#44474c] group-hover:text-[#006397] group-hover:underline">
                   {slice.label} ({formatCurrency(slice.preco)})
                 </span>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

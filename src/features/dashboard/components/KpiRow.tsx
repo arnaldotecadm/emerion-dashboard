@@ -26,7 +26,7 @@ function KpiRow() {
 
   if (loading) {
     return (
-      <section className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
         {Array.from({ length: 5 }).map((_, index) => (
           <div key={index} className="bg-white p-6 rounded-xl shadow-card animate-pulse">
             <div className="h-3 w-24 bg-[#eceef0] rounded-full mb-4" />
@@ -71,7 +71,7 @@ function KpiRow() {
   ];
 
   return (
-    <section className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+    <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
       {KPIS.map((kpi) => {
         const isHighlight = kpi.variant === "highlight";
 
@@ -79,16 +79,21 @@ function KpiRow() {
           <Link
             key={kpi.label}
             to={kpi.to}
-            className={`group relative bg-white p-6 rounded-xl shadow-card transition-all duration-200 cursor-pointer hover:shadow-[0px_8px_20px_rgba(0,99,151,0.18)] hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#006397] ${
+            className={`group relative bg-white p-6 rounded-xl shadow-card transition-all duration-200 cursor-pointer hover:shadow-[0px_8px_20px_rgba(0,99,151,0.18)] hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#006397] min-w-0 ${
               isHighlight ? "border-l-4 border-[#006397]" : ""
             }`}
           >
             <span className="absolute top-4 right-4 text-[#006397] opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200">
               <span className="material-symbols-outlined text-lg">arrow_forward</span>
             </span>
-            <p className="text-xs font-semibold tracking-wide mb-2 text-[#44474c]">{kpi.label}</p>
-            <h2 className="text-[36px] leading-[44px] font-bold tracking-tight text-[#041627]">{kpi.value}</h2>
-            {kpi.hint && <p className="text-xs font-medium mt-2 text-[#8192a7]">{kpi.hint}</p>}
+            <p className="text-xs font-semibold tracking-wide mb-2 text-[#44474c] truncate pr-6">{kpi.label}</p>
+            <h2
+              title={kpi.value}
+              className="text-2xl lg:text-[28px] xl:text-[32px] leading-tight font-bold tracking-tight text-[#041627] truncate"
+            >
+              {kpi.value}
+            </h2>
+            {kpi.hint && <p className="text-xs font-medium mt-2 text-[#8192a7] truncate">{kpi.hint}</p>}
           </Link>
         );
       })}

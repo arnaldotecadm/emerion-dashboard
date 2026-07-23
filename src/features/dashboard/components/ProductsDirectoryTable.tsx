@@ -1,27 +1,22 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCustomers } from "../hooks/useCustomers";
-import { formatCpfCnpj } from "../utils/format";
+import { useProducts } from "../hooks/useProducts";
+import { formatCurrency, formatDate } from "../utils/format";
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
 
-
-/** Full client directory table, backed by the ERP backend's `GET /api/v1/customers` endpoint. */
-function ClientsDirectoryTable() {
+/** Full product directory table, backed by the ERP backend's `GET /api/v1/products` endpoint. */
+function ProductsDirectoryTable() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
-  const { data, loading, error, page, size, setPage, setSize, refetch } = useCustomers(0, 10);
+  const { data, loading, error, page, size, setPage, setSize, refetch } = useProducts(0, 10);
 
   const visibleRows = useMemo(() => {
     const rows = data?.data ?? [];
     const query = search.trim().toLowerCase();
     if (!query) return rows;
 
-    return rows.filter((row) =>
-      [row.nomeFantasia, row.razaoSocial, row.cpfCnpj, row.externalId].some((field) =>
-        field.toLowerCase().includes(query)
-      )
-    );
+    return rows.filter((row) => [row.nome, row.externalId].some((field) => field.toLowerCase().includes(query)));
   }, [data, search]);
 
   const totalPages = data?.pagination.totalPages ?? 0;
@@ -31,9 +26,9 @@ function ClientsDirectoryTable() {
   const isLastPage = totalPages === 0 || currentPage >= totalPages - 1;
 
   return (
-    <section id="todos-clientes" className="bg-white rounded-xl shadow-card border border-[#e6e8ea] overflow-hidden">
+    <section id="todos-produtos" className="bg-white rounded-xl shadow-card border border-[#e6e8ea] overflow-hidden">
       <div className="p-6 border-b border-[#e6e8ea] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h3 className="font-bold text-[#041627] text-lg">Todos os Clientes</h3>
+        <h3 className="font-bold text-[#041627] text-lg">Todos os Produtos</h3>
         <div className="flex items-center gap-3 w-full sm:w-auto">
           <div className="relative flex-1 sm:w-64">
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#8192a7] text-lg">
@@ -43,7 +38,7 @@ function ClientsDirectoryTable() {
               type="text"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Buscar nesta página por nome, CNPJ ou Codigo"
+              placeholder="Buscar nesta página por nome ou Codigo"
               className="w-full pl-9 pr-3 py-2 text-sm border border-[#e6e8ea] rounded-lg text-[#44474c] focus:outline-none focus:ring-2 focus:ring-[#006397]/30 focus:border-[#006397]"
             />
           </div>
@@ -84,26 +79,18 @@ function ClientsDirectoryTable() {
                   <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
                     Codigo
                   </th>
+                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Nome</th>
+                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Preço</th>
                   <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
-                    Razão Social
+                    Cadastrado em
                   </th>
-                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
-                    CPF/CNPJ
-                  </th>
-                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
-                    Inscrição Estadual
-                  </th>
-                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
-                    Regime Tributário
-                  </th>
-                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#f7f9fb]">
                 {loading &&
                   Array.from({ length: size }).map((_, index) => (
                     <tr key={`skeleton-${index}`} className="animate-pulse">
-                      {Array.from({ length: 7 }).map((__, cell) => (
+                      {Array.from({ length: 4 }).map((__, cell) => (
                         <td key={cell} className="px-6 py-4">
                           <div className="h-3.5 bg-[#eceef0] rounded-full w-full max-w-[10rem]" />
                         </td>
@@ -115,36 +102,26 @@ function ClientsDirectoryTable() {
                   visibleRows.map((row) => (
                     <tr
                       key={row.id}
-                      onClick={() => navigate(`/dashboard/clientes/${row.id}`)}
+                      onClick={() => navigate(`/dashboard/produtos/${row.id}`)}
                       className="hover:bg-[#f7f9fb] transition-colors cursor-pointer group"
                     >
                       <td className="px-6 py-4 text-sm text-[#8192a7] whitespace-nowrap">{row.externalId}</td>
-                      <td className="px-6 py-4 text-sm text-[#44474c]">{row.razaoSocial}</td>
+                      <td className="px-6 py-4 text-sm font-semibold text-[#041627]">{row.nome}</td>
                       <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">
-                        {formatCpfCnpj(row.cpfCnpj)}
+                        {formatCurrency(row.preco)}
                       </td>
                       <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">
-                        {row.inscricaoEstadual}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-[#44474c]">{row.regimeTributario}</td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`px-2.5 py-1 text-xs font-bold rounded-full ${
-                            row.bloqueado ? "bg-[#ffdad6] text-[#93000a]" : "bg-emerald-100 text-emerald-700"
-                          }`}
-                        >
-                          {row.bloqueado ? "Bloqueado" : "Ativo"}
-                        </span>
+                        {formatDate(row.createdAt)}
                       </td>
                     </tr>
                   ))}
 
                 {!loading && visibleRows.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-6 py-10 text-center text-sm text-[#8192a7]">
+                    <td colSpan={4} className="px-6 py-10 text-center text-sm text-[#8192a7]">
                       {search
-                        ? `Nenhum cliente encontrado para "${search}" nesta página.`
-                        : "Nenhum cliente encontrado."}
+                        ? `Nenhum produto encontrado para "${search}" nesta página.`
+                        : "Nenhum produto encontrado."}
                     </td>
                   </tr>
                 )}
@@ -155,7 +132,7 @@ function ClientsDirectoryTable() {
           <div className="px-6 py-4 bg-[#f7f9fb] border-t border-[#e6e8ea] flex flex-col sm:flex-row justify-between items-center gap-3">
             <span className="text-sm text-[#8192a7]">
               {totalElements > 0
-                ? `Exibindo ${data?.data.length ?? 0} de ${totalElements.toLocaleString("pt-BR")} clientes`
+                ? `Exibindo ${data?.data.length ?? 0} de ${totalElements.toLocaleString("pt-BR")} produtos`
                 : "—"}
             </span>
             <div className="flex items-center gap-3">
@@ -188,4 +165,4 @@ function ClientsDirectoryTable() {
   );
 }
 
-export default ClientsDirectoryTable;
+export default ProductsDirectoryTable;

@@ -19,8 +19,8 @@ function OrdersDirectoryTable() {
     if (!query) return rows;
 
     return rows.filter((row) =>
-      [row.codCli, customerNames.get(row.codCli) ?? "", row.nronfe ?? "", row.sitres ?? ""].some((field) =>
-        field.toLowerCase().includes(query)
+      [row.externalId, row.codCli, customerNames.get(row.codCli) ?? "", row.nronfe ?? "", row.sitres ?? ""].some(
+        (field) => field.toLowerCase().includes(query)
       )
     );
   }, [data, search, customerNames]);
@@ -44,7 +44,7 @@ function OrdersDirectoryTable() {
               type="text"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Buscar nesta página por cliente, NF-e ou status"
+              placeholder="Buscar nesta página por Num do pedido, cliente, NF-e ou status"
               className="w-full pl-9 pr-3 py-2 text-sm border border-[#e6e8ea] rounded-lg text-[#44474c] focus:outline-none focus:ring-2 focus:ring-[#006397]/30 focus:border-[#006397]"
             />
           </div>
@@ -82,7 +82,9 @@ function OrdersDirectoryTable() {
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-[#f7f9fb] border-b border-[#e6e8ea]">
-                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">ID</th>
+                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
+                    Num do Pedido
+                  </th>
                   <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Cliente</th>
                   <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">NF-e</th>
                   <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Data</th>
@@ -109,7 +111,7 @@ function OrdersDirectoryTable() {
                       onClick={() => navigate(`/dashboard/pedidos/${row.id}`)}
                       className="hover:bg-[#f7f9fb] transition-colors cursor-pointer group"
                     >
-                      <td className="px-6 py-4 text-sm text-[#8192a7]">{row.id}</td>
+                      <td className="px-6 py-4 text-sm text-[#8192a7] whitespace-nowrap">{row.externalId}</td>
                       <td className="px-6 py-4 text-sm text-[#44474c]">
                         {customerNames.get(row.codCli) ?? row.codCli}
                       </td>

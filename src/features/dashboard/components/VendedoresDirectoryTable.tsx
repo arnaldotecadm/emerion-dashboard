@@ -17,7 +17,7 @@ function VendedoresDirectoryTable() {
     if (!query) return rows;
 
     return rows.filter((row) =>
-      [row.nome, row.apelido ?? "", row.cidade ?? "", row.uf ?? ""].some((field) =>
+      [row.nome, row.apelido ?? "", row.cidade ?? "", row.uf ?? "", row.externalId].some((field) =>
         field.toLowerCase().includes(query)
       )
     );
@@ -42,7 +42,7 @@ function VendedoresDirectoryTable() {
               type="text"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Buscar nesta página por nome, apelido ou cidade"
+              placeholder="Buscar nesta página por nome, apelido, cidade ou Codigo"
               className="w-full pl-9 pr-3 py-2 text-sm border border-[#e6e8ea] rounded-lg text-[#44474c] focus:outline-none focus:ring-2 focus:ring-[#006397]/30 focus:border-[#006397]"
             />
           </div>
@@ -80,7 +80,9 @@ function VendedoresDirectoryTable() {
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-[#f7f9fb] border-b border-[#e6e8ea]">
-                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">ID</th>
+                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
+                    Codigo
+                  </th>
                   <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Nome</th>
                   <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Contato</th>
                   <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Cidade/UF</th>
@@ -107,7 +109,7 @@ function VendedoresDirectoryTable() {
                       onClick={() => navigate(`/dashboard/vendedores/${row.id}`)}
                       className="hover:bg-[#f7f9fb] transition-colors cursor-pointer group"
                     >
-                      <td className="px-6 py-4 text-sm text-[#8192a7]">{row.id}</td>
+                      <td className="px-6 py-4 text-sm text-[#8192a7] whitespace-nowrap">{row.externalId}</td>
                       <td className="px-6 py-4 text-sm text-[#44474c]">
                         {row.nome}
                         {row.apelido && <span className="text-[#8192a7]"> ({row.apelido})</span>}

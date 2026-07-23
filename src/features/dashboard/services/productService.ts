@@ -30,3 +30,18 @@ export async function fetchProductById(id: string | number): Promise<Product> {
 
   return (await response.json()) as Product;
 }
+
+/** Fetches a single product by its ERP `externalId` from the ERP backend. */
+export async function fetchProductByExternalId(externalId: string): Promise<Product> {
+  const response = await fetch(`${API_BASE_URL}/products/by-external-id/${externalId}`);
+
+  if (!response.ok) {
+    throw new Error(
+      response.status === 404 || response.status === 500
+        ? "Produto não encontrado."
+        : `Falha ao carregar o produto (HTTP ${response.status}).`
+    );
+  }
+
+  return (await response.json()) as Product;
+}

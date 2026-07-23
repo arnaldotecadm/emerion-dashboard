@@ -118,8 +118,8 @@ function ClienteDetailPage() {
         <h3 className="font-bold text-[#041627] text-lg mb-6">Dados Cadastrais</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">ID do Cliente</p>
-            <p className="text-sm font-bold text-[#041627]">{cliente.id}</p>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Codigo</p>
+            <p className="text-sm font-bold text-[#041627]">{cliente.externalId}</p>
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Razão Social</p>

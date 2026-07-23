@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { to: "/dashboard/pedidos", icon: "receipt_long", label: "Pedidos" },
   { to: "/dashboard/clientes", icon: "groups", label: "Clientes" },
   { to: "/dashboard/vendedores", icon: "person_search", label: "Vendedores" },
+  { to: "/dashboard/produtos", icon: "inventory_2", label: "Produtos" },
   { to: "/dashboard/configuracoes", icon: "settings", label: "Configurações" },
 ];
 

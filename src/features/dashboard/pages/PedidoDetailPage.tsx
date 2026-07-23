@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { useCustomerOrder } from "../hooks/useCustomerOrder";
 import { useCustomerByExternalId } from "../hooks/useCustomerByExternalId";
+import { useProductsByExternalId } from "../hooks/useProductsByExternalId";
 import { formatCurrency, formatDate } from "../utils/format";
 import PlaceholderPage from "../components/PlaceholderPage";
 
@@ -19,6 +20,7 @@ function PedidoDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { data: pedido, loading, error, notFound } = useCustomerOrder(id);
   const { data: cliente, loading: clienteLoading } = useCustomerByExternalId(pedido?.codCli);
+  const productIds = useProductsByExternalId(pedido?.itens.map((item) => item.produto) ?? []);
 
   if (notFound) {
     return (
@@ -116,8 +118,8 @@ function PedidoDetailPage() {
         <h3 className="font-bold text-[#041627] text-lg mb-6">Dados do Pedido</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">ID do Pedido</p>
-            <p className="text-sm font-bold text-[#041627]">{pedido.id}</p>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Numero do Pedido</p>
+            <p className="text-sm font-bold text-[#041627]">{pedido.externalId}</p>
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Cliente (codCli)</p>
@@ -197,19 +199,30 @@ function PedidoDetailPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#f7f9fb]">
-              {pedido.itens.map((item, index) => (
-                <tr key={`${item.produto}-${index}`} className="hover:bg-[#f7f9fb] transition-colors">
-                  <td className="px-6 py-4 text-sm font-semibold text-[#041627]">{item.produto}</td>
-                  <td className="px-6 py-4 text-sm text-[#44474c]">{item.descricao || "—"}</td>
-                  <td className="px-6 py-4 text-sm text-[#44474c]">{item.quantidade}</td>
-                  <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">
-                    {formatCurrency(item.valorUnitario)}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">
-                    {formatCurrency(item.valorTotal)}
-                  </td>
-                </tr>
-              ))}
+              {pedido.itens.map((item, index) => {
+                const productId = productIds.get(item.produto);
+                return (
+                  <tr key={`${item.produto}-${index}`} className="hover:bg-[#f7f9fb] transition-colors">
+                    <td className="px-6 py-4 text-sm font-semibold text-[#041627]">
+                      {productId ? (
+                        <Link to={`/dashboard/produtos/${productId}`} className="text-[#006397] hover:underline">
+                          {item.produto}
+                        </Link>
+                      ) : (
+                        item.produto
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-[#44474c]">{item.descricao || "—"}</td>
+                    <td className="px-6 py-4 text-sm text-[#44474c]">{item.quantidade}</td>
+                    <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">
+                      {formatCurrency(item.valorUnitario)}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">
+                      {formatCurrency(item.valorTotal)}
+                    </td>
+                  </tr>
+                );
+              })}
 
               {pedido.itens.length === 0 && (
                 <tr>
