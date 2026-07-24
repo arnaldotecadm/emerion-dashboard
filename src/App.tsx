@@ -14,6 +14,7 @@ import VendedorDetailPage from "./features/dashboard/pages/VendedorDetailPage";
 import ProdutosPage from "./features/dashboard/pages/ProdutosPage";
 import ProdutoDetailPage from "./features/dashboard/pages/ProdutoDetailPage";
 import ConfiguracoesPage from "./features/dashboard/pages/ConfiguracoesPage";
+import NotificacoesPage from "./features/dashboard/pages/NotificacoesPage";
 import NotificationDetailPage from "./features/dashboard/pages/NotificationDetailPage";
 import AccountPage from "./features/account/AccountPage";
 import { setAuthToken } from "./features/dashboard/services/apiConfig";
@@ -85,6 +86,7 @@ function App() {
         <Route path="produtos" element={<ProdutosPage />} />
         <Route path="produtos/:id" element={<ProdutoDetailPage />} />
         <Route path="configuracoes" element={<ConfiguracoesPage />} />
+        <Route path="notificacoes" element={<NotificacoesPage />} />
         <Route path="notificacoes/:id" element={<NotificationDetailPage />} />
         <Route path="conta" element={<AccountPage />} />
       </Route>

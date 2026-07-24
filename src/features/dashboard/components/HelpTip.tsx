@@ -9,6 +9,7 @@ const PAGE_TIPS: Record<string, string> = {
   "/dashboard/pedidos": "Aqui você poderá acompanhar o status dos pedidos, faturamento e histórico completo assim que esta área estiver disponível.",
   "/dashboard/clientes": "Acompanhe o risco de inadimplência, limites de crédito e o ranking dos clientes que mais geram receita.",
   "/dashboard/vendedores": "Aqui você poderá acompanhar o desempenho da equipe de vendas, metas e comissões assim que esta área estiver disponível.",
+  "/dashboard/notificacoes": "Abra uma notificação para ver os detalhes completos e a referência relacionada.",
   "/dashboard/configuracoes": "Aqui você poderá ajustar preferências do workspace, integrações e permissões de equipe assim que esta área estiver disponível.",
   "/dashboard/conta": "Atualize seus dados de perfil e preferências de notificação nesta página.",
 };

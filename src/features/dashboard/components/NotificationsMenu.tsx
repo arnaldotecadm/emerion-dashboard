@@ -1,18 +1,44 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Tooltip from "../../../components/Tooltip";
-import { NOTIFICATIONS } from "../data/notificationsData";
+import { useNotifications } from "../hooks/useNotifications";
+import { formatDateTime } from "../utils/format";
+import type { Notification } from "../types/notification";
+
+function iconByCategory(category: Notification["category"]): string {
+  switch (category) {
+    case "INGESTION":
+      return "sync";
+    case "STATUS_UPDATE":
+      return "update";
+    case "APPROVAL_NEEDED":
+      return "rule";
+    case "SYSTEM":
+      return "settings";
+    default:
+      return "notifications";
+  }
+}
 
 /** Top-right dropdown showing the latest system notifications. */
 function NotificationsMenu() {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const unreadCount = NOTIFICATIONS.filter((n) => n.unread).length;
+  const notificationsQuery = useNotifications(0, 10);
+  const unreadQuery = useNotifications(0, 1, "UNREAD");
 
-  const goToNotification = (id: string) => {
+  const notifications = notificationsQuery.data?.data ?? [];
+  const unreadCount = unreadQuery.data?.pagination.total ?? 0;
+
+  const goToNotification = (id: number) => {
     setOpen(false);
     navigate(`/dashboard/notificacoes/${id}`);
+  };
+
+  const goToNotificationsList = () => {
+    setOpen(false);
+    navigate("/dashboard/notificacoes");
   };
 
   useEffect(() => {
@@ -68,33 +94,64 @@ function NotificationsMenu() {
             )}
           </div>
           <div className="max-h-96 overflow-y-auto divide-y divide-[#eceef0]">
-            {NOTIFICATIONS.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => goToNotification(item.id)}
-                className="w-full flex gap-3 px-4 py-3 text-left hover:bg-[#f7f9fb] transition-colors"
-              >
-                <span
-                  className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
-                    item.unread ? "bg-[#cce5ff] text-[#006397]" : "bg-[#eceef0] text-[#44474c]"
-                  }`}
-                >
-                  <span className="material-symbols-outlined text-lg">{item.icon}</span>
-                </span>
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-[#191c1e] truncate">{item.name}</p>
-                  <p className="text-xs text-[#44474c] line-clamp-2">{item.description}</p>
-                  <p className="text-[10px] text-[#8192a7] mt-1">{item.time}</p>
+            {notificationsQuery.loading &&
+              Array.from({ length: 4 }).map((_, index) => (
+                <div key={index} className="px-4 py-3 flex gap-3 animate-pulse">
+                  <div className="w-9 h-9 rounded-full bg-[#eceef0] shrink-0" />
+                  <div className="min-w-0 flex-1 space-y-2">
+                    <div className="h-3.5 w-40 bg-[#eceef0] rounded-full" />
+                    <div className="h-3 w-full bg-[#eceef0] rounded-full" />
+                    <div className="h-2.5 w-24 bg-[#eceef0] rounded-full" />
+                  </div>
                 </div>
-                {item.unread && (
-                  <span className="w-2 h-2 rounded-full bg-[#006397] shrink-0 mt-1.5" aria-hidden />
-                )}
-              </button>
-            ))}
+              ))}
+
+            {!notificationsQuery.loading && notificationsQuery.error && (
+              <div className="p-4 text-center">
+                <p className="text-xs text-[#ba1a1a] mb-2">{notificationsQuery.error}</p>
+                <button
+                  onClick={notificationsQuery.refetch}
+                  className="text-xs font-semibold text-[#006397] hover:underline"
+                >
+                  Tentar novamente
+                </button>
+              </div>
+            )}
+
+            {!notificationsQuery.loading && !notificationsQuery.error && notifications.length === 0 && (
+              <div className="p-4 text-center text-xs text-[#8192a7]">Nenhuma notificação encontrada.</div>
+            )}
+
+            {!notificationsQuery.loading &&
+              !notificationsQuery.error &&
+              notifications.map((item) => {
+                const unread = item.status === "UNREAD";
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => goToNotification(item.id)}
+                    className="w-full flex gap-3 px-4 py-3 text-left hover:bg-[#f7f9fb] transition-colors"
+                  >
+                    <span
+                      className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
+                        unread ? "bg-[#cce5ff] text-[#006397]" : "bg-[#eceef0] text-[#44474c]"
+                      }`}
+                    >
+                      <span className="material-symbols-outlined text-lg">{iconByCategory(item.category)}</span>
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-[#191c1e] truncate">{item.name}</p>
+                      <p className="text-xs text-[#44474c] line-clamp-2">{item.description}</p>
+                      <p className="text-[10px] text-[#8192a7] mt-1">{formatDateTime(item.createdAt)}</p>
+                    </div>
+                    {unread && <span className="w-2 h-2 rounded-full bg-[#006397] shrink-0 mt-1.5" aria-hidden />}
+                  </button>
+                );
+              })}
           </div>
           <div className="px-4 py-2.5 border-t border-[#eceef0] text-center">
-            <button className="text-xs font-semibold text-[#006397] hover:underline">
+            <button onClick={goToNotificationsList} className="text-xs font-semibold text-[#006397] hover:underline">
               Ver todas as notificações
             </button>
           </div>

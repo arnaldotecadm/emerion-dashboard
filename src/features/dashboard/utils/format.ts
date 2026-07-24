@@ -31,6 +31,20 @@ export function formatDate(value: string | null | undefined): string {
   return date.toLocaleDateString("pt-BR");
 }
 
+/** Formats an ISO date-time string as `dd/mm/aaaa hh:mm` (24h), for timestamps. */
+export function formatDateTime(value: string | null | undefined): string {
+  if (!value) return "—";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+  return date.toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 /** Derives a 1-2 letter avatar initial from a company/trade name. */
 export function initialsFrom(name: string): string {
   const words = name.trim().split(/\s+/).filter(Boolean);
