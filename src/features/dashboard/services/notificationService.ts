@@ -46,3 +46,33 @@ export async function fetchNotificationById(id: string | number): Promise<Notifi
 
   return (await response.json()) as Notification;
 }
+
+/** Marks a notification as read for the authenticated user. */
+export async function markNotificationAsRead(id: string | number): Promise<Notification> {
+  const response = await apiFetch(`${API_BASE_URL}/notifications/${id}/read`, { method: "PATCH" });
+
+  if (!response.ok) {
+    throw new Error(
+      response.status === 404 || response.status === 500
+        ? "Notificação não encontrada."
+        : `Falha ao marcar a notificação como lida (HTTP ${response.status}).`
+    );
+  }
+
+  return (await response.json()) as Notification;
+}
+
+/** Dismisses a notification for the authenticated user. */
+export async function dismissNotification(id: string | number): Promise<Notification> {
+  const response = await apiFetch(`${API_BASE_URL}/notifications/${id}/dismiss`, { method: "PATCH" });
+
+  if (!response.ok) {
+    throw new Error(
+      response.status === 404 || response.status === 500
+        ? "Notificação não encontrada."
+        : `Falha ao dispensar a notificação (HTTP ${response.status}).`
+    );
+  }
+
+  return (await response.json()) as Notification;
+}

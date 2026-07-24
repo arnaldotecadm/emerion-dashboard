@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { fetchNotificationById } from "../services/notificationService";
 import type { Notification } from "../types/notification";
 
@@ -7,6 +7,7 @@ export interface UseNotificationResult {
   loading: boolean;
   error: string | null;
   notFound: boolean;
+  refetch: () => void;
 }
 
 /** Loads a single notification by id from the ERP backend. */
@@ -15,6 +16,7 @@ export function useNotification(id: string | undefined): UseNotificationResult {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
+  const [reloadToken, setReloadToken] = useState(0);
 
   useEffect(() => {
     if (!id) {
@@ -48,7 +50,9 @@ export function useNotification(id: string | undefined): UseNotificationResult {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [id, reloadToken]);
 
-  return { data, loading, error, notFound };
+  const refetch = useCallback(() => setReloadToken((token) => token + 1), []);
+
+  return { data, loading, error, notFound, refetch };
 }

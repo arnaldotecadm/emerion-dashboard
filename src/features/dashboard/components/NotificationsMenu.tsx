@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Tooltip from "../../../components/Tooltip";
 import { useNotifications } from "../hooks/useNotifications";
+import { dismissNotification } from "../services/notificationService";
 import { formatDateTime } from "../utils/format";
 import type { Notification } from "../types/notification";
 
@@ -23,10 +24,14 @@ function iconByCategory(category: Notification["category"]): string {
 /** Top-right dropdown showing the latest system notifications. */
 function NotificationsMenu() {
   const [open, setOpen] = useState(false);
+  const [dismissingId, setDismissingId] = useState<number | null>(null);
+  const [dismissError, setDismissError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const notificationsQuery = useNotifications(0, 10);
   const unreadQuery = useNotifications(0, 1, "UNREAD");
+  const refetchNotifications = notificationsQuery.refetch;
+  const refetchUnread = unreadQuery.refetch;
 
   const notifications = notificationsQuery.data?.data ?? [];
   const unreadCount = unreadQuery.data?.pagination.total ?? 0;
@@ -41,8 +46,28 @@ function NotificationsMenu() {
     navigate("/dashboard/notificacoes");
   };
 
+  const handleDismiss = (id: number) => {
+    if (dismissingId === id) return;
+    setDismissError(null);
+    setDismissingId(id);
+    dismissNotification(id)
+      .then(() => {
+        refetchNotifications();
+        refetchUnread();
+      })
+      .catch((err: unknown) => {
+        setDismissError(err instanceof Error ? err.message : "Não foi possível dispensar a notificação.");
+      })
+      .finally(() => {
+        setDismissingId(null);
+      });
+  };
+
   useEffect(() => {
     if (!open) return;
+
+    refetchNotifications();
+    refetchUnread();
 
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -59,7 +84,7 @@ function NotificationsMenu() {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [open]);
+  }, [open, refetchNotifications, refetchUnread]);
 
   return (
     <div className="relative" ref={containerRef}>
@@ -94,6 +119,7 @@ function NotificationsMenu() {
             )}
           </div>
           <div className="max-h-96 overflow-y-auto divide-y divide-[#eceef0]">
+            {dismissError && <div className="px-4 py-2 text-xs text-[#ba1a1a]">{dismissError}</div>}
             {notificationsQuery.loading &&
               Array.from({ length: 4 }).map((_, index) => (
                 <div key={index} className="px-4 py-3 flex gap-3 animate-pulse">
@@ -127,26 +153,39 @@ function NotificationsMenu() {
               notifications.map((item) => {
                 const unread = item.status === "UNREAD";
                 return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => goToNotification(item.id)}
-                    className="w-full flex gap-3 px-4 py-3 text-left hover:bg-[#f7f9fb] transition-colors"
-                  >
-                    <span
-                      className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
-                        unread ? "bg-[#cce5ff] text-[#006397]" : "bg-[#eceef0] text-[#44474c]"
-                      }`}
+                  <div key={item.id} className="flex items-start">
+                    <button
+                      type="button"
+                      onClick={() => goToNotification(item.id)}
+                      className="flex-1 flex gap-3 px-4 py-3 text-left hover:bg-[#f7f9fb] transition-colors"
                     >
-                      <span className="material-symbols-outlined text-lg">{iconByCategory(item.category)}</span>
-                    </span>
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-[#191c1e] truncate">{item.name}</p>
-                      <p className="text-xs text-[#44474c] line-clamp-2">{item.description}</p>
-                      <p className="text-[10px] text-[#8192a7] mt-1">{formatDateTime(item.createdAt)}</p>
-                    </div>
-                    {unread && <span className="w-2 h-2 rounded-full bg-[#006397] shrink-0 mt-1.5" aria-hidden />}
-                  </button>
+                      <span
+                        className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
+                          unread ? "bg-[#cce5ff] text-[#006397]" : "bg-[#eceef0] text-[#44474c]"
+                        }`}
+                      >
+                        <span className="material-symbols-outlined text-lg">{iconByCategory(item.category)}</span>
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-[#191c1e] truncate">{item.name}</p>
+                        <p className="text-xs text-[#44474c] line-clamp-2">{item.description}</p>
+                        <p className="text-[10px] text-[#8192a7] mt-1">{formatDateTime(item.createdAt)}</p>
+                      </div>
+                      {unread && <span className="w-2 h-2 rounded-full bg-[#006397] shrink-0 mt-1.5" aria-hidden />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDismiss(item.id)}
+                      disabled={item.status === "DISMISSED" || dismissingId === item.id}
+                      className="mx-2 mt-3 p-1.5 rounded-md text-[#8192a7] hover:text-[#93000a] hover:bg-[#ffdad6] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                      aria-label={item.status === "DISMISSED" ? "Notificação dispensada" : "Dispensar notificação"}
+                      title={item.status === "DISMISSED" ? "Notificação dispensada" : "Dispensar notificação"}
+                    >
+                      <span className="material-symbols-outlined text-base">
+                        {dismissingId === item.id ? "hourglass_top" : "close"}
+                      </span>
+                    </button>
+                  </div>
                 );
               })}
           </div>

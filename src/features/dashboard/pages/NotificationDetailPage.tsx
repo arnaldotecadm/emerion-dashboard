@@ -1,6 +1,8 @@
+import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import PlaceholderPage from "../components/PlaceholderPage";
 import { useNotification } from "../hooks/useNotification";
+import { markNotificationAsRead } from "../services/notificationService";
 import { formatDateTime } from "../utils/format";
 import type { Notification } from "../types/notification";
 
@@ -47,7 +49,27 @@ function categoryLabel(category: Notification["category"]): string {
 /** Detail view for a single notification, reached from the notifications dropdown. */
 function NotificationDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { data: notification, loading, error, notFound } = useNotification(id);
+  const { data: notification, loading, error, notFound, refetch } = useNotification(id);
+  const [updatingRead, setUpdatingRead] = useState(false);
+  const [mutationError, setMutationError] = useState<string | null>(null);
+  const autoReadDoneRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!id || !notification || notification.readAt) return;
+    if (autoReadDoneRef.current === id || updatingRead) return;
+
+    autoReadDoneRef.current = id;
+    setUpdatingRead(true);
+    setMutationError(null);
+
+    markNotificationAsRead(id)
+      .then(() => refetch())
+      .catch((err: unknown) => {
+        autoReadDoneRef.current = null;
+        setMutationError(err instanceof Error ? err.message : "Não foi possível marcar a notificação como lida.");
+      })
+      .finally(() => setUpdatingRead(false));
+  }, [id, notification, refetch, updatingRead]);
 
   if (notFound) {
     return (
@@ -133,6 +155,14 @@ function NotificationDetailPage() {
         <p className="text-xs text-[#8192a7] mb-6">{formatDateTime(notification.createdAt)}</p>
 
         <p className="text-sm text-[#44474c] leading-relaxed mb-8">{notification.description}</p>
+
+        {updatingRead && <p className="text-xs text-[#8192a7] mb-6">Marcando como lida...</p>}
+
+        {mutationError && (
+          <p className="text-xs text-[#ba1a1a] mb-4" role="alert">
+            {mutationError}
+          </p>
+        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 border-t border-[#eceef0] pt-4">
           <div>
