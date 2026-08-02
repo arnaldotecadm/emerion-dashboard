@@ -9,12 +9,27 @@
 export interface Customer {
   id: number;
   externalId: string;
+  cnpjEmpresa: string | null;
   nomeFantasia: string;
   razaoSocial: string;
   cpfCnpj: string;
   inscricaoEstadual: string;
   regimeTributario: string;
   bloqueado: boolean;
+  dataNascimento: string | null;
+  dataCadastro: string | null;
+  dataUltimaAtualizacao: string | null;
+  email1: string | null;
+  email2: string | null;
+  website: string | null;
+  limiteCredito: number | null;
+  observacoes: string | null;
+  cnae: string | null;
+  vendedorExternalId: string | null;
+  nomeVendedor: string | null;
+  codigoTipoCliente: string | null;
+  codigoGrupoCliente: string | null;
+  codigoCategoriaCliente: string | null;
   createdAt: string;
   updatedAt: string;
 }

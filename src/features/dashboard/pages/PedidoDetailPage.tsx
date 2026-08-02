@@ -3,7 +3,8 @@ import { Link, useParams } from "react-router-dom";
 import { useCustomerOrder } from "../hooks/useCustomerOrder";
 import { useCustomerByExternalId } from "../hooks/useCustomerByExternalId";
 import { useProductsByExternalId } from "../hooks/useProductsByExternalId";
-import { formatCurrency, formatDate, formatPercent } from "../utils/format";
+import { useVendedorByExternalId } from "../hooks/useVendedorByExternalId";
+import { formatCpfCnpj, formatCurrency, formatDate, formatPercent } from "../utils/format";
 import PlaceholderPage from "../components/PlaceholderPage";
 
 const BackLink = () => (
@@ -29,6 +30,7 @@ function PedidoDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { data: pedido, loading, error, notFound } = useCustomerOrder(id);
   const { data: cliente, loading: clienteLoading } = useCustomerByExternalId(pedido?.codCli);
+  const { data: vendedor, loading: vendedorLoading } = useVendedorByExternalId(pedido?.vendedorExternalId ?? undefined);
   const productIds = useProductsByExternalId(pedido?.itens.map((item) => item.produto) ?? []);
   const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set());
 
@@ -136,11 +138,11 @@ function PedidoDetailPage() {
       </section>
 
       {/* Order data */}
-      <section className="bg-white rounded-xl shadow-card border border-[#e6e8ea] p-6 mb-8">
+      <section className="bg-white rounded-xl shadow-card border border-[#e6e8ea] p-6 mb-6">
         <h3 className="font-bold text-[#041627] text-lg mb-6">Dados do Pedido</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Numero do Pedido</p>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Número do Pedido</p>
             <p className="text-sm font-bold text-[#041627]">{pedido.externalId}</p>
           </div>
           <div>
@@ -159,7 +161,13 @@ function PedidoDetailPage() {
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">CNPJ da Empresa</p>
-            <p className="text-sm font-bold text-[#041627]">{pedido.cpfCnpj || "—"}</p>
+            <p className="text-sm font-bold text-[#041627]">
+              {pedido.cnpjEmpresa ? formatCpfCnpj(pedido.cnpjEmpresa) : "—"}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">CPF/CNPJ do Cliente</p>
+            <p className="text-sm font-bold text-[#041627]">{pedido.cpfCnpj ? formatCpfCnpj(pedido.cpfCnpj) : "—"}</p>
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">NF-e</p>
@@ -192,6 +200,88 @@ function PedidoDetailPage() {
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Total Desc./Acréscimo</p>
             <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totdescinc)}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Total de Frete</p>
+            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totfrt)}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Total de Seguro</p>
+            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totseg)}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">
+              Outras Despesas
+            </p>
+            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totoutdesp)}</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white rounded-xl shadow-card border border-[#e6e8ea] p-6 mb-8">
+        <h3 className="font-bold text-[#041627] text-lg mb-6">Comercial e Logística</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Vendedor</p>
+            <p className="text-sm font-bold text-[#041627]">
+              {!pedido.vendedorExternalId ? (
+                "—"
+              ) : vendedorLoading ? (
+                "Carregando..."
+              ) : vendedor ? (
+                <Link to={`/dashboard/vendedores/${vendedor.id}`} className="text-[#006397] hover:underline">
+                  {vendedor.nome.trim()} ({pedido.vendedorExternalId})
+                </Link>
+              ) : (
+                pedido.vendedorExternalId
+              )}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Atendente</p>
+            <p className="text-sm font-bold text-[#041627]">{pedido.atendenteCod || "—"}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">
+              Data Entrega Prevista
+            </p>
+            <p className="text-sm font-bold text-[#041627]">{formatDate(pedido.dataEntregaPrevista)}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">
+              Código Transportadora
+            </p>
+            <p className="text-sm font-bold text-[#041627]">{pedido.codigoTransportadora || "—"}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Linha Reserva</p>
+            <p className="text-sm font-bold text-[#041627]">{pedido.linhaReserva || "—"}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Pedido Anterior</p>
+            <p className="text-sm font-bold text-[#041627]">{pedido.pedidoAnterior || "—"}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">
+              Desconto Comercial
+            </p>
+            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.descontoComercial)}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">
+              Desconto Regional
+            </p>
+            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.descontoRegional)}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Regime Tributário</p>
+            <p className="text-sm font-bold text-[#041627]">{pedido.regimeTributario || "—"}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">
+              Nome do Regime Tributário
+            </p>
+            <p className="text-sm font-bold text-[#041627]">{pedido.nomeRegimeTributario || "—"}</p>
           </div>
         </div>
       </section>
@@ -364,7 +454,10 @@ function PedidoDetailPage() {
                                 <DetailField label="Cód. Unidade" value={item.codUnd || "—"} />
                                 <DetailField label="Cód. CLP" value={item.codClp || "—"} />
                                 <DetailField label="Cód. ST1" value={item.codSt1 || "—"} />
-                                <DetailField label="Cód. CFO" value={item.codCfo || "—"} />
+                                <DetailField label="Cód. CFO" value={item.codCfo?.trim() || "—"} />
+                                <DetailField label="Cód. Cor" value={item.codcor || "—"} />
+                                <DetailField label="Cód. Tamanho" value={item.codtam || "—"} />
+                                <DetailField label="Referência" value={item.referencia || "—"} />
                                 <DetailField
                                   label="Pedido de Compra do Cliente"
                                   value={item.pedidoCompraCliente || "—"}
@@ -377,6 +470,27 @@ function PedidoDetailPage() {
                                 <DetailField label="Nro. Re2" value={item.nroRe2?.toString() ?? "—"} />
                               </div>
                             </div>
+
+                            <div className="bg-white rounded-lg border border-[#e6e8ea] p-4">
+                              <h4 className="text-xs font-bold text-[#041627] uppercase tracking-wider mb-3">
+                                Quantidades e Pesos
+                              </h4>
+                              <div className="grid grid-cols-2 gap-3">
+                                <DetailField label="Qtd. Faturada" value={item.quantidadeFaturada?.toString() ?? "—"} />
+                                <DetailField label="Qtd. Separada" value={item.quantidadeSeparada?.toString() ?? "—"} />
+                                <DetailField label="Peso Líquido" value={item.pesoLiquido?.toString() ?? "—"} />
+                                <DetailField label="Peso Bruto" value={item.pesoBruto?.toString() ?? "—"} />
+                              </div>
+                            </div>
+
+                            {item.descricaoNFe && (
+                              <div className="bg-white rounded-lg border border-[#e6e8ea] p-4 md:col-span-2 xl:col-span-3">
+                                <h4 className="text-xs font-bold text-[#041627] uppercase tracking-wider mb-2">
+                                  Descrição para NF-e
+                                </h4>
+                                <p className="text-xs text-[#44474c]">{item.descricaoNFe}</p>
+                              </div>
+                            )}
 
                             <div className="bg-white rounded-lg border border-[#e6e8ea] p-4">
                               <h4 className="text-xs font-bold text-[#041627] uppercase tracking-wider mb-3">

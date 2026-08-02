@@ -41,3 +41,18 @@ export async function fetchVendedorById(id: string | number): Promise<Vendedor> 
 
   return (await response.json()) as Vendedor;
 }
+
+/** Fetches a single vendedor by its ERP `externalId` from the ERP backend. */
+export async function fetchVendedorByExternalId(externalId: string): Promise<Vendedor> {
+  const response = await apiFetch(`${API_BASE_URL}/vendedores/by-external-id/${externalId}`);
+
+  if (!response.ok) {
+    throw new Error(
+      response.status === 404 || response.status === 500
+        ? "Vendedor não encontrado."
+        : `Falha ao carregar o vendedor (HTTP ${response.status}).`
+    );
+  }
+
+  return (await response.json()) as Vendedor;
+}

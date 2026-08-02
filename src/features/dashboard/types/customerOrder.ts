@@ -54,6 +54,14 @@ export interface CustomerOrderItem {
   flgPac: string | null;
   flgLib: string | null;
   codCfo: string | null;
+  codcor: string | null;
+  codtam: string | null;
+  descricaoNFe: string | null;
+  pesoLiquido: number | null;
+  pesoBruto: number | null;
+  referencia: string | null;
+  quantidadeFaturada: number | null;
+  quantidadeSeparada: number | null;
 }
 
 /** A single customer order row as returned by `GET /api/v1/customer-orders`. */
@@ -72,6 +80,19 @@ export interface CustomerOrder {
   totipi: number;
   totsub: number;
   totdescinc: number;
+  totfrt: number | null;
+  totseg: number | null;
+  totoutdesp: number | null;
+  vendedorExternalId: string | null;
+  atendenteCod: string | null;
+  dataEntregaPrevista: string | null;
+  descontoComercial: number | null;
+  descontoRegional: number | null;
+  codigoTransportadora: string | null;
+  linhaReserva: string | null;
+  pedidoAnterior: string | null;
+  regimeTributario: string | null;
+  nomeRegimeTributario: string | null;
   itens: CustomerOrderItem[];
   createdAt: string;
   updatedAt: string;

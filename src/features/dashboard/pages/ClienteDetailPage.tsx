@@ -3,6 +3,18 @@ import { useCustomer } from "../hooks/useCustomer";
 import { formatCpfCnpj, initialsFrom } from "../utils/format";
 import PlaceholderPage from "../components/PlaceholderPage";
 
+function formatDate(value: string | null | undefined): string {
+  if (!value) return "—";
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return value;
+  return d.toLocaleDateString("pt-BR");
+}
+
+function formatCurrency(value: number | null | undefined): string {
+  if (value == null) return "—";
+  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
 const BackLink = () => (
   <Link
     to="/dashboard/clientes"
@@ -114,11 +126,11 @@ function ClienteDetailPage() {
       )}
 
       {/* Registration data */}
-      <section className="bg-white rounded-xl shadow-card border border-[#e6e8ea] p-6">
+      <section className="bg-white rounded-xl shadow-card border border-[#e6e8ea] p-6 mb-6">
         <h3 className="font-bold text-[#041627] text-lg mb-6">Dados Cadastrais</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Codigo</p>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Código</p>
             <p className="text-sm font-bold text-[#041627]">{cliente.externalId}</p>
           </div>
           <div>
@@ -143,10 +155,104 @@ function ClienteDetailPage() {
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">
               Regime Tributário
             </p>
-            <p className="text-sm font-bold text-[#041627]">{cliente.regimeTributario}</p>
+            <p className="text-sm font-bold text-[#041627]">{cliente.regimeTributario || "—"}</p>
+          </div>
+          {cliente.cnae && (
+            <div>
+              <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">CNAE</p>
+              <p className="text-sm font-bold text-[#041627]">{cliente.cnae}</p>
+            </div>
+          )}
+          {cliente.cnpjEmpresa && (
+            <div>
+              <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">CNPJ Empresa</p>
+              <p className="text-sm font-bold text-[#041627]">{cliente.cnpjEmpresa}</p>
+            </div>
+          )}
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Data de Cadastro</p>
+            <p className="text-sm font-bold text-[#041627]">{formatDate(cliente.dataCadastro)}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Última Atualização</p>
+            <p className="text-sm font-bold text-[#041627]">{formatDate(cliente.dataUltimaAtualizacao)}</p>
+          </div>
+          {cliente.dataNascimento && (
+            <div>
+              <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Data de Nascimento</p>
+              <p className="text-sm font-bold text-[#041627]">{formatDate(cliente.dataNascimento)}</p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Contact */}
+      <section className="bg-white rounded-xl shadow-card border border-[#e6e8ea] p-6 mb-6">
+        <h3 className="font-bold text-[#041627] text-lg mb-6">Contato</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">E-mail 1</p>
+            <p className="text-sm font-bold text-[#041627]">{cliente.email1 || "—"}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">E-mail 2</p>
+            <p className="text-sm font-bold text-[#041627]">{cliente.email2 || "—"}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Website</p>
+            {cliente.website ? (
+              <a
+                href={cliente.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm font-bold text-[#006397] hover:underline break-all"
+              >
+                {cliente.website}
+              </a>
+            ) : (
+              <p className="text-sm font-bold text-[#041627]">—</p>
+            )}
           </div>
         </div>
       </section>
+
+      {/* Commercial */}
+      <section className="bg-white rounded-xl shadow-card border border-[#e6e8ea] p-6 mb-6">
+        <h3 className="font-bold text-[#041627] text-lg mb-6">Informações Comerciais</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Limite de Crédito</p>
+            <p className="text-sm font-bold text-[#041627]">{formatCurrency(cliente.limiteCredito)}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Vendedor</p>
+            <p className="text-sm font-bold text-[#041627]">
+              {cliente.nomeVendedor
+                ? `${cliente.nomeVendedor}${cliente.vendedorExternalId ? ` (${cliente.vendedorExternalId})` : ""}`
+                : "—"}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Tipo de Cliente</p>
+            <p className="text-sm font-bold text-[#041627]">{cliente.codigoTipoCliente || "—"}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Grupo de Cliente</p>
+            <p className="text-sm font-bold text-[#041627]">{cliente.codigoGrupoCliente || "—"}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Categoria de Cliente</p>
+            <p className="text-sm font-bold text-[#041627]">{cliente.codigoCategoriaCliente || "—"}</p>
+          </div>
+        </div>
+      </section>
+
+      {cliente.observacoes && (
+        <section className="bg-white rounded-xl shadow-card border border-[#e6e8ea] p-6">
+          <h3 className="font-bold text-[#041627] text-lg mb-4">Observações</h3>
+          <p className="text-sm text-[#041627] whitespace-pre-wrap">{cliente.observacoes}</p>
+        </section>
+      )}
     </div>
   );
 }
