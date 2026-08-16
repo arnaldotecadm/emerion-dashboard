@@ -1,0 +1,23 @@
+{
+  "content": [
+    {
+      "id": 12345,
+      "externalId": "9001",
+      "codCli": 1,
+      "nomeCliente": "Alimentos S/A",
+      "dataOrdem": "2023-11-01T10:30:00",
+      "dataEntrega": "2023-11-15T23:59:59",
+      "valorTotal": 18200.50,
+      "status": "Faturado",
+      "diasAtrasado": 5,
+      "itens": [
+        { "sequencia": 1, "codProduto": "PR001", "quantidade": 10.0000, "precoUnitario": 1500.00, "valorTotal": 15000.00 },
+        { "sequencia": 2, "codProduto": "PR002", "quantidade": 2.0000, "precoUnitario": 1100.25, "valorTotal": 2200.50 }
+      ]
+    }
+  ],
+  "totalElements": 1200,
+  "totalPages": 120,
+  "number": 0,
+  "size": 10
+}

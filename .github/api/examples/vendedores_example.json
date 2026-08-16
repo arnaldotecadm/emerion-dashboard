@@ -1,0 +1,16 @@
+{
+  "content": [
+    {
+      "id": 5,
+      "externalId": "V-12",
+      "nome": "João Silva",
+      "situacao": "ATIVO",
+      "telefone": "+55 11 99999-0000",
+      "email": "joao.silva@example.com"
+    }
+  ],
+  "totalElements": 1,
+  "totalPages": 1,
+  "number": 0,
+  "size": 10
+}

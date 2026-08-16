@@ -1,0 +1,17 @@
+{
+  "content": [
+    {
+      "id": 77,
+      "userId": 10,
+      "category": "INGESTION",
+      "status": "UNREAD",
+      "title": "New ingestion: customers",
+      "body": "50 customers processed, 3 failed",
+      "createdAt": "2026-08-16T10:00:00Z"
+    }
+  ],
+  "totalElements": 1,
+  "totalPages": 1,
+  "number": 0,
+  "size": 10
+}

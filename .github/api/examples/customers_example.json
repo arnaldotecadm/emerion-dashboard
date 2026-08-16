@@ -1,0 +1,20 @@
+{
+  "content": [
+    {
+      "id": 1,
+      "externalId": "1001",
+      "nomeFantasia": "Alimentos S/A",
+      "razaoSocial": "Alimentos Comercial Ltda.",
+      "cpfCnpj": "12345678000190",
+      "bloqueado": false
+    }
+  ],
+  "totalElements": 1284,
+  "totalPages": 129,
+  "number": 0,
+  "size": 10,
+  "numberOfElements": 1,
+  "first": true,
+  "last": false,
+  "empty": false
+}

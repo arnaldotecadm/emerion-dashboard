@@ -1,0 +1,59 @@
+openapi: 3.0.1
+info:
+  title: Dashboard overview (suggested)
+  version: 1.0.0
+paths:
+  /api/v1/dashboard/overview:
+    get:
+      summary: Aggregated KPIs for dashboard overview
+      responses:
+        '200':
+          description: Dashboard overview
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardOverview'
+components:
+  schemas:
+    DashboardOverview:
+      type: object
+      properties:
+        totalCustomers:
+          type: integer
+        totalOrders:
+          type: integer
+        totalRevenue:
+          type: number
+          format: double
+        period:
+          type: object
+          properties:
+            from:
+              type: string
+              format: date
+            to:
+              type: string
+              format: date
+        topCustomers:
+          type: array
+          items:
+            type: object
+            properties:
+              customerExternalId:
+                type: string
+              name:
+                type: string
+              revenue:
+                type: number
+                format: double
+      example:
+        totalCustomers: 1250
+        totalOrders: 34210
+        totalRevenue: 1245000.75
+        period:
+          from: "2026-07-01"
+          to: "2026-07-31"
+        topCustomers:
+          - customerExternalId: "1001"
+            name: "Alimentos S/A"
+            revenue: 142500.00

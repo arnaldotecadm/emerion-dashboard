@@ -1,0 +1,16 @@
+{
+  "content": [
+    {
+      "id": 10,
+      "externalId": "P-123",
+      "nome": "Widget",
+      "codigo": "W-001",
+      "categoria": "Gadgets",
+      "marca": "Acme"
+    }
+  ],
+  "totalElements": 1,
+  "totalPages": 1,
+  "number": 0,
+  "size": 10
+}
