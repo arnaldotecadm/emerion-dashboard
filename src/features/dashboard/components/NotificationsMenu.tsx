@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Tooltip from "../../../components/Tooltip";
+import { useNotificationPreferences } from "../hooks/useNotificationPreferences";
 import { useNotifications } from "../hooks/useNotifications";
 import { dismissNotification } from "../services/notificationService";
 import { formatDateTime } from "../utils/format";
@@ -28,13 +29,34 @@ function NotificationsMenu() {
   const [dismissError, setDismissError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { enabledCategories } = useNotificationPreferences();
   const notificationsQuery = useNotifications(0, 10);
-  const unreadQuery = useNotifications(0, 1, "UNREAD");
+  const unreadIngestionQuery = useNotifications(0, 1, "UNREAD", "INGESTION");
+  const unreadStatusUpdateQuery = useNotifications(0, 1, "UNREAD", "STATUS_UPDATE");
+  const unreadApprovalNeededQuery = useNotifications(0, 1, "UNREAD", "APPROVAL_NEEDED");
+  const unreadSystemQuery = useNotifications(0, 1, "UNREAD", "SYSTEM");
   const refetchNotifications = notificationsQuery.refetch;
-  const refetchUnread = unreadQuery.refetch;
+  const refetchUnread = useCallback(() => {
+    unreadIngestionQuery.refetch();
+    unreadStatusUpdateQuery.refetch();
+    unreadApprovalNeededQuery.refetch();
+    unreadSystemQuery.refetch();
+  }, [
+    unreadApprovalNeededQuery,
+    unreadIngestionQuery,
+    unreadStatusUpdateQuery,
+    unreadSystemQuery,
+  ]);
 
-  const notifications = notificationsQuery.data?.data ?? [];
-  const unreadCount = unreadQuery.data?.pagination.total ?? 0;
+  const notifications = (notificationsQuery.data?.data ?? []).filter((item) => enabledCategories.includes(item.category));
+  const unreadByCategory: Record<Notification["category"], number> = {
+    INGESTION: unreadIngestionQuery.data?.pagination.total ?? 0,
+    STATUS_UPDATE: unreadStatusUpdateQuery.data?.pagination.total ?? 0,
+    APPROVAL_NEEDED: unreadApprovalNeededQuery.data?.pagination.total ?? 0,
+    SYSTEM: unreadSystemQuery.data?.pagination.total ?? 0,
+  };
+  const unreadCount = enabledCategories.reduce((total, category) => total + unreadByCategory[category], 0);
+  const hasAtLeastOneCategoryEnabled = enabledCategories.length > 0;
 
   const goToNotification = (id: number) => {
     setOpen(false);
@@ -44,6 +66,11 @@ function NotificationsMenu() {
   const goToNotificationsList = () => {
     setOpen(false);
     navigate("/dashboard/notificacoes");
+  };
+
+  const goToSettings = () => {
+    setOpen(false);
+    navigate("/dashboard/configuracoes");
   };
 
   const handleDismiss = (id: number) => {
@@ -86,6 +113,11 @@ function NotificationsMenu() {
     };
   }, [open, refetchNotifications, refetchUnread]);
 
+  useEffect(() => {
+    refetchUnread();
+    // This keeps the badge in sync when the user changes settings in Configurações.
+  }, [enabledCategories, refetchUnread]);
+
   return (
     <div className="relative" ref={containerRef}>
       <Tooltip label="Notificações">
@@ -120,7 +152,16 @@ function NotificationsMenu() {
           </div>
           <div className="max-h-96 overflow-y-auto divide-y divide-[#eceef0]">
             {dismissError && <div className="px-4 py-2 text-xs text-[#ba1a1a]">{dismissError}</div>}
+            {!hasAtLeastOneCategoryEnabled && (
+              <div className="p-4 text-center text-xs text-[#8192a7] space-y-2">
+                <p>Você desabilitou todos os tipos de notificações.</p>
+                <button onClick={goToSettings} className="text-xs font-semibold text-[#006397] hover:underline">
+                  Ajustar preferências
+                </button>
+              </div>
+            )}
             {notificationsQuery.loading &&
+              hasAtLeastOneCategoryEnabled &&
               Array.from({ length: 4 }).map((_, index) => (
                 <div key={index} className="px-4 py-3 flex gap-3 animate-pulse">
                   <div className="w-9 h-9 rounded-full bg-[#eceef0] shrink-0" />
@@ -190,7 +231,11 @@ function NotificationsMenu() {
               })}
           </div>
           <div className="px-4 py-2.5 border-t border-[#eceef0] text-center">
-            <button onClick={goToNotificationsList} className="text-xs font-semibold text-[#006397] hover:underline">
+            <button
+              onClick={goToNotificationsList}
+              disabled={!hasAtLeastOneCategoryEnabled}
+              className="text-xs font-semibold text-[#006397] hover:underline disabled:text-[#8192a7] disabled:no-underline"
+            >
               Ver todas as notificações
             </button>
           </div>

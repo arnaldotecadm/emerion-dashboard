@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useNotificationPreferences } from "../hooks/useNotificationPreferences";
 import { useNotifications } from "../hooks/useNotifications";
+import { ALL_NOTIFICATION_CATEGORIES } from "../types/notificationPreferences";
 import { formatDateTime } from "../utils/format";
 import type { Notification } from "../types/notification";
 
@@ -38,10 +40,13 @@ function statusBadge(status: Notification["status"]): string {
 function NotificacoesPage() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
+  const { enabledCategories } = useNotificationPreferences();
   const { data, loading, error, page, size, setPage, setSize, refetch } = useNotifications(0, 20);
+  const allCategoriesEnabled = enabledCategories.length === ALL_NOTIFICATION_CATEGORIES.length;
+  const hasAtLeastOneCategoryEnabled = enabledCategories.length > 0;
 
   const visibleRows = useMemo(() => {
-    const rows = data?.data ?? [];
+    const rows = (data?.data ?? []).filter((row) => enabledCategories.includes(row.category));
     const query = search.trim().toLowerCase();
     if (!query) return rows;
 
@@ -50,7 +55,7 @@ function NotificacoesPage() {
         (field) => field.toLowerCase().includes(query)
       )
     );
-  }, [data, search]);
+  }, [data, enabledCategories, search]);
 
   const totalPages = data?.pagination.totalPages ?? 0;
   const currentPage = data?.pagination.page ?? page;
@@ -64,6 +69,11 @@ function NotificacoesPage() {
         <div>
           <h2 className="text-3xl font-bold text-[#041627] tracking-tight">Notificações</h2>
           <p className="text-[#8192a7] mt-1">Acompanhe alertas e atualizações recentes do sistema.</p>
+          {!allCategoriesEnabled && (
+            <p className="text-xs text-[#8192a7] mt-2">
+              Filtro ativo por preferências de categoria em Configurações.
+            </p>
+          )}
         </div>
       </div>
 
@@ -151,6 +161,16 @@ function NotificacoesPage() {
                     ))}
 
                   {!loading &&
+                    !hasAtLeastOneCategoryEnabled && (
+                      <tr>
+                        <td colSpan={6} className="px-6 py-10 text-center text-sm text-[#8192a7]">
+                          Você desabilitou todos os tipos de notificações em Configurações.
+                        </td>
+                      </tr>
+                    )}
+
+                  {!loading &&
+                    hasAtLeastOneCategoryEnabled &&
                     visibleRows.map((row) => (
                       <tr
                         key={row.id}
@@ -181,7 +201,7 @@ function NotificacoesPage() {
                       </tr>
                     ))}
 
-                  {!loading && visibleRows.length === 0 && (
+                  {!loading && hasAtLeastOneCategoryEnabled && visibleRows.length === 0 && (
                     <tr>
                       <td colSpan={6} className="px-6 py-10 text-center text-sm text-[#8192a7]">
                         {search
@@ -196,9 +216,13 @@ function NotificacoesPage() {
 
             <div className="px-6 py-4 bg-[#f7f9fb] border-t border-[#e6e8ea] flex flex-col sm:flex-row justify-between items-center gap-3">
               <span className="text-sm text-[#8192a7]">
-                {totalElements > 0
-                  ? `Exibindo ${data?.data.length ?? 0} de ${totalElements.toLocaleString("pt-BR")} notificações`
-                  : "—"}
+                {!hasAtLeastOneCategoryEnabled
+                  ? "Nenhum tipo de notificação habilitado."
+                  : allCategoriesEnabled
+                    ? totalElements > 0
+                      ? `Exibindo ${data?.data.length ?? 0} de ${totalElements.toLocaleString("pt-BR")} notificações`
+                      : "—"
+                    : `Exibindo ${visibleRows.length} notificações nesta página conforme suas preferências`}
               </span>
               <div className="flex items-center gap-3">
                 <span className="text-sm text-[#44474c]">
@@ -207,7 +231,7 @@ function NotificacoesPage() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => setPage(Math.max(0, currentPage - 1))}
-                    disabled={isFirstPage || loading}
+                    disabled={isFirstPage || loading || !hasAtLeastOneCategoryEnabled}
                     className="p-2 border border-[#e6e8ea] rounded-lg bg-white text-[#8192a7] hover:text-[#006397] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-[#8192a7] transition-all"
                     aria-label="Página anterior"
                   >
@@ -215,7 +239,7 @@ function NotificacoesPage() {
                   </button>
                   <button
                     onClick={() => setPage(Math.min(totalPages - 1, currentPage + 1))}
-                    disabled={isLastPage || loading}
+                    disabled={isLastPage || loading || !hasAtLeastOneCategoryEnabled}
                     className="p-2 border border-[#e6e8ea] rounded-lg bg-white text-[#8192a7] hover:text-[#006397] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-[#8192a7] transition-all"
                     aria-label="Próxima página"
                   >
