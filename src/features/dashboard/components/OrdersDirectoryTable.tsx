@@ -11,7 +11,9 @@ function OrdersDirectoryTable() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const { data, loading, error, page, size, setPage, setSize, refetch } = useCustomerOrders(0, 10);
-  const customerNames = useCustomerNamesByExternalId(data?.data.map((row) => row.codCli) ?? []);
+  const customerNames = useCustomerNamesByExternalId(
+    data?.data.filter((row) => row.codigoCliente !== null).map((row) => String(row.codigoCliente)) ?? []
+  );
 
   const visibleRows = useMemo(() => {
     const rows = data?.data ?? [];
@@ -19,7 +21,13 @@ function OrdersDirectoryTable() {
     if (!query) return rows;
 
     return rows.filter((row) =>
-      [row.externalId, row.codCli, customerNames.get(row.codCli) ?? "", row.nronfe ?? "", row.sitres ?? ""].some(
+      [
+        row.externalId,
+        String(row.codigoCliente ?? ""),
+        customerNames.get(String(row.codigoCliente ?? "")) ?? "",
+        row.numeroPedido ?? "",
+        row.statusPedido ?? "",
+      ].some(
         (field) => field.toLowerCase().includes(query)
       )
     );
@@ -86,7 +94,7 @@ function OrdersDirectoryTable() {
                     Num do Pedido
                   </th>
                   <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Cliente</th>
-                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">NF-e</th>
+                  {/* <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">NF-e</th> */}
                   <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Data</th>
                   <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Status</th>
                   <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Total</th>
@@ -111,19 +119,19 @@ function OrdersDirectoryTable() {
                       onClick={() => navigate(`/dashboard/pedidos/${row.id}`)}
                       className="hover:bg-[#f7f9fb] transition-colors cursor-pointer group"
                     >
-                      <td className="px-6 py-4 text-sm text-[#8192a7] whitespace-nowrap">{row.externalId}</td>
+                      <td className="px-6 py-4 text-sm text-[#8192a7] whitespace-nowrap">{row.numeroPedido}</td>
                       <td className="px-6 py-4 text-sm text-[#44474c]">
-                        {customerNames.get(row.codCli) ?? row.codCli}
+                        {customerNames.get(String(row.codigoCliente ?? "")) ?? row.codigoCliente ?? "—"}
                       </td>
-                      <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">{row.nronfe ?? "—"}</td>
-                      <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">{formatDate(row.dteres)}</td>
+                      {/*<td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">{row.numeroPedido ?? "—"}</td> */}
+                      <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">{formatDate(row.dataPedido)}</td>
                       <td className="px-6 py-4">
                         <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-[#006397]/10 text-[#006397]">
-                          {row.sitres ?? "—"}
+                          {row.statusPedido ?? "—"}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">
-                        {formatCurrency(row.totres)}
+                        {formatCurrency(row.totalPedidoSemImpostos)}
                       </td>
                     </tr>
                   ))}

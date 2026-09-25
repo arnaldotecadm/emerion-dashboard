@@ -69,12 +69,12 @@ function RankingsPanel() {
                   <td className="p-3 text-right">
                     <span
                       className={
-                        vendedor.situacao?.toLowerCase() === "ativo"
+                        vendedor.ativo?.toLowerCase() === "sim"
                           ? "text-[#18a659] bg-[#7efba4]/20 px-2 py-1 rounded text-[10px]"
                           : "text-[#44474c] bg-[#eceef0] px-2 py-1 rounded text-[10px]"
                       }
                     >
-                      {vendedor.situacao ?? "—"}
+                      {vendedor.ativo ?? "—"}
                     </span>
                   </td>
                 </tr>

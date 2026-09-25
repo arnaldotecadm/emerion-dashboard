@@ -29,8 +29,14 @@ const DetailField = ({ label, value }: { label: string; value: string }) => (
 function PedidoDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { data: pedido, loading, error, notFound } = useCustomerOrder(id);
-  const { data: cliente, loading: clienteLoading } = useCustomerByExternalId(pedido?.codCli);
-  const { data: vendedor, loading: vendedorLoading } = useVendedorByExternalId(pedido?.vendedorExternalId ?? undefined);
+  const { data: cliente, loading: clienteLoading } = useCustomerByExternalId(
+    pedido?.codigoCliente === null || pedido?.codigoCliente === undefined ? undefined : String(pedido.codigoCliente)
+  );
+  const { data: vendedor, loading: vendedorLoading } = useVendedorByExternalId(
+    pedido?.vendedorExternalId === null || pedido?.vendedorExternalId === undefined
+      ? undefined
+      : String(pedido.vendedorExternalId)
+  );
   const productIds = useProductsByExternalId(pedido?.itens.map((item) => item.produto) ?? []);
   const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set());
 
@@ -111,11 +117,11 @@ function PedidoDetailPage() {
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-2xl font-bold text-[#041627] tracking-tight">
-                  Pedido #{pedido.nronfe ?? pedido.externalId}
+                  Pedido #{pedido.numeroPedido ?? pedido.externalId}
                 </h2>
-                {pedido.sitres && (
+                {pedido.statusPedido && (
                   <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-[#006397]/10 text-[#006397]">
-                    {pedido.sitres}
+                    {pedido.statusPedido}
                   </span>
                 )}
               </div>
@@ -128,9 +134,9 @@ function PedidoDetailPage() {
                     {cliente.nomeFantasia.trim()}
                   </Link>
                 ) : (
-                  pedido.codCli
+                  pedido.codigoCliente ?? "—"
                 )}{" "}
-                · {formatDate(pedido.dteres)}
+                · {formatDate(pedido.dataPedido)}
               </p>
             </div>
           </div>
@@ -146,23 +152,23 @@ function PedidoDetailPage() {
             <p className="text-sm font-bold text-[#041627]">{pedido.externalId}</p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Cliente (codCli)</p>
+            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Cliente (código)</p>
             <p className="text-sm font-bold text-[#041627]">
               {clienteLoading ? (
                 "Carregando..."
               ) : cliente ? (
                 <Link to={`/dashboard/clientes/${cliente.id}`} className="text-[#006397] hover:underline">
-                  {cliente.nomeFantasia.trim()} ({pedido.codCli})
+                  {cliente.nomeFantasia.trim()} ({pedido.codigoCliente})
                 </Link>
               ) : (
-                pedido.codCli
+                pedido.codigoCliente ?? "—"
               )}
             </p>
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">CNPJ da Empresa</p>
             <p className="text-sm font-bold text-[#041627]">
-              {pedido.cnpjEmpresa ? formatCpfCnpj(pedido.cnpjEmpresa) : "—"}
+              {pedido.codigoEmpresa ?? "—"}
             </p>
           </div>
           <div>
@@ -171,49 +177,49 @@ function PedidoDetailPage() {
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">NF-e</p>
-            <p className="text-sm font-bold text-[#041627]">{pedido.nronfe || "—"}</p>
+            <p className="text-sm font-bold text-[#041627]">{pedido.numeroPedido || "—"}</p>
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Data</p>
-            <p className="text-sm font-bold text-[#041627]">{formatDate(pedido.dteres)}</p>
+            <p className="text-sm font-bold text-[#041627]">{formatDate(pedido.dataPedido)}</p>
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Status</p>
-            <p className="text-sm font-bold text-[#041627]">{pedido.sitres || "—"}</p>
+            <p className="text-sm font-bold text-[#041627]">{pedido.statusPedido || "—"}</p>
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Total Geral</p>
-            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totger)}</p>
+            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totalPedidoComImpostos)}</p>
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Total do Pedido</p>
-            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totres)}</p>
+            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totalPedidoSemImpostos)}</p>
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Total IPI</p>
-            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totipi)}</p>
+            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totalIpi)}</p>
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Total Substituição</p>
-            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totsub)}</p>
+            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totalSubstituicaoTributaria)}</p>
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Total Desc./Acréscimo</p>
-            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totdescinc)}</p>
+            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totalDescontoIncondicional)}</p>
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Total de Frete</p>
-            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totfrt)}</p>
+            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totalFrete)}</p>
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Total de Seguro</p>
-            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totseg)}</p>
+            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totalSeguro)}</p>
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">
               Outras Despesas
             </p>
-            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totoutdesp)}</p>
+            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totalOutrasDespesas)}</p>
           </div>
         </div>
       </section>
@@ -239,7 +245,7 @@ function PedidoDetailPage() {
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Atendente</p>
-            <p className="text-sm font-bold text-[#041627]">{pedido.atendenteCod || "—"}</p>
+            <p className="text-sm font-bold text-[#041627]">—</p>
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">
@@ -255,7 +261,7 @@ function PedidoDetailPage() {
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Linha Reserva</p>
-            <p className="text-sm font-bold text-[#041627]">{pedido.linhaReserva || "—"}</p>
+            <p className="text-sm font-bold text-[#041627]">—</p>
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Pedido Anterior</p>
@@ -265,13 +271,13 @@ function PedidoDetailPage() {
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">
               Desconto Comercial
             </p>
-            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.descontoComercial)}</p>
+            <p className="text-sm font-bold text-[#041627]">—</p>
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">
               Desconto Regional
             </p>
-            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.descontoRegional)}</p>
+            <p className="text-sm font-bold text-[#041627]">—</p>
           </div>
           <div>
             <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Regime Tributário</p>

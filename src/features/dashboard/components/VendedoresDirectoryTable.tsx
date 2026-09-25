@@ -126,12 +126,12 @@ function VendedoresDirectoryTable() {
                       <td className="px-6 py-4">
                         <span
                           className={`px-2.5 py-1 text-xs font-bold rounded-full ${
-                            row.situacao?.toLowerCase() === "ativo"
+                            row.ativo?.toLowerCase() === "sim"
                               ? "bg-emerald-100 text-emerald-700"
                               : "bg-[#eceef0] text-[#44474c]"
                           }`}
                         >
-                          {row.situacao ?? "—"}
+                          {row.ativo ?? "—"}
                         </span>
                       </td>
                     </tr>

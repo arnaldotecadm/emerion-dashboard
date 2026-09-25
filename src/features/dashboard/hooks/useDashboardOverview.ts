@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { createContext, createElement, useContext, useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import { fetchCustomerByExternalId, fetchCustomers } from "../services/customerService";
 import { fetchProducts } from "../services/productService";
 import { fetchCustomerOrders } from "../services/customerOrderService";
@@ -13,8 +14,8 @@ export interface TopCustomerRow {
   faturamento: number;
 }
 
-/** Safety cap on how many order pages are aggregated client-side, to bound request volume. */
-const MAX_ORDER_PAGES = 20;
+/** The overview samples one order page; full aggregation belongs in the API. */
+const MAX_ORDER_PAGES = 1;
 const ORDER_PAGE_SIZE = 100;
 const VENDEDOR_PAGE_SIZE = 100;
 const TOP_N = 5;
@@ -36,14 +37,15 @@ export interface UseDashboardOverviewResult {
   topVendedores: Vendedor[];
 }
 
+const DashboardOverviewContext = createContext<UseDashboardOverviewResult | null>(null);
+
 /**
  * Aggregates real data from the customers, products, customer-orders and
  * vendedores endpoints into the summary metrics and rankings shown on the
- * "Visão Geral" dashboard. Order totals are summed client-side across pages
- * (capped at `MAX_ORDER_PAGES`) since the ERP backend doesn't expose a
- * dedicated aggregation endpoint yet.
+ * "Visão Geral" dashboard. Order totals are sampled from the first page since
+ * the ERP backend doesn't expose a dedicated aggregation endpoint yet.
  */
-export function useDashboardOverview(): UseDashboardOverviewResult {
+function useDashboardOverviewData(): UseDashboardOverviewResult {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<Omit<UseDashboardOverviewResult, "loading" | "error">>({
@@ -72,8 +74,9 @@ export function useDashboardOverview(): UseDashboardOverviewResult {
           fetchVendedores(0, VENDEDOR_PAGE_SIZE),
         ]);
 
-        // Aggregate order totals per customer, paging through the customer-orders
-        // endpoint up to MAX_ORDER_PAGES to bound the number of requests.
+        // Aggregate the first order page only. Paging through the full order
+        // collection on the homepage creates a burst of requests and is not a
+        // suitable substitute for a backend aggregation endpoint.
         const perCliente = new Map<string, { total: number; count: number }>();
         let totalPedidos = 0;
         let sumTotres = 0;
@@ -86,15 +89,16 @@ export function useDashboardOverview(): UseDashboardOverviewResult {
           totalPedidos = ordersPage.pagination.total;
 
           for (const order of ordersPage.data) {
-            sumTotres += order.totres;
+            sumTotres += order.totalPedidoSemImpostos ?? 0;
             ordersSampled += 1;
 
-            const existing = perCliente.get(order.codCli);
+            const codigoCliente = String(order.codigoCliente ?? "");
+            const existing = perCliente.get(codigoCliente);
             if (existing) {
-              existing.total += order.totres;
+              existing.total += order.totalPedidoSemImpostos ?? 0;
               existing.count += 1;
             } else {
-              perCliente.set(order.codCli, { total: order.totres, count: 1 });
+              perCliente.set(codigoCliente, { total: order.totalPedidoSemImpostos ?? 0, count: 1 });
             }
           }
 
@@ -155,4 +159,17 @@ export function useDashboardOverview(): UseDashboardOverviewResult {
   }, []);
 
   return { loading, error, ...result };
+}
+
+export function DashboardOverviewProvider({ children }: { children: ReactNode }) {
+  const value = useDashboardOverviewData();
+  return createElement(DashboardOverviewContext.Provider, { value }, children);
+}
+
+export function useDashboardOverview(): UseDashboardOverviewResult {
+  const value = useContext(DashboardOverviewContext);
+  if (!value) {
+    throw new Error("useDashboardOverview must be used within DashboardOverviewProvider");
+  }
+  return value;
 }

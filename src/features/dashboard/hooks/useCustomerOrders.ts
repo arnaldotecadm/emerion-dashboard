@@ -17,8 +17,9 @@ export interface UseCustomerOrdersResult {
 export function useCustomerOrders(
   initialPage = 0,
   initialSize = 10,
-  codCli?: string,
-  sitres?: string
+  codigoCliente?: number,
+  statusPedido?: string,
+  codigoEmpresa?: number
 ): UseCustomerOrdersResult {
   const [page, setPage] = useState(initialPage);
   const [size, setSize] = useState(initialSize);
@@ -33,7 +34,7 @@ export function useCustomerOrders(
     setLoading(true);
     setError(null);
 
-    fetchCustomerOrders(page, size, codCli, sitres)
+    fetchCustomerOrders(page, size, codigoCliente, statusPedido, codigoEmpresa)
       .then((result) => {
         if (!cancelled) setData(result);
       })
@@ -49,7 +50,7 @@ export function useCustomerOrders(
     return () => {
       cancelled = true;
     };
-  }, [page, size, codCli, sitres, reloadToken]);
+  }, [page, size, codigoCliente, statusPedido, codigoEmpresa, reloadToken]);
 
   const refetch = useCallback(() => setReloadToken((token) => token + 1), []);
 

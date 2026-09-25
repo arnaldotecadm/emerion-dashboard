@@ -5,6 +5,9 @@
 
 /** A single line item within a customer order. */
 export interface CustomerOrderItem {
+  codEmp: number | null;
+  dteres: string | null;
+  numres: string | null;
   produto: string;
   descricao: string | null;
   quantidade: number;
@@ -62,34 +65,35 @@ export interface CustomerOrderItem {
   referencia: string | null;
   quantidadeFaturada: number | null;
   quantidadeSeparada: number | null;
+  custoTotal: number | null;
+  lucroValor: number | null;
+  lucroPorcentagem: number | null;
 }
 
 /** A single customer order row as returned by `GET /api/v1/customer-orders`. */
 export interface CustomerOrder {
   id: number;
   externalId: string;
-  /** Owning customer's externalId (codCli), matching `Customer.externalId`. */
-  codCli: string;
-  cnpjEmpresa: string | null;
+  codigoEmpresa: number | null;
+  codigoCliente: number | null;
   cpfCnpj: string | null;
-  nronfe: string | null;
-  dteres: string;
-  sitres: string | null;
-  totger: number;
-  totres: number;
-  totipi: number;
-  totsub: number;
-  totdescinc: number;
-  totfrt: number | null;
-  totseg: number | null;
-  totoutdesp: number | null;
-  vendedorExternalId: string | null;
-  atendenteCod: string | null;
+  numeroPedido: string | null;
+  dataPedido: string | null;
+  statusPedido: string | null;
+  totalPedidoComImpostos: number | null;
+  totalPedidoSemImpostos: number | null;
+  totalIpi: number | null;
+  totalIcms: number | null;
+  totalPis: number | null;
+  totalCofins: number | null;
+  totalSubstituicaoTributaria: number | null;
+  totalDescontoIncondicional: number | null;
+  totalFrete: number | null;
+  totalSeguro: number | null;
+  totalOutrasDespesas: number | null;
+  vendedorExternalId: number | null;
   dataEntregaPrevista: string | null;
-  descontoComercial: number | null;
-  descontoRegional: number | null;
   codigoTransportadora: string | null;
-  linhaReserva: string | null;
   pedidoAnterior: string | null;
   regimeTributario: string | null;
   nomeRegimeTributario: string | null;

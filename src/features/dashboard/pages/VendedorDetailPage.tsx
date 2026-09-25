@@ -69,7 +69,7 @@ function VendedorDetailPage() {
     );
   }
 
-  const isActive = vendedor.situacao?.toLowerCase() === "ativo";
+  const isActive = vendedor.ativo?.toLowerCase() === "sim";
 
   return (
     <div>
@@ -85,13 +85,13 @@ function VendedorDetailPage() {
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-2xl font-bold text-[#041627] tracking-tight">{vendedor.nome.trim()}</h2>
-                {vendedor.situacao && (
+                {vendedor.ativo && (
                   <span
                     className={`px-2.5 py-1 text-xs font-bold rounded-full ${
                       isActive ? "bg-emerald-100 text-emerald-700" : "bg-[#eceef0] text-[#44474c]"
                     }`}
                   >
-                    {vendedor.situacao}
+                    {vendedor.ativo}
                   </span>
                 )}
               </div>

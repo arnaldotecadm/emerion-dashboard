@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Tooltip from "../../../components/Tooltip";
 import { useNotificationPreferences } from "../hooks/useNotificationPreferences";
@@ -30,30 +30,24 @@ function NotificationsMenu() {
   const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { enabledCategories } = useNotificationPreferences();
-  const notificationsQuery = useNotifications(0, 10);
-  const unreadIngestionQuery = useNotifications(0, 1, "UNREAD", "INGESTION");
-  const unreadStatusUpdateQuery = useNotifications(0, 1, "UNREAD", "STATUS_UPDATE");
-  const unreadApprovalNeededQuery = useNotifications(0, 1, "UNREAD", "APPROVAL_NEEDED");
-  const unreadSystemQuery = useNotifications(0, 1, "UNREAD", "SYSTEM");
-  const refetchNotifications = notificationsQuery.refetch;
-  const refetchUnread = useCallback(() => {
-    unreadIngestionQuery.refetch();
-    unreadStatusUpdateQuery.refetch();
-    unreadApprovalNeededQuery.refetch();
-    unreadSystemQuery.refetch();
-  }, [
-    unreadApprovalNeededQuery,
-    unreadIngestionQuery,
-    unreadStatusUpdateQuery,
-    unreadSystemQuery,
-  ]);
+  const {
+    data: notificationsData,
+    loading: notificationsLoading,
+    error: notificationsError,
+    refetch: refetchNotifications,
+  } = useNotifications(0, 100);
+  const refetchUnread = refetchNotifications;
 
-  const notifications = (notificationsQuery.data?.data ?? []).filter((item) => enabledCategories.includes(item.category));
+  const notifications = (notificationsData?.data ?? []).filter((item) => enabledCategories.includes(item.category));
   const unreadByCategory: Record<Notification["category"], number> = {
-    INGESTION: unreadIngestionQuery.data?.pagination.total ?? 0,
-    STATUS_UPDATE: unreadStatusUpdateQuery.data?.pagination.total ?? 0,
-    APPROVAL_NEEDED: unreadApprovalNeededQuery.data?.pagination.total ?? 0,
-    SYSTEM: unreadSystemQuery.data?.pagination.total ?? 0,
+    INGESTION:
+      notificationsData?.data.filter((item) => item.status === "UNREAD" && item.category === "INGESTION").length ?? 0,
+    STATUS_UPDATE:
+      notificationsData?.data.filter((item) => item.status === "UNREAD" && item.category === "STATUS_UPDATE").length ?? 0,
+    APPROVAL_NEEDED:
+      notificationsData?.data.filter((item) => item.status === "UNREAD" && item.category === "APPROVAL_NEEDED").length ?? 0,
+    SYSTEM:
+      notificationsData?.data.filter((item) => item.status === "UNREAD" && item.category === "SYSTEM").length ?? 0,
   };
   const unreadCount = enabledCategories.reduce((total, category) => total + unreadByCategory[category], 0);
   const hasAtLeastOneCategoryEnabled = enabledCategories.length > 0;
@@ -113,11 +107,6 @@ function NotificationsMenu() {
     };
   }, [open, refetchNotifications, refetchUnread]);
 
-  useEffect(() => {
-    refetchUnread();
-    // This keeps the badge in sync when the user changes settings in Configurações.
-  }, [enabledCategories, refetchUnread]);
-
   return (
     <div className="relative" ref={containerRef}>
       <Tooltip label="Notificações">
@@ -160,7 +149,7 @@ function NotificationsMenu() {
                 </button>
               </div>
             )}
-            {notificationsQuery.loading &&
+            {notificationsLoading &&
               hasAtLeastOneCategoryEnabled &&
               Array.from({ length: 4 }).map((_, index) => (
                 <div key={index} className="px-4 py-3 flex gap-3 animate-pulse">
@@ -173,11 +162,11 @@ function NotificationsMenu() {
                 </div>
               ))}
 
-            {!notificationsQuery.loading && notificationsQuery.error && (
+            {!notificationsLoading && notificationsError && (
               <div className="p-4 text-center">
-                <p className="text-xs text-[#ba1a1a] mb-2">{notificationsQuery.error}</p>
+                <p className="text-xs text-[#ba1a1a] mb-2">{notificationsError}</p>
                 <button
-                  onClick={notificationsQuery.refetch}
+                  onClick={refetchNotifications}
                   className="text-xs font-semibold text-[#006397] hover:underline"
                 >
                   Tentar novamente
@@ -185,12 +174,12 @@ function NotificationsMenu() {
               </div>
             )}
 
-            {!notificationsQuery.loading && !notificationsQuery.error && notifications.length === 0 && (
+            {!notificationsLoading && !notificationsError && notifications.length === 0 && (
               <div className="p-4 text-center text-xs text-[#8192a7]">Nenhuma notificação encontrada.</div>
             )}
 
-            {!notificationsQuery.loading &&
-              !notificationsQuery.error &&
+            {!notificationsLoading &&
+              !notificationsError &&
               notifications.map((item) => {
                 const unread = item.status === "UNREAD";
                 return (

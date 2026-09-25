@@ -7,11 +7,12 @@ import RankingsPanel from "../components/RankingsPanel";
 import ProductMixPanel from "../components/ProductMixPanel";
 import FiscalPanel from "../components/FiscalPanel";
 import CriticalAlerts from "../components/CriticalAlerts";
+import { DashboardOverviewProvider } from "../hooks/useDashboardOverview";
 
 /** "Visão Geral" — the executive dashboard overview (KPIs, pipeline health, charts, rankings, alerts). */
 function VisaoGeralPage() {
   return (
-    <>
+    <DashboardOverviewProvider>
       <KpiRow />
       <section className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
         <div className="lg:col-span-3">
@@ -33,7 +34,7 @@ function VisaoGeralPage() {
         </div>
       </section>
       <CriticalAlerts />
-    </>
+    </DashboardOverviewProvider>
   );
 }
 

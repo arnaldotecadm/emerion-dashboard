@@ -15,7 +15,7 @@ export interface Vendedor {
   email: string | null;
   cidade: string | null;
   uf: string | null;
-  situacao: string | null;
+  ativo: string | null;
   saldo: number | null;
   dataCadastro: string | null;
   createdAt: string;

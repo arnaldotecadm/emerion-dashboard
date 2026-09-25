@@ -5,18 +5,20 @@ import { API_BASE_URL, apiFetch } from "./apiConfig";
  * Fetches a page of customer orders from the ERP backend.
  * @param page zero-based page index.
  * @param size number of rows per page.
- * @param codCli optional exact match on the owning customer's externalId.
- * @param sitres optional exact match on order status.
+ * @param codigoCliente optional exact match on the customer code.
+ * @param statusPedido optional exact match on order status.
  */
 export async function fetchCustomerOrders(
   page: number,
   size: number,
-  codCli?: string,
-  sitres?: string
+  codigoCliente?: number,
+  statusPedido?: string,
+  codigoEmpresa?: number
 ): Promise<CustomerOrderPage> {
   const params = new URLSearchParams({ page: String(page), size: String(size) });
-  if (codCli) params.set("codCli", codCli);
-  if (sitres) params.set("sitres", sitres);
+  if (codigoCliente !== undefined) params.set("codigoCliente", String(codigoCliente));
+  if (statusPedido) params.set("statusPedido", statusPedido);
+  if (codigoEmpresa !== undefined) params.set("codigoEmpresa", String(codigoEmpresa));
 
   const response = await apiFetch(`${API_BASE_URL}/customer-orders?${params.toString()}`);
 
