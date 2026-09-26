@@ -1,13 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDashboardOverview } from "../hooks/useDashboardOverview";
+import type { CustomerOrderBy } from "../types/dashboardTopTrends";
 import { formatCurrency } from "../utils/format";
 
-/** Tabbed rankings card: top vendedores (by saldo) vs. top clientes (by faturamento), from real ERP data. */
+const RANKING_ORDER_OPTIONS: { value: CustomerOrderBy; label: string }[] = [
+  { value: "QUANTIDADEPEDIDO", label: "Quantidade de pedidos" },
+  { value: "TOTALFATURADO", label: "Faturamento" },
+];
+
+/** Tabbed rankings card showing the top customers and salespeople from dashboard aggregates. */
 function RankingsPanel() {
   const navigate = useNavigate();
   const [tab, setTab] = useState<"sellers" | "customers">("sellers");
-  const { loading, error, topVendedores, topClientes } = useDashboardOverview();
+  const { loading, error, topVendedores, topClientes, customerOrderBy, setCustomerOrderBy } = useDashboardOverview();
 
   return (
     <div className="bg-white rounded-xl shadow-card overflow-hidden">
@@ -36,6 +42,24 @@ function RankingsPanel() {
       <div className="p-6">
         {error && <p className="text-sm text-[#8192a7]">{error}</p>}
 
+        <div className="flex justify-end gap-2 mb-4">
+          {RANKING_ORDER_OPTIONS.map(({ value: orderBy, label }) => (
+              <button
+                key={orderBy}
+                type="button"
+                aria-pressed={customerOrderBy === orderBy}
+                onClick={() => setCustomerOrderBy(orderBy)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
+                  customerOrderBy === orderBy
+                    ? "bg-[#006397] text-white"
+                    : "bg-[#eceef0] text-[#44474c] hover:bg-[#dfe3e6]"
+                }`}
+              >
+                {label}
+              </button>
+          ))}
+        </div>
+
         {!error && loading && (
           <div className="space-y-3 animate-pulse">
             {Array.from({ length: 3 }).map((_, index) => (
@@ -49,40 +73,38 @@ function RankingsPanel() {
             <thead className="bg-[#eceef0]">
               <tr>
                 <th className="p-3 text-xs rounded-l-lg">Vendedor</th>
-                <th className="p-3 text-xs">Cidade/UF</th>
-                <th className="p-3 text-xs">Saldo</th>
-                <th className="p-3 text-xs text-right rounded-r-lg">Situação</th>
+                <th
+                  className={`p-3 text-xs ${
+                    customerOrderBy === "QUANTIDADEPEDIDO" ? "text-red-600 uppercase" : ""
+                  }`}
+                >
+                  Pedidos
+                </th>
+                <th
+                  className={`p-3 text-xs text-right rounded-r-lg ${
+                    customerOrderBy === "TOTALFATURADO" ? "text-red-600 uppercase" : ""
+                  }`}
+                >
+                  Faturamento
+                </th>
               </tr>
             </thead>
             <tbody className="text-sm font-medium">
               {topVendedores.map((vendedor) => (
                 <tr
-                  key={vendedor.id}
-                  onClick={() => navigate(`/dashboard/vendedores/${vendedor.id}`)}
+                  key={vendedor.identifier}
+                  onClick={() => navigate(`/dashboard/vendedores/${vendedor.identifier}`)}
                   className="border-b border-[#eceef0] last:border-b-0 cursor-pointer hover:bg-[#f7f9fb]"
                 >
-                  <td className="p-3 font-bold">{vendedor.nome.trim()}</td>
-                  <td className="p-3">
-                    {vendedor.cidade ? `${vendedor.cidade}${vendedor.uf ? `/${vendedor.uf}` : ""}` : "—"}
-                  </td>
-                  <td className="p-3">{formatCurrency(vendedor.saldo)}</td>
-                  <td className="p-3 text-right">
-                    <span
-                      className={
-                        vendedor.ativo?.toLowerCase() === "sim"
-                          ? "text-[#18a659] bg-[#7efba4]/20 px-2 py-1 rounded text-[10px]"
-                          : "text-[#44474c] bg-[#eceef0] px-2 py-1 rounded text-[10px]"
-                      }
-                    >
-                      {vendedor.ativo ?? "—"}
-                    </span>
-                  </td>
+                  <td className="p-3 font-bold">{vendedor.name.trim()}</td>
+                  <td className="p-3">{vendedor.amountSales.toLocaleString("pt-BR")}</td>
+                  <td className="p-3 text-right">{formatCurrency(vendedor.totalSales)}</td>
                 </tr>
               ))}
 
               {topVendedores.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="p-3 text-center text-[#8192a7]">
+                  <td colSpan={3} className="p-3 text-center text-[#8192a7]">
                     Nenhum vendedor cadastrado.
                   </td>
                 </tr>
@@ -96,16 +118,32 @@ function RankingsPanel() {
             <thead className="bg-[#eceef0]">
               <tr>
                 <th className="p-3 text-xs rounded-l-lg">Cliente</th>
-                <th className="p-3 text-xs">Pedidos</th>
-                <th className="p-3 text-xs text-right rounded-r-lg">Faturamento</th>
+                <th
+                  className={`p-3 text-xs ${
+                    customerOrderBy === "QUANTIDADEPEDIDO" ? "text-red-600 uppercase" : ""
+                  }`}
+                >
+                  Pedidos
+                </th>
+                <th
+                  className={`p-3 text-xs text-right rounded-r-lg ${
+                    customerOrderBy === "TOTALFATURADO" ? "text-red-600 uppercase" : ""
+                  }`}
+                >
+                  Faturamento
+                </th>
               </tr>
             </thead>
             <tbody className="text-sm font-medium">
               {topClientes.map((cliente) => (
-                <tr key={cliente.codCli} className="border-b border-[#eceef0] last:border-b-0">
-                  <td className="p-3 font-bold">{cliente.nome}</td>
-                  <td className="p-3">{cliente.totalPedidos}</td>
-                  <td className="p-3 text-right">{formatCurrency(cliente.faturamento)}</td>
+                <tr
+                  key={cliente.identifier}
+                  onClick={() => navigate(`/dashboard/clientes/${cliente.identifier}`)}
+                  className="border-b border-[#eceef0] last:border-b-0 cursor-pointer hover:bg-[#f7f9fb]"
+                >
+                  <td className="p-3 font-bold">{cliente.name}</td>
+                  <td className="p-3">{cliente.amountSales.toLocaleString("pt-BR")}</td>
+                  <td className="p-3 text-right">{formatCurrency(cliente.totalSales)}</td>
                 </tr>
               ))}
 

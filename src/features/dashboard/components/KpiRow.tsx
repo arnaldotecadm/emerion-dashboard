@@ -12,7 +12,7 @@ interface KpiCard {
 
 /** Top row of KPI summary cards for the executive dashboard, backed by real ERP data. */
 function KpiRow() {
-  const { loading, error, totalVendas, totalPedidos, ticketMedio, totalClientes, totalVendedores, isPartial } =
+  const { loading, error, totalVendas, totalPedidos, ticketMedio, totalClientes, totalVendedores } =
     useDashboardOverview();
 
   if (error) {
@@ -37,13 +37,10 @@ function KpiRow() {
     );
   }
 
-  const sampleHint = isPartial ? "Baseado nos pedidos mais recentes" : "Baseado em todos os pedidos";
-
   const KPIS: KpiCard[] = [
     {
       label: "VENDAS TOTAIS",
       value: formatCurrency(totalVendas),
-      hint: sampleHint,
       variant: "highlight",
       to: "/dashboard/pedidos",
     },
@@ -55,7 +52,6 @@ function KpiRow() {
     {
       label: "TICKET MÉDIO",
       value: formatCurrency(ticketMedio),
-      hint: sampleHint,
       to: "/dashboard/pedidos",
     },
     {
