@@ -1,7 +1,13 @@
 import { createContext, createElement, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { fetchDashboardTopTrends } from "../services/dashboardService";
-import type { CustomerOrderBy, DashboardTopTrend } from "../types/dashboardTopTrends";
+import type {
+  CustomerOrderBy,
+  DashboardYears,
+  DashboardOrdersByRegion,
+  DashboardTopTrend,
+  DashboardTrendByMonth,
+} from "../types/dashboardTopTrends";
 
 export interface UseDashboardOverviewResult {
   loading: boolean;
@@ -13,8 +19,13 @@ export interface UseDashboardOverviewResult {
   ticketMedio: number;
   topClientes: DashboardTopTrend[];
   topVendedores: DashboardTopTrend[];
+  customerOrders: DashboardTrendByMonth[];
+  customerQuotations: DashboardTrendByMonth[];
+  ordersByRegion: DashboardOrdersByRegion[];
   customerOrderBy: CustomerOrderBy;
   setCustomerOrderBy: (orderBy: CustomerOrderBy) => void;
+  years: DashboardYears;
+  setYears: (years: DashboardYears) => void;
 }
 
 const DashboardOverviewContext = createContext<UseDashboardOverviewResult | null>(null);
@@ -27,8 +38,12 @@ function useDashboardOverviewData(): UseDashboardOverviewResult {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [customerOrderBy, setCustomerOrderBy] = useState<CustomerOrderBy>("TOTALFATURADO");
+  const [years, setYears] = useState<DashboardYears>(1);
   const [result, setResult] = useState<
-    Omit<UseDashboardOverviewResult, "loading" | "error" | "customerOrderBy" | "setCustomerOrderBy">
+    Omit<
+      UseDashboardOverviewResult,
+      "loading" | "error" | "customerOrderBy" | "setCustomerOrderBy" | "years" | "setYears"
+    >
   >({
     totalClientes: 0,
     totalPedidos: 0,
@@ -37,6 +52,9 @@ function useDashboardOverviewData(): UseDashboardOverviewResult {
     ticketMedio: 0,
     topClientes: [],
     topVendedores: [],
+    customerOrders: [],
+    customerQuotations: [],
+    ordersByRegion: [],
   });
 
   useEffect(() => {
@@ -47,7 +65,7 @@ function useDashboardOverviewData(): UseDashboardOverviewResult {
       setError(null);
 
       try {
-        const dashboardData = await fetchDashboardTopTrends(customerOrderBy);
+        const dashboardData = await fetchDashboardTopTrends(customerOrderBy, years);
 
         if (!cancelled) {
           setResult({
@@ -58,6 +76,9 @@ function useDashboardOverviewData(): UseDashboardOverviewResult {
             ticketMedio: dashboardData.ticketMedio,
             topClientes: dashboardData.topCustomers,
             topVendedores: dashboardData.topVendedores,
+            customerOrders: dashboardData.customerOrders,
+            customerQuotations: dashboardData.customerQuotations,
+            ordersByRegion: dashboardData.ordersByRegion,
           });
         }
       } catch (err: unknown) {
@@ -74,9 +95,9 @@ function useDashboardOverviewData(): UseDashboardOverviewResult {
     return () => {
       cancelled = true;
     };
-  }, [customerOrderBy]);
+  }, [customerOrderBy, years]);
 
-  return { loading, error, ...result, customerOrderBy, setCustomerOrderBy };
+  return { loading, error, ...result, customerOrderBy, setCustomerOrderBy, years, setYears };
 }
 
 export function DashboardOverviewProvider({ children }: { children: ReactNode }) {

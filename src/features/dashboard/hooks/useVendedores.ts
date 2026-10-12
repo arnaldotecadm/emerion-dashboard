@@ -8,8 +8,10 @@ export interface UseVendedoresResult {
   error: string | null;
   page: number;
   size: number;
+  situacao: "sim" | "nao" | "";
   setPage: (page: number) => void;
   setSize: (size: number) => void;
+  setSituacao: (situacao: "sim" | "nao" | "") => void;
   refetch: () => void;
 }
 
@@ -17,6 +19,7 @@ export interface UseVendedoresResult {
 export function useVendedores(initialPage = 0, initialSize = 10): UseVendedoresResult {
   const [page, setPage] = useState(initialPage);
   const [size, setSize] = useState(initialSize);
+  const [situacao, setSituacaoState] = useState<"sim" | "nao" | "">("");
   const [data, setData] = useState<VendedorPage | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +31,7 @@ export function useVendedores(initialPage = 0, initialSize = 10): UseVendedoresR
     setLoading(true);
     setError(null);
 
-    fetchVendedores(page, size)
+    fetchVendedores(page, size, undefined, situacao || undefined)
       .then((result) => {
         if (!cancelled) setData(result);
       })
@@ -44,7 +47,7 @@ export function useVendedores(initialPage = 0, initialSize = 10): UseVendedoresR
     return () => {
       cancelled = true;
     };
-  }, [page, size, reloadToken]);
+  }, [page, size, situacao, reloadToken]);
 
   const refetch = useCallback(() => setReloadToken((token) => token + 1), []);
 
@@ -53,5 +56,21 @@ export function useVendedores(initialPage = 0, initialSize = 10): UseVendedoresR
     setPage(0);
   }, []);
 
-  return { data, loading, error, page, size, setPage, setSize: changeSize, refetch };
+  const changeSituacao = useCallback((nextSituacao: "sim" | "nao" | "") => {
+    setSituacaoState(nextSituacao);
+    setPage(0);
+  }, []);
+
+  return {
+    data,
+    loading,
+    error,
+    page,
+    size,
+    situacao,
+    setPage,
+    setSize: changeSize,
+    setSituacao: changeSituacao,
+    refetch,
+  };
 }

@@ -79,7 +79,7 @@ function UserMenu({ userName, userEmail, userGroups, onSignOut }: UserMenuProps)
               <span className="material-symbols-outlined text-lg text-[#44474c]">
                 manage_accounts
               </span>
-              Minha Conta
+              Perfil do Usuário
             </Link>
             <Link
               to="/dashboard/configuracoes"

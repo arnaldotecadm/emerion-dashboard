@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
 import LandingPage from "./pages/LandingPage";
@@ -13,11 +13,14 @@ import VendedoresPage from "./features/dashboard/pages/VendedoresPage";
 import VendedorDetailPage from "./features/dashboard/pages/VendedorDetailPage";
 import ProdutosPage from "./features/dashboard/pages/ProdutosPage";
 import ProdutoDetailPage from "./features/dashboard/pages/ProdutoDetailPage";
+import InteligenciaEstoquePage from "./features/dashboard/pages/InteligenciaEstoquePage";
 import ConfiguracoesPage from "./features/dashboard/pages/ConfiguracoesPage";
 import NotificacoesPage from "./features/dashboard/pages/NotificacoesPage";
 import NotificationDetailPage from "./features/dashboard/pages/NotificationDetailPage";
-import AccountPage from "./features/account/AccountPage";
+import PerfilUsuario from "./features/account/PerfilUsuario";
 import { setAuthToken } from "./features/dashboard/services/apiConfig";
+
+const CockpitExecutivoPage = lazy(() => import("./features/dashboard/pages/CockpitExecutivoPage"));
 
 function App() {
   const auth = useAuth();
@@ -71,6 +74,9 @@ function App() {
             userName={userName}
             userEmail={profile?.email}
             userGroups={userGroups}
+            userId={profile?.sub}
+            userPhone={profile?.phone_number}
+            userEmailVerified={profile?.email_verified}
             onSignOut={handleSignOut}
           />
         }
@@ -85,10 +91,19 @@ function App() {
         <Route path="vendedores/:id" element={<VendedorDetailPage />} />
         <Route path="produtos" element={<ProdutosPage />} />
         <Route path="produtos/:id" element={<ProdutoDetailPage />} />
+        <Route path="estoque" element={<InteligenciaEstoquePage />} />
+        <Route
+          path="cockpit"
+          element={
+            <Suspense fallback={<div className="text-sm text-[#8192a7]">Carregando Cockpit Executivo...</div>}>
+              <CockpitExecutivoPage />
+            </Suspense>
+          }
+        />
         <Route path="configuracoes" element={<ConfiguracoesPage />} />
         <Route path="notificacoes" element={<NotificacoesPage />} />
         <Route path="notificacoes/:id" element={<NotificationDetailPage />} />
-        <Route path="conta" element={<AccountPage />} />
+        <Route path="conta" element={<PerfilUsuario />} />
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>

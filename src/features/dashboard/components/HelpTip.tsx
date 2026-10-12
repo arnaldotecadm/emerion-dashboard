@@ -11,7 +11,7 @@ const PAGE_TIPS: Record<string, string> = {
   "/dashboard/vendedores": "Aqui você poderá acompanhar o desempenho da equipe de vendas, metas e comissões assim que esta área estiver disponível.",
   "/dashboard/notificacoes": "Abra uma notificação para ver os detalhes completos e a referência relacionada.",
   "/dashboard/configuracoes": "Aqui você poderá ajustar preferências do workspace, integrações e permissões de equipe assim que esta área estiver disponível.",
-  "/dashboard/conta": "Atualize seus dados de perfil e preferências de notificação nesta página.",
+  "/dashboard/conta": "Consulte os dados da conta autenticada e os grupos de acesso disponíveis.",
 };
 
 const DEFAULT_TIP =

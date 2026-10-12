@@ -6,17 +6,17 @@ import { API_BASE_URL, apiFetch } from "./apiConfig";
  * @param page zero-based page index.
  * @param size number of rows per page.
  * @param nome optional partial, case-insensitive match on vendedor nome.
- * @param situacao optional exact match on vendedor situacao.
+ * @param ativo optional exact match on vendedor active status.
  */
 export async function fetchVendedores(
   page: number,
   size: number,
   nome?: string,
-  situacao?: string
+  ativo?: string
 ): Promise<VendedorPage> {
   const params = new URLSearchParams({ page: String(page), size: String(size) });
   if (nome) params.set("nome", nome);
-  if (situacao) params.set("situacao", situacao);
+  if (ativo) params.set("ativo", ativo);
 
   const response = await apiFetch(`${API_BASE_URL}/vendedores?${params.toString()}`);
 

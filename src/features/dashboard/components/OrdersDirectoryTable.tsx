@@ -131,7 +131,7 @@ function OrdersDirectoryTable() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">
-                        {formatCurrency(row.totalPedidoSemImpostos)}
+                        {formatCurrency(row.totalPedidoComImpostos)}
                       </td>
                     </tr>
                   ))}

@@ -9,7 +9,18 @@ const PAGE_SIZE_OPTIONS = [10, 25, 50];
 function VendedoresDirectoryTable() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
-  const { data, loading, error, page, size, setPage, setSize, refetch } = useVendedores(0, 10);
+  const {
+    data,
+    loading,
+    error,
+    page,
+    size,
+    situacao,
+    setPage,
+    setSize,
+    setSituacao,
+    refetch,
+  } = useVendedores(0, 10);
 
   const visibleRows = useMemo(() => {
     const rows = data?.data ?? [];
@@ -46,6 +57,22 @@ function VendedoresDirectoryTable() {
               className="w-full pl-9 pr-3 py-2 text-sm border border-[#e6e8ea] rounded-lg text-[#44474c] focus:outline-none focus:ring-2 focus:ring-[#006397]/30 focus:border-[#006397]"
             />
           </div>
+          <label className="flex items-center gap-2 text-sm text-[#8192a7] whitespace-nowrap">
+            <span>Ativo</span>
+            <select
+              value={situacao}
+              onChange={(event) => {
+                const value = event.target.value;
+                if (value === "" || value === "sim" || value === "nao") setSituacao(value);
+              }}
+              className="border border-[#e6e8ea] rounded-lg text-sm text-[#44474c] py-2 px-2 focus:ring-[#006397] focus:border-[#006397]"
+              aria-label="Filtrar vendedores por ativo"
+            >
+              <option value="">Todos</option>
+              <option value="sim">Sim</option>
+              <option value="nao">Não</option>
+            </select>
+          </label>
           <div className="hidden sm:flex items-center gap-2 text-sm text-[#8192a7]">
             <span>Mostrar</span>
             <select
@@ -87,7 +114,7 @@ function VendedoresDirectoryTable() {
                   <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Contato</th>
                   <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Cidade/UF</th>
                   <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Saldo</th>
-                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Situação</th>
+                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Ativo</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#f7f9fb]">

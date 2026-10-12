@@ -10,6 +10,7 @@ export interface TopBarProps {
   userEmail?: string;
   userGroups?: string[];
   onSignOut: () => void;
+  sidebarCollapsed: boolean;
 }
 
 /** Maps each dashboard route to the page title shown in the top bar. */
@@ -21,13 +22,19 @@ const PAGE_TITLES: Record<string, string> = {
   "/dashboard/vendedores": "Vendedores",
   "/dashboard/notificacoes": "Notificações",
   "/dashboard/configuracoes": "Configurações",
-  "/dashboard/conta": "Minha Conta",
+  "/dashboard/conta": "Perfil do Usuário",
 };
 
 const DEFAULT_TITLE = "Emerion Dashboard";
 
 /** Sticky top bar showing the current page's title and the account menu. */
-function TopBar({ userName, userEmail, userGroups, onSignOut }: TopBarProps) {
+function TopBar({
+  userName,
+  userEmail,
+  userGroups,
+  onSignOut,
+  sidebarCollapsed,
+}: TopBarProps) {
   const location = useLocation();
   const clienteMatch = location.pathname.match(/^\/dashboard\/clientes\/(.+)$/);
   const clienteId = clienteMatch?.[1];
@@ -44,7 +51,11 @@ function TopBar({ userName, userEmail, userGroups, onSignOut }: TopBarProps) {
       : (PAGE_TITLES[location.pathname] ?? DEFAULT_TITLE);
 
   return (
-    <header className="fixed top-0 left-0 w-full z-40 flex justify-between items-center pl-72 pr-6 h-16 bg-[#f7f9fb] shadow-card">
+    <header
+      className={`fixed left-0 right-0 top-0 z-40 flex h-16 items-center justify-between bg-[#f7f9fb] pr-6 shadow-card transition-[padding] duration-300 ${
+        sidebarCollapsed ? "pl-20" : "pl-72"
+      }`}
+    >
       <h1 className="text-2xl font-semibold text-[#041627]">{title}</h1>
       <div className="flex items-center gap-4">
         <NotificationsMenu />

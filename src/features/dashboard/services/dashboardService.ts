@@ -1,4 +1,4 @@
-import type { CustomerOrderBy, DashboardTopTrends } from "../types/dashboardTopTrends";
+import type { CustomerOrderBy, DashboardTopTrends, DashboardYears } from "../types/dashboardTopTrends";
 import { API_BASE_URL, apiFetch } from "./apiConfig";
 
 function isDashboardTopTrends(value: unknown): value is DashboardTopTrends {
@@ -16,10 +16,39 @@ function isDashboardTopTrends(value: unknown): value is DashboardTopTrends {
         typeof item.amountSales === "number" &&
         typeof item.totalSales === "number"
     );
+  const isMonthlyTrendList = (items: unknown): boolean =>
+    Array.isArray(items) &&
+    items.every(
+      (item) =>
+        typeof item === "object" &&
+        item !== null &&
+        typeof item.yearMonth === "string" &&
+        /^\d{4}-(0[1-9]|1[0-2])$/.test(item.yearMonth) &&
+        typeof item.count === "number" &&
+        Number.isInteger(item.count) &&
+        item.count >= 0
+    );
+  const isRegionalTrendList = (items: unknown): boolean =>
+    Array.isArray(items) &&
+    items.every(
+      (item) =>
+        typeof item === "object" &&
+        item !== null &&
+        typeof item.region === "string" &&
+        typeof item.faturado === "number" &&
+        Number.isFinite(item.faturado) &&
+        typeof item.cancelado === "number" &&
+        Number.isFinite(item.cancelado) &&
+        typeof item.outros === "number" &&
+        Number.isFinite(item.outros)
+    );
 
   return (
     isTrendList(data.topCustomers) &&
     isTrendList(data.topVendedores) &&
+    isMonthlyTrendList(data.customerOrders) &&
+    isMonthlyTrendList(data.customerQuotations) &&
+    isRegionalTrendList(data.ordersByRegion) &&
     typeof data.quantidadePedidos === "number" &&
     typeof data.totalFaturado === "number" &&
     typeof data.quantidadeClientes === "number" &&
@@ -27,10 +56,18 @@ function isDashboardTopTrends(value: unknown): value is DashboardTopTrends {
   );
 }
 
-/** Fetches the aggregated dashboard metrics and rankings from the ERP backend. */
-export async function fetchDashboardTopTrends(orderBy: CustomerOrderBy): Promise<DashboardTopTrends> {
+/**
+ * Fetches aggregated dashboard metrics and rankings. The optional `years`
+ * request header limits the backend result; omitting it returns all available data.
+ */
+export async function fetchDashboardTopTrends(
+  orderBy: CustomerOrderBy,
+  years: DashboardYears = null
+): Promise<DashboardTopTrends> {
   const params = new URLSearchParams({ orderby: orderBy });
-  const response = await apiFetch(`${API_BASE_URL}/dashboard/top-trends?${params.toString()}`);
+  const headers = years === null ? undefined : { years: String(years) };
+  if (years !== null) params.set("years", String(years));
+  const response = await apiFetch(`${API_BASE_URL}/dashboard/top-trends?${params.toString()}`, { headers });
 
   if (!response.ok) {
     throw new Error(`Falha ao carregar os dados do painel (HTTP ${response.status}).`);
