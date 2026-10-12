@@ -19,7 +19,8 @@ export function useCustomerOrders(
   initialSize = 10,
   codigoCliente?: number,
   statusPedido?: string,
-  codigoEmpresa?: number
+  codigoEmpresa?: number,
+  numeroPedido?: string
 ): UseCustomerOrdersResult {
   const [page, setPage] = useState(initialPage);
   const [size, setSize] = useState(initialSize);
@@ -34,7 +35,7 @@ export function useCustomerOrders(
     setLoading(true);
     setError(null);
 
-    fetchCustomerOrders(page, size, codigoCliente, statusPedido, codigoEmpresa)
+    fetchCustomerOrders(page, size, codigoCliente, statusPedido, codigoEmpresa, numeroPedido)
       .then((result) => {
         if (!cancelled) setData(result);
       })
@@ -50,7 +51,7 @@ export function useCustomerOrders(
     return () => {
       cancelled = true;
     };
-  }, [page, size, codigoCliente, statusPedido, codigoEmpresa, reloadToken]);
+  }, [page, size, codigoCliente, statusPedido, codigoEmpresa, numeroPedido, reloadToken]);
 
   const refetch = useCallback(() => setReloadToken((token) => token + 1), []);
 

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Bar, BarChart, CartesianGrid, Cell, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useDashboardOverview } from "../hooks/useDashboardOverview";
 import type { DashboardOrdersByRegion } from "../types/dashboardTopTrends";
 
@@ -15,32 +16,17 @@ const SERIES: { key: RegionalSeriesKey; label: string; color: string }[] = [
   { key: "outros", label: "Outros", color: "#92ccff" },
 ];
 
-const CHART_HEIGHT = 240;
-const CHART_PADDING_TOP = 16;
-const CHART_PADDING_BOTTOM = 52;
-const MIN_CHART_WIDTH = 600;
 const REGION_SLOT_WIDTH = 88;
 
 function formatCurrency(value: number): string {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
-function getRegionValue(region: DashboardOrdersByRegion, seriesKey: keyof Omit<DashboardOrdersByRegion, "region">) {
-  return region[seriesKey];
-}
-
 /** Bar chart card showing billed, cancelled and other order values per region. */
 function RegionalBarChart() {
   const { loading, error, ordersByRegion } = useDashboardOverview();
   const [hoveredBar, setHoveredBar] = useState<HoveredRegionalBar | null>(null);
-  const chartWidth = Math.max(MIN_CHART_WIDTH, ordersByRegion.length * REGION_SLOT_WIDTH);
-  const plotHeight = CHART_HEIGHT - CHART_PADDING_TOP - CHART_PADDING_BOTTOM;
-  const maxValue = Math.max(0, ...ordersByRegion.flatMap((region) => SERIES.map(({ key }) => getRegionValue(region, key))));
-  const scaleMax = maxValue || 1;
-  const slotWidth = chartWidth / Math.max(ordersByRegion.length, 1);
-  const barWidth = Math.min(24, slotWidth / 5);
   const hoveredRegion = hoveredBar ? ordersByRegion[hoveredBar.regionIndex] : undefined;
-  const hoveredSeries = hoveredBar ? SERIES.find(({ key }) => key === hoveredBar.seriesKey) : undefined;
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-card flex flex-col h-[400px]">
@@ -62,105 +48,81 @@ function RegionalBarChart() {
       )}
 
       {!error && !loading && ordersByRegion.length > 0 && (
-        <div className="relative flex-1 overflow-x-auto" onPointerLeave={() => setHoveredBar(null)}>
-          {hoveredRegion && hoveredSeries && (
-            <div className="absolute right-2 top-2 z-10 rounded-lg bg-[#041627] px-3 py-2 text-white shadow-lg pointer-events-none">
-              <p className="text-xs font-bold mb-1">{hoveredRegion.region}</p>
-              <p className="text-[11px] flex items-center gap-2">
-                <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: hoveredSeries.color }} />
-                {hoveredSeries.label}: {formatCurrency(getRegionValue(hoveredRegion, hoveredSeries.key))}
-              </p>
-            </div>
-          )}
-          <svg
-            className="h-full min-h-56"
-            style={{ width: chartWidth }}
-            viewBox={`0 0 ${chartWidth} ${CHART_HEIGHT}`}
-            role="img"
-            aria-label="Valores faturados, cancelados e outros por região"
+        <div className="relative flex-1 min-h-0 min-w-0 overflow-x-auto" onPointerLeave={() => setHoveredBar(null)}>
+          <div
+            className="h-full w-full"
+            style={{ minWidth: ordersByRegion.length * REGION_SLOT_WIDTH }}
           >
-            {[0, 0.5, 1].map((ratio) => {
-              const y = CHART_HEIGHT - CHART_PADDING_BOTTOM - ratio * plotHeight;
-              return (
-                <line
-                  key={ratio}
-                  x1="0"
-                  x2={chartWidth}
-                  y1={y}
-                  y2={y}
-                  stroke="#e6e8ea"
-                  strokeWidth="1"
-                  pointerEvents="none"
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={ordersByRegion}
+                margin={{ top: 8, right: 8, bottom: 24, left: 8 }}
+                barCategoryGap="30%"
+                accessibilityLayer
+                onMouseLeave={() => setHoveredBar(null)}
+                aria-label="Valores faturados, cancelados e outros por região"
+              >
+                <CartesianGrid vertical={false} stroke="#e6e8ea" />
+                <XAxis
+                  dataKey="region"
+                  tick={{ fill: "#44474c", fontSize: 11, fontWeight: 600 }}
+                  tickLine={false}
+                  axisLine={false}
+                  interval={0}
                 />
-              );
-            })}
-            {ordersByRegion.map((region, regionIndex) => {
-              const groupCenter = (regionIndex + 0.5) * slotWidth;
-              const groupWidth = SERIES.length * barWidth;
-              const groupStart = groupCenter - groupWidth / 2;
-              const isRegionHovered = hoveredBar?.regionIndex === regionIndex;
-
-              return (
-                <g key={region.region}>
-                  {isRegionHovered && (
-                    <line
-                      x1={groupCenter}
-                      x2={groupCenter}
-                      y1={CHART_PADDING_TOP}
-                      y2={CHART_HEIGHT - CHART_PADDING_BOTTOM}
-                      stroke="#8192a7"
-                      strokeDasharray="3 4"
-                      strokeWidth="1"
-                      pointerEvents="none"
-                    />
-                  )}
-                  {SERIES.map((series, seriesIndex) => {
-                    const value = getRegionValue(region, series.key);
-                    const barHeight = (value / scaleMax) * plotHeight;
-                    const x = groupStart + seriesIndex * barWidth;
-                    const y = CHART_HEIGHT - CHART_PADDING_BOTTOM - barHeight;
-                    const isBarHovered =
-                      isRegionHovered && hoveredBar?.seriesKey === series.key;
-
-                    return (
-                      <rect
-                        key={series.key}
-                        x={x}
-                        y={y}
-                        width={barWidth - 3}
-                        height={Math.max(barHeight, 1)}
-                        rx="2"
-                        fill={series.color}
-                        opacity={hoveredBar && !isBarHovered ? 0.35 : 1}
-                        stroke={isBarHovered ? "#041627" : "transparent"}
-                        strokeWidth={isBarHovered ? "2" : "0"}
-                        tabIndex={0}
-                        role="button"
-                        aria-label={`${region.region}, ${series.label}: ${formatCurrency(value)}`}
-                        onPointerEnter={() => setHoveredBar({ regionIndex, seriesKey: series.key })}
-                        onFocus={() => setHoveredBar({ regionIndex, seriesKey: series.key })}
-                        onBlur={() => setHoveredBar(null)}
-                        className="cursor-pointer transition-opacity"
-                      >
-                        <title>{`${region.region} — ${series.label}: ${formatCurrency(value)}`}</title>
-                      </rect>
-                    );
-                  })}
-                  <text
-                    x={groupCenter}
-                    y={CHART_HEIGHT - 20}
-                    textAnchor="middle"
-                    fill={isRegionHovered ? "#006397" : "#44474c"}
-                    fontSize="11"
-                    fontWeight="600"
+                <YAxis hide domain={[0, "auto"]} />
+                {hoveredRegion && (
+                  <ReferenceLine
+                    x={hoveredRegion.region}
+                    stroke="#8192a7"
+                    strokeDasharray="3 4"
                     pointerEvents="none"
+                  />
+                )}
+                <Tooltip
+                  cursor={{ fill: "#f7f9fb", opacity: 0.75 }}
+                  content={({ active, payload, label }) => {
+                    if (!active || !payload?.length) return null;
+                    const item = payload.find((entry) => entry.dataKey === hoveredBar?.seriesKey) ?? payload[0];
+                    const series = SERIES.find(({ key }) => key === item.dataKey);
+                    const value = Number(item.value ?? 0);
+                    return (
+                      <div className="rounded-lg bg-[#041627] px-3 py-2 text-white shadow-lg">
+                        <p className="text-xs font-bold mb-1">{label}</p>
+                        <p className="text-[11px] flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: item.color }} />
+                          {series?.label}: {formatCurrency(value)}
+                        </p>
+                      </div>
+                    );
+                  }}
+                />
+                {SERIES.map((series) => (
+                  <Bar
+                    key={series.key}
+                    dataKey={series.key}
+                    name={series.label}
+                    fill={series.color}
+                    maxBarSize={32}
+                    isAnimationActive
+                    onMouseEnter={(_, index) => setHoveredBar({ regionIndex: index, seriesKey: series.key })}
                   >
-                    {region.region}
-                  </text>
-                </g>
-              );
-            })}
-          </svg>
+                    {ordersByRegion.map((region, index) => {
+                      const selected = hoveredBar?.regionIndex === index && hoveredBar.seriesKey === series.key;
+                      return (
+                        <Cell
+                          key={region.region}
+                          fillOpacity={hoveredBar && !selected ? 0.35 : 1}
+                          stroke={selected ? "#041627" : "transparent"}
+                          strokeWidth={selected ? 2 : 0}
+                        />
+                      );
+                    })}
+                  </Bar>
+                ))}
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       )}
 

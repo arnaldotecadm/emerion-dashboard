@@ -1,71 +1,95 @@
-interface SellerProgress {
-  initials: string;
-  name: string;
-  value: string;
-  goalPct: number;
-  medal?: "gold" | "silver" | "bronze";
-}
+import { useState } from "react";
+import { useSellerTopTrends } from "../hooks/useSellerTopTrends";
+import type { CustomerOrderBy, DashboardYears } from "../types/dashboardTopTrends";
+import { formatCurrency } from "../utils/format";
 
-const SELLERS: SellerProgress[] = [
-  { initials: "JS", name: "João Silva", value: "R$ 450k", goalPct: 95, medal: "gold" },
-  { initials: "AM", name: "Ana Maria", value: "R$ 412k", goalPct: 88, medal: "silver" },
-  { initials: "RC", name: "Ricardo Costa", value: "R$ 385k", goalPct: 82, medal: "bronze" },
-  { initials: "PL", name: "Patrícia Lima", value: "R$ 290k", goalPct: 65 },
+const ORDER_OPTIONS: { value: CustomerOrderBy; label: string }[] = [
+  { value: "QUANTIDADEPEDIDO", label: "Quantidade de Pedidos" },
+  { value: "TOTALFATURADO", label: "Faturamento" },
 ];
 
-const MEDAL_CLASS: Record<string, string> = {
-  gold: "text-yellow-500",
-  silver: "text-[#8192a7]",
-  bronze: "text-orange-400",
-};
+const MEDAL_CLASS = ["text-yellow-500", "text-[#8192a7]", "text-orange-400"];
 
-/** Compact leaderboard of top sellers for the period, with quota progress bars. */
-function TopSellersLeaderboard() {
+function getSellerInitials(name: string): string {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0] ?? "")
+    .join("")
+    .toLocaleUpperCase("pt-BR");
+}
+
+/** Compact leaderboard of top sellers ranked by orders or billed sales. */
+function TopSellersLeaderboard({ years }: { years: DashboardYears }) {
+  const [orderBy, setOrderBy] = useState<CustomerOrderBy>("TOTALFATURADO");
+  const { data: sellers, loading, error } = useSellerTopTrends(orderBy, years);
+
   return (
     <div className="bg-white rounded-xl shadow-card border border-[#e6e8ea] p-6 h-full">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
         <h3 className="font-bold text-[#041627]">Top Vendedores</h3>
-        <span className="text-[10px] font-bold text-[#8192a7] uppercase tracking-widest">Performance Global</span>
+        <div className="flex rounded-lg bg-[#eceef0] p-1" aria-label="Ordenar vendedores por">
+          {ORDER_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              aria-pressed={orderBy === option.value}
+              onClick={() => setOrderBy(option.value)}
+              className={`rounded-md px-2.5 py-1.5 text-xs font-semibold transition-all ${
+                orderBy === option.value
+                  ? "bg-white text-[#006397] shadow-sm"
+                  : "text-[#44474c] hover:text-[#041627]"
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
       </div>
-      <div className="space-y-4">
-        {SELLERS.map((seller) => (
-          <div key={seller.name} className="flex items-center gap-4">
-            <div className="relative shrink-0">
-              <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${
-                  seller.medal ? "bg-[#cce5ff] text-[#006397]" : "bg-[#eceef0] text-[#8192a7]"
-                }`}
-              >
-                {seller.initials}
+
+      {error && <p role="alert" className="py-6 text-center text-sm text-[#ba1a1a]">{error}</p>}
+      {!error && loading && (
+        <div className="space-y-4 animate-pulse">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className="h-12 rounded-lg bg-[#eceef0]" />
+          ))}
+        </div>
+      )}
+      {!error && !loading && sellers.length === 0 && (
+        <p className="py-6 text-center text-sm text-[#8192a7]">Nenhum vendedor encontrado.</p>
+      )}
+      {!error && !loading && sellers.length > 0 && (
+        <div className="max-h-[260px] space-y-4 overflow-y-auto pr-2">
+          {sellers.map((seller, index) => (
+            <div key={seller.identifier} className="flex items-center gap-4">
+              <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#cce5ff] text-sm font-bold text-[#006397]">
+                {getSellerInitials(seller.name)}
+                {index < MEDAL_CLASS.length && (
+                  <span
+                    className={`material-symbols-outlined absolute -right-1 -top-1 text-lg ${MEDAL_CLASS[index]}`}
+                    style={{ fontVariationSettings: "'FILL' 1" }}
+                    aria-label={`Posição ${index + 1}`}
+                  >
+                    military_tech
+                  </span>
+                )}
               </div>
-              {seller.medal && (
-                <span
-                  className={`material-symbols-outlined absolute -top-1 -right-1 text-lg ${MEDAL_CLASS[seller.medal]}`}
-                  style={{ fontVariationSettings: "'FILL' 1" }}
-                >
-                  military_tech
-                </span>
-              )}
+              <div className="flex min-w-0 flex-1 flex-col gap-1">
+                <span className="truncate text-sm font-bold text-[#041627]">{seller.name.trim()}</span>
+                <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-0.5 text-xs">
+                  <span className="text-[#8192a7]">
+                    {seller.amountSales.toLocaleString("pt-BR")} pedidos
+                  </span>
+                  <span className={`font-bold ${orderBy === "TOTALFATURADO" ? "text-[#006397]" : "text-[#44474c]"}`}>
+                    {formatCurrency(seller.totalSales)}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="flex-1">
-              <div className="flex justify-between items-center mb-1">
-                <span className={`text-sm font-bold ${seller.medal ? "text-[#041627]" : "text-[#44474c]"}`}>
-                  {seller.name}
-                </span>
-                <span className={`text-xs font-bold ${seller.medal ? "text-[#006397]" : "text-[#8192a7]"}`}>
-                  {seller.value}
-                </span>
-              </div>
-              <div className="w-full bg-[#f7f9fb] h-1.5 rounded-full overflow-hidden">
-                <div
-                  className={`h-full rounded-full ${seller.medal ? "bg-[#18a659]" : "bg-[#006397]/40"}`}
-                  style={{ width: `${seller.goalPct}%` }}
-                />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

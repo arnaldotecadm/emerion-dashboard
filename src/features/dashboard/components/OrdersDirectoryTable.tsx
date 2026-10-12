@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCustomerOrders } from "../hooks/useCustomerOrders";
 import { useCustomerNamesByExternalId } from "../hooks/useCustomerNamesByExternalId";
@@ -6,32 +6,44 @@ import { formatCurrency, formatDate } from "../utils/format";
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
 
+function getOrderStatusClasses(status: string | null): string {
+  const normalizedStatus = status?.trim().toLocaleLowerCase("pt-BR") ?? "";
+
+  if (normalizedStatus.includes("faturad")) return "bg-emerald-100 text-emerald-800";
+  if (normalizedStatus.includes("cancel")) return "bg-red-100 text-red-800";
+  if (normalizedStatus.includes("penden") || normalizedStatus.includes("aguard")) {
+    return "bg-amber-100 text-amber-800";
+  }
+  if (normalizedStatus.includes("aprov") || normalizedStatus.includes("pronto")) {
+    return "bg-blue-100 text-blue-800";
+  }
+
+  return "bg-[#006397]/10 text-[#006397]";
+}
+
 /** Full order directory table, backed by the ERP backend's `GET /api/v1/customer-orders` endpoint. */
 function OrdersDirectoryTable() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
-  const { data, loading, error, page, size, setPage, setSize, refetch } = useCustomerOrders(0, 10);
+  const [orderNumberQuery, setOrderNumberQuery] = useState("");
+  const { data, loading, error, page, size, setPage, setSize, refetch } = useCustomerOrders(
+    0,
+    10,
+    undefined,
+    undefined,
+    undefined,
+    orderNumberQuery
+  );
   const customerNames = useCustomerNamesByExternalId(
     data?.data.filter((row) => row.codigoCliente !== null).map((row) => String(row.codigoCliente)) ?? []
   );
 
-  const visibleRows = useMemo(() => {
-    const rows = data?.data ?? [];
-    const query = search.trim().toLowerCase();
-    if (!query) return rows;
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => setOrderNumberQuery(search.trim()), 300);
+    return () => window.clearTimeout(timeoutId);
+  }, [search]);
 
-    return rows.filter((row) =>
-      [
-        row.externalId,
-        String(row.codigoCliente ?? ""),
-        customerNames.get(String(row.codigoCliente ?? "")) ?? "",
-        row.numeroPedido ?? "",
-        row.statusPedido ?? "",
-      ].some(
-        (field) => field.toLowerCase().includes(query)
-      )
-    );
-  }, [data, search, customerNames]);
+  const visibleRows = data?.data ?? [];
 
   const totalPages = data?.pagination.totalPages ?? 0;
   const currentPage = data?.pagination.page ?? page;
@@ -44,15 +56,18 @@ function OrdersDirectoryTable() {
       <div className="p-6 border-b border-[#e6e8ea] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h3 className="font-bold text-[#041627] text-lg">Todos os Pedidos</h3>
         <div className="flex items-center gap-3 w-full sm:w-auto">
-          <div className="relative flex-1 sm:w-64">
+          <div className="relative flex-1 sm:w-[26rem] lg:w-[30rem]">
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#8192a7] text-lg">
               search
             </span>
             <input
               type="text"
               value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Buscar nesta página por Num do pedido, cliente, NF-e ou status"
+              onChange={(event) => {
+                setSearch(event.target.value);
+                setPage(0);
+              }}
+              placeholder="Buscar por número do pedido (ex.: 719)"
               className="w-full pl-9 pr-3 py-2 text-sm border border-[#e6e8ea] rounded-lg text-[#44474c] focus:outline-none focus:ring-2 focus:ring-[#006397]/30 focus:border-[#006397]"
             />
           </div>
@@ -126,7 +141,7 @@ function OrdersDirectoryTable() {
                       {/*<td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">{row.numeroPedido ?? "—"}</td> */}
                       <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">{formatDate(row.dataPedido)}</td>
                       <td className="px-6 py-4">
-                        <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-[#006397]/10 text-[#006397]">
+                        <span className={`px-2.5 py-1 text-xs font-bold rounded-full ${getOrderStatusClasses(row.statusPedido)}`}>
                           {row.statusPedido ?? "—"}
                         </span>
                       </td>

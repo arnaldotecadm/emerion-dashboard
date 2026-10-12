@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { useProducts } from "../hooks/useProducts";
 import { formatCurrency } from "../utils/format";
 
@@ -15,19 +16,15 @@ function ProductMixPanel() {
     const total = products.reduce((sum, product) => sum + (product.preco ?? 0), 0);
     if (total <= 0) return [];
 
-    let offset = 0;
     return products.map((product, index) => {
       const pct = ((product.preco ?? 0) / total) * 100;
-      const slice = {
+      return {
         id: product.id,
         label: product.nome,
         preco: product.preco,
         pct,
         color: SLICE_COLORS[index % SLICE_COLORS.length],
-        offset,
       };
-      offset += pct;
-      return slice;
     });
   }, [data]);
 
@@ -55,22 +52,36 @@ function ProductMixPanel() {
       {!error && !loading && slices.length > 0 && (
         <div className="flex items-center gap-6">
           <div className="relative w-24 h-24 shrink-0">
-            <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-              <circle cx="18" cy="18" r="16" fill="transparent" stroke="#e6e8ea" strokeWidth="4" />
-              {slices.map((slice) => (
-                <circle
-                  key={slice.label}
-                  cx="18"
-                  cy="18"
-                  r="16"
-                  fill="transparent"
-                  stroke={slice.color}
-                  strokeWidth="4"
-                  strokeDasharray={`${slice.pct} ${100 - slice.pct}`}
-                  strokeDashoffset={-slice.offset}
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart accessibilityLayer>
+                <Pie
+                  data={slices}
+                  dataKey="pct"
+                  nameKey="label"
+                  innerRadius="76%"
+                  outerRadius="100%"
+                  startAngle={90}
+                  endAngle={-270}
+                  stroke="none"
+                  isAnimationActive
+                >
+                  {slices.map((slice) => <Cell key={slice.label} fill={slice.color} />)}
+                </Pie>
+                <Tooltip
+                  content={({ active, payload }) => {
+                    const slice = payload?.[0]?.payload as (typeof slices)[number] | undefined;
+                    if (!active || !slice) return null;
+                    return (
+                      <div className="rounded-lg bg-[#041627] px-3 py-2 text-white shadow-lg">
+                        <p className="text-xs font-bold">{slice.label}</p>
+                        <p className="text-[11px]">{slice.pct.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%</p>
+                        <p className="text-[11px]">{formatCurrency(slice.preco)}</p>
+                      </div>
+                    );
+                  }}
                 />
-              ))}
-            </svg>
+              </PieChart>
+            </ResponsiveContainer>
           </div>
           <div className="space-y-2">
             {slices.map((slice) => (

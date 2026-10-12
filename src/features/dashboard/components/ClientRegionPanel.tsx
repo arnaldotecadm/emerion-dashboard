@@ -1,3 +1,4 @@
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { CLIENT_REGIONS, CLIENTES_DIRECTORY_TOTAL } from "../data/clientesData";
 
 /** Donut chart card breaking down the client base by Brazilian macro-region (no segment taxonomy exists). */
@@ -7,23 +8,36 @@ function ClientRegionPanel() {
       <h3 className="font-bold text-[#041627] text-lg mb-4">Distribuição por Região</h3>
       <div className="flex items-center gap-6">
         <div className="relative w-24 h-24 shrink-0">
-          <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-            <circle cx="18" cy="18" r="16" fill="transparent" stroke="#e6e8ea" strokeWidth="4" />
-            {CLIENT_REGIONS.map((slice) => (
-              <circle
-                key={slice.label}
-                cx="18"
-                cy="18"
-                r="16"
-                fill="transparent"
-                stroke={slice.color}
-                strokeWidth="4"
-                strokeDasharray={`${slice.pct} ${100 - slice.pct}`}
-                strokeDashoffset={-slice.offset}
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart accessibilityLayer>
+              <Pie
+                data={CLIENT_REGIONS}
+                dataKey="pct"
+                nameKey="label"
+                innerRadius="76%"
+                outerRadius="100%"
+                startAngle={90}
+                endAngle={-270}
+                stroke="none"
+                isAnimationActive
+              >
+                {CLIENT_REGIONS.map((slice) => <Cell key={slice.label} fill={slice.color} />)}
+              </Pie>
+              <Tooltip
+                content={({ active, payload }) => {
+                  const slice = payload?.[0]?.payload as (typeof CLIENT_REGIONS)[number] | undefined;
+                  if (!active || !slice) return null;
+                  return (
+                    <div className="rounded-lg bg-[#041627] px-3 py-2 text-white shadow-lg">
+                      <p className="text-xs font-bold">{slice.label}</p>
+                      <p className="text-[11px]">{slice.pct}%</p>
+                    </div>
+                  );
+                }}
               />
-            ))}
-          </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            </PieChart>
+          </ResponsiveContainer>
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
             <p className="text-lg font-bold text-[#041627]">{CLIENTES_DIRECTORY_TOTAL.toLocaleString("pt-BR")}</p>
             <p className="text-[9px] text-[#8192a7] font-bold uppercase">Total</p>
           </div>
