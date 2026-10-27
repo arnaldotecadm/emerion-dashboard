@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
-import { useAuth } from "react-oidc-context";
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { useAuth } from "./auth/AuthContext";
+import LoginPage from "./pages/login/LoginPage";
 import LandingPage from "./pages/LandingPage";
 import DashboardLayout from "./features/dashboard/DashboardLayout";
 import VisaoGeralPage from "./features/dashboard/pages/VisaoGeralPage";
@@ -24,6 +25,7 @@ const CockpitExecutivoPage = lazy(() => import("./features/dashboard/pages/Cockp
 
 function App() {
   const auth = useAuth();
+  const navigate = useNavigate();
 
   // Keeps the ERP API client's JWT in sync with the Cognito session, so every
   // request carries a valid `Authorization: Bearer` header for the backend to validate.
@@ -31,25 +33,15 @@ function App() {
     setAuthToken(auth.user?.access_token ?? null);
   }, [auth.user]);
 
-  const signOutRedirect = () => {
-    const clientId = "395rpr7l5274ei0ivbjm6l2ptd";
-    const logoutUri = "http://localhost:5173/logout";
-    const cognitoDomain = "https://eu-north-1ntdqlsmut.auth.eu-north-1.amazoncognito.com";
-    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
-  };
-
   if (auth.isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (auth.error) {
-    return <div>Encountering error... {auth.error.message}</div>;
+    return <div className="min-h-screen bg-canvas" />;
   }
 
   if (!auth.isAuthenticated) {
     return (
       <Routes>
-        <Route path="*" element={<LandingPage onSignIn={() => auth.signinRedirect()} />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="*" element={<LandingPage onSignIn={() => navigate("/login")} />} />
       </Routes>
     );
   }
@@ -61,8 +53,8 @@ function App() {
   const rawGroups = profile?.["cognito:groups"];
   const userGroups = Array.isArray(rawGroups) ? (rawGroups as string[]) : undefined;
   const handleSignOut = () => {
-    auth.removeUser();
-    signOutRedirect();
+    auth.signOut();
+    navigate("/login", { replace: true });
   };
 
   return (

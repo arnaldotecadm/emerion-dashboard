@@ -3,7 +3,7 @@ export const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL ?? "http://loca
 
 /**
  * Holds the current Cognito-issued JWT access token, set by `App.tsx` whenever
- * `react-oidc-context`'s auth state changes. Kept outside React state since
+ * the Cognito session (see `src/auth/AuthContext.tsx`) changes. Kept outside React state since
  * plain service functions (not hooks/components) need synchronous access to it.
  */
 let authToken: string | null = null;

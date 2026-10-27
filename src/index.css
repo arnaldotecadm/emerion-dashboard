@@ -214,6 +214,11 @@
   color: var(--app-fg);
 }
 
+@keyframes login-rise {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
 @keyframes theme-spin {
   from { transform: rotate(-90deg) scale(0.6); opacity: 0; }
   to { transform: rotate(0) scale(1); opacity: 1; }
