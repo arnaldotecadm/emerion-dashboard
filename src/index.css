@@ -201,9 +201,11 @@
 
 /* Recharts draws with SVG attributes; CSS overrides them in dark mode. */
 .dark .recharts-cartesian-grid line { stroke: var(--app-line); }
-.dark .recharts-cartesian-axis-tick text { fill: var(--app-fg-muted); }
+.dark .recharts-cartesian-axis-tick text,
+.dark .recharts-cartesian-axis-tick-value { fill: var(--app-fg-muted); }
 .dark .recharts-tooltip-cursor { fill: var(--app-surface-2); stroke: var(--app-fg-subtle); }
 .dark .recharts-bar-background-rectangle path,
+.dark path.recharts-bar-background-rectangle,
 .dark .recharts-radial-bar-background-sector { fill: var(--app-surface-2); }
 .dark .recharts-dot { stroke: var(--app-card); }
 .dark .recharts-default-tooltip {
