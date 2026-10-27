@@ -5,6 +5,8 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  // amazon-cognito-identity-js expects Node's `global` in the browser.
+  define: { global: "globalThis" },
   server: {
     // Proxies API calls to the local ERP backend during development so the
     // browser request stays same-origin, avoiding CORS entirely in dev.

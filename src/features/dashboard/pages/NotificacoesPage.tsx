@@ -26,13 +26,13 @@ function resolveCategoryLabel(category: Notification["category"]): string {
 function statusBadge(status: Notification["status"]): string {
   switch (status) {
     case "UNREAD":
-      return "bg-[#cce5ff] text-[#006397]";
+      return "bg-accent-soft text-accent";
     case "READ":
-      return "bg-[#eceef0] text-[#44474c]";
+      return "bg-surface-2 text-fg-muted";
     case "DISMISSED":
-      return "bg-[#ffdad6] text-[#93000a]";
+      return "bg-danger-soft text-danger-ink";
     default:
-      return "bg-[#eceef0] text-[#44474c]";
+      return "bg-surface-2 text-fg-muted";
   }
 }
 
@@ -67,10 +67,10 @@ function NotificacoesPage() {
     <div>
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div>
-          <h2 className="text-3xl font-bold text-[#041627] tracking-tight">Notificações</h2>
-          <p className="text-[#8192a7] mt-1">Acompanhe alertas e atualizações recentes do sistema.</p>
+          <h2 className="text-3xl font-bold text-fg-strong tracking-tight">Notificações</h2>
+          <p className="text-fg-subtle mt-1">Acompanhe alertas e atualizações recentes do sistema.</p>
           {!allCategoriesEnabled && (
-            <p className="text-xs text-[#8192a7] mt-2">
+            <p className="text-xs text-fg-subtle mt-2">
               Filtro ativo por preferências de categoria em Configurações.
             </p>
           )}
@@ -79,13 +79,13 @@ function NotificacoesPage() {
 
       <section
         id="todas-notificacoes"
-        className="bg-white rounded-xl shadow-card border border-[#e6e8ea] overflow-hidden"
+        className="bg-card rounded-xl shadow-card border border-line overflow-hidden"
       >
-        <div className="p-6 border-b border-[#e6e8ea] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <h3 className="font-bold text-[#041627] text-lg">Todas as Notificações</h3>
+        <div className="p-6 border-b border-line flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <h3 className="font-bold text-fg-strong text-lg">Todas as Notificações</h3>
           <div className="flex items-center gap-3 w-full sm:w-auto">
             <div className="relative flex-1 sm:w-72">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#8192a7] text-lg">
+              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-fg-subtle text-lg">
                 search
               </span>
               <input
@@ -93,15 +93,15 @@ function NotificacoesPage() {
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Buscar por título, descrição, categoria ou referência"
-                className="w-full pl-9 pr-3 py-2 text-sm border border-[#e6e8ea] rounded-lg text-[#44474c] focus:outline-none focus:ring-2 focus:ring-[#006397]/30 focus:border-[#006397]"
+                className="w-full pl-9 pr-3 py-2 text-sm border border-line rounded-lg text-fg-muted focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
               />
             </div>
-            <div className="hidden sm:flex items-center gap-2 text-sm text-[#8192a7]">
+            <div className="hidden sm:flex items-center gap-2 text-sm text-fg-subtle">
               <span>Mostrar</span>
               <select
                 value={size}
                 onChange={(event) => setSize(Number(event.target.value))}
-                className="border border-[#e6e8ea] rounded-lg text-sm text-[#44474c] py-1 px-2 focus:ring-[#006397] focus:border-[#006397]"
+                className="border border-line rounded-lg text-sm text-fg-muted py-1 px-2 focus:ring-accent focus:border-accent"
               >
                 {PAGE_SIZE_OPTIONS.map((option) => (
                   <option key={option} value={option}>
@@ -115,11 +115,11 @@ function NotificacoesPage() {
 
         {error ? (
           <div className="p-10 flex flex-col items-center text-center gap-3">
-            <span className="material-symbols-outlined text-4xl text-[#ba1a1a]">error</span>
-            <p className="text-sm text-[#44474c]">{error}</p>
+            <span className="material-symbols-outlined text-4xl text-danger-fg">error</span>
+            <p className="text-sm text-fg-muted">{error}</p>
             <button
               onClick={refetch}
-              className="px-4 py-2 text-sm font-semibold text-[#006397] border border-[#006397] rounded-lg hover:bg-[#006397]/5 transition-colors"
+              className="px-4 py-2 text-sm font-semibold text-accent border border-accent rounded-lg hover:bg-accent-solid/5 transition-colors"
             >
               Tentar novamente
             </button>
@@ -129,32 +129,32 @@ function NotificacoesPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="bg-[#f7f9fb] border-b border-[#e6e8ea]">
-                    <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Título</th>
-                    <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
+                  <tr className="bg-canvas border-b border-line">
+                    <th className="px-6 py-3 text-[11px] font-bold text-fg-subtle uppercase tracking-wider">Título</th>
+                    <th className="px-6 py-3 text-[11px] font-bold text-fg-subtle uppercase tracking-wider">
                       Categoria
                     </th>
-                    <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
+                    <th className="px-6 py-3 text-[11px] font-bold text-fg-subtle uppercase tracking-wider">
                       Prioridade
                     </th>
-                    <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
+                    <th className="px-6 py-3 text-[11px] font-bold text-fg-subtle uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
+                    <th className="px-6 py-3 text-[11px] font-bold text-fg-subtle uppercase tracking-wider">
                       Referência
                     </th>
-                    <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
+                    <th className="px-6 py-3 text-[11px] font-bold text-fg-subtle uppercase tracking-wider">
                       Criada em
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#f7f9fb]">
+                <tbody className="divide-y divide-line-soft">
                   {loading &&
                     Array.from({ length: size }).map((_, index) => (
                       <tr key={`skeleton-${index}`} className="animate-pulse">
                         {Array.from({ length: 6 }).map((__, cell) => (
                           <td key={cell} className="px-6 py-4">
-                            <div className="h-3.5 bg-[#eceef0] rounded-full w-full max-w-[14rem]" />
+                            <div className="h-3.5 bg-surface-2 rounded-full w-full max-w-[14rem]" />
                           </td>
                         ))}
                       </tr>
@@ -163,7 +163,7 @@ function NotificacoesPage() {
                   {!loading &&
                     !hasAtLeastOneCategoryEnabled && (
                       <tr>
-                        <td colSpan={6} className="px-6 py-10 text-center text-sm text-[#8192a7]">
+                        <td colSpan={6} className="px-6 py-10 text-center text-sm text-fg-subtle">
                           Você desabilitou todos os tipos de notificações em Configurações.
                         </td>
                       </tr>
@@ -175,27 +175,27 @@ function NotificacoesPage() {
                       <tr
                         key={row.id}
                         onClick={() => navigate(`/dashboard/notificacoes/${row.id}`)}
-                        className="hover:bg-[#f7f9fb] transition-colors cursor-pointer"
+                        className="hover:bg-canvas transition-colors cursor-pointer"
                       >
                         <td className="px-6 py-4">
-                          <p className="text-sm font-semibold text-[#041627]">{row.name}</p>
-                          <p className="text-xs text-[#8192a7] line-clamp-1">{row.description}</p>
+                          <p className="text-sm font-semibold text-fg-strong">{row.name}</p>
+                          <p className="text-xs text-fg-subtle line-clamp-1">{row.description}</p>
                         </td>
-                        <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">
+                        <td className="px-6 py-4 text-sm text-fg-muted whitespace-nowrap">
                           {resolveCategoryLabel(row.category)}
                         </td>
-                        <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">{row.priority}</td>
+                        <td className="px-6 py-4 text-sm text-fg-muted whitespace-nowrap">{row.priority}</td>
                         <td className="px-6 py-4">
                           <span className={`px-2.5 py-1 text-xs font-bold rounded-full ${statusBadge(row.status)}`}>
                             {row.status}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">
+                        <td className="px-6 py-4 text-sm text-fg-muted whitespace-nowrap">
                           {row.referenceType && row.referenceId
                             ? `${row.referenceType} #${row.referenceId}`
                             : row.referenceType ?? row.referenceId ?? "—"}
                         </td>
-                        <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">
+                        <td className="px-6 py-4 text-sm text-fg-muted whitespace-nowrap">
                           {formatDateTime(row.createdAt)}
                         </td>
                       </tr>
@@ -203,7 +203,7 @@ function NotificacoesPage() {
 
                   {!loading && hasAtLeastOneCategoryEnabled && visibleRows.length === 0 && (
                     <tr>
-                      <td colSpan={6} className="px-6 py-10 text-center text-sm text-[#8192a7]">
+                      <td colSpan={6} className="px-6 py-10 text-center text-sm text-fg-subtle">
                         {search
                           ? `Nenhuma notificação encontrada para "${search}" nesta página.`
                           : "Nenhuma notificação encontrada."}
@@ -214,8 +214,8 @@ function NotificacoesPage() {
               </table>
             </div>
 
-            <div className="px-6 py-4 bg-[#f7f9fb] border-t border-[#e6e8ea] flex flex-col sm:flex-row justify-between items-center gap-3">
-              <span className="text-sm text-[#8192a7]">
+            <div className="px-6 py-4 bg-canvas border-t border-line flex flex-col sm:flex-row justify-between items-center gap-3">
+              <span className="text-sm text-fg-subtle">
                 {!hasAtLeastOneCategoryEnabled
                   ? "Nenhum tipo de notificação habilitado."
                   : allCategoriesEnabled
@@ -225,14 +225,14 @@ function NotificacoesPage() {
                     : `Exibindo ${visibleRows.length} notificações nesta página conforme suas preferências`}
               </span>
               <div className="flex items-center gap-3">
-                <span className="text-sm text-[#44474c]">
+                <span className="text-sm text-fg-muted">
                   Página {totalPages === 0 ? 0 : currentPage + 1} de {totalPages}
                 </span>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setPage(Math.max(0, currentPage - 1))}
                     disabled={isFirstPage || loading || !hasAtLeastOneCategoryEnabled}
-                    className="p-2 border border-[#e6e8ea] rounded-lg bg-white text-[#8192a7] hover:text-[#006397] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-[#8192a7] transition-all"
+                    className="p-2 border border-line rounded-lg bg-card text-fg-subtle hover:text-accent disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-fg-subtle transition-all"
                     aria-label="Página anterior"
                   >
                     <span className="material-symbols-outlined text-sm">chevron_left</span>
@@ -240,7 +240,7 @@ function NotificacoesPage() {
                   <button
                     onClick={() => setPage(Math.min(totalPages - 1, currentPage + 1))}
                     disabled={isLastPage || loading || !hasAtLeastOneCategoryEnabled}
-                    className="p-2 border border-[#e6e8ea] rounded-lg bg-white text-[#8192a7] hover:text-[#006397] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-[#8192a7] transition-all"
+                    className="p-2 border border-line rounded-lg bg-card text-fg-subtle hover:text-accent disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-fg-subtle transition-all"
                     aria-label="Próxima página"
                   >
                     <span className="material-symbols-outlined text-sm">chevron_right</span>

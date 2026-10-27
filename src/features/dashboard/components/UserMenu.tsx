@@ -38,30 +38,30 @@ function UserMenu({ userName, userEmail, userGroups, onSignOut }: UserMenuProps)
     <div className="relative ml-2" ref={containerRef}>
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full hover:bg-[#eceef0] transition-colors"
+        className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full hover:bg-surface-2 transition-colors"
         aria-haspopup="menu"
         aria-expanded={open}
       >
-        <span className="h-8 w-8 rounded-full overflow-hidden border border-[#c4c6cd] bg-[#e0e3e5] flex items-center justify-center text-[10px] font-bold text-[#44474c]">
+        <span className="h-8 w-8 rounded-full overflow-hidden border border-line-strong bg-surface-3 flex items-center justify-center text-[10px] font-bold text-fg-muted">
           {initials}
         </span>
-        <span className="material-symbols-outlined text-lg text-[#44474c]">expand_more</span>
+        <span className="material-symbols-outlined text-lg text-fg-muted">expand_more</span>
       </button>
 
       {open && (
         <div
           role="menu"
-          className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-popover border border-[#e6e8ea] overflow-hidden z-50"
+          className="absolute right-0 mt-2 w-64 bg-card rounded-xl shadow-popover border border-line overflow-hidden z-50"
         >
-          <div className="px-4 py-3 border-b border-[#eceef0]">
-            <p className="text-sm font-semibold text-[#041627] truncate">{userName}</p>
-            {userEmail && <p className="text-xs text-[#44474c] truncate">{userEmail}</p>}
+          <div className="px-4 py-3 border-b border-line-soft">
+            <p className="text-sm font-semibold text-fg-strong truncate">{userName}</p>
+            {userEmail && <p className="text-xs text-fg-muted truncate">{userEmail}</p>}
             {userGroups && userGroups.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
                 {userGroups.map((group) => (
                   <span
                     key={group}
-                    className="px-2 py-0.5 rounded-full bg-[#e3f2fa] text-[#006397] text-[10px] font-semibold uppercase tracking-wide"
+                    className="px-2 py-0.5 rounded-full bg-accent-tint text-accent text-[10px] font-semibold uppercase tracking-wide"
                   >
                     {group}
                   </span>
@@ -73,10 +73,10 @@ function UserMenu({ userName, userEmail, userGroups, onSignOut }: UserMenuProps)
             <Link
               to="/dashboard/conta"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#191c1e] hover:bg-[#f7f9fb] transition-colors"
+              className="flex items-center gap-3 px-4 py-2.5 text-sm text-fg hover:bg-canvas transition-colors"
               role="menuitem"
             >
-              <span className="material-symbols-outlined text-lg text-[#44474c]">
+              <span className="material-symbols-outlined text-lg text-fg-muted">
                 manage_accounts
               </span>
               Perfil do Usuário
@@ -84,14 +84,14 @@ function UserMenu({ userName, userEmail, userGroups, onSignOut }: UserMenuProps)
             <Link
               to="/dashboard/configuracoes"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#191c1e] hover:bg-[#f7f9fb] transition-colors"
+              className="flex items-center gap-3 px-4 py-2.5 text-sm text-fg hover:bg-canvas transition-colors"
               role="menuitem"
             >
-              <span className="material-symbols-outlined text-lg text-[#44474c]">settings</span>
+              <span className="material-symbols-outlined text-lg text-fg-muted">settings</span>
               Preferências
             </Link>
           </nav>
-          <div className="py-1 border-t border-[#eceef0]">
+          <div className="py-1 border-t border-line-soft">
             <button
               onClick={() => {
                 setOpen(false);

@@ -1,3 +1,4 @@
+import { useTheme } from "../../../theme/ThemeContext";
 import { useState } from "react";
 import { Bar, BarChart, CartesianGrid, Cell, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useDashboardOverview } from "../hooks/useDashboardOverview";
@@ -24,25 +25,26 @@ function formatCurrency(value: number): string {
 
 /** Bar chart card showing billed, cancelled and other order values per region. */
 function RegionalBarChart() {
+  const inkColor = useTheme().theme === "dark" ? "#f1f5f9" : "#041627";
   const { loading, error, ordersByRegion } = useDashboardOverview();
   const [hoveredBar, setHoveredBar] = useState<HoveredRegionalBar | null>(null);
   const hoveredRegion = hoveredBar ? ordersByRegion[hoveredBar.regionIndex] : undefined;
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-card flex flex-col h-[400px]">
-      <h3 className="text-xl font-semibold text-[#041627]">Situação dos Pedidos por Região</h3>
-      <p className="text-xs text-[#8192a7] mt-1 mb-4">Valores em reais</p>
+    <div className="bg-card p-6 rounded-xl shadow-card flex flex-col h-[400px]">
+      <h3 className="text-xl font-semibold text-fg-strong">Situação dos Pedidos por Região</h3>
+      <p className="text-xs text-fg-subtle mt-1 mb-4">Valores em reais</p>
 
-      {error && <p className="flex-1 flex items-center justify-center text-sm text-[#ba1a1a]">{error}</p>}
+      {error && <p className="flex-1 flex items-center justify-center text-sm text-danger-fg">{error}</p>}
 
       {!error && loading && (
         <div className="flex-1 flex items-center animate-pulse">
-          <div className="w-full h-56 bg-[#eceef0] rounded-lg" />
+          <div className="w-full h-56 bg-surface-2 rounded-lg" />
         </div>
       )}
 
       {!error && !loading && ordersByRegion.length === 0 && (
-        <p className="flex-1 flex items-center justify-center text-sm text-[#8192a7]">
+        <p className="flex-1 flex items-center justify-center text-sm text-fg-subtle">
           Nenhum dado disponível por região.
         </p>
       )}
@@ -87,7 +89,7 @@ function RegionalBarChart() {
                     const series = SERIES.find(({ key }) => key === item.dataKey);
                     const value = Number(item.value ?? 0);
                     return (
-                      <div className="rounded-lg bg-[#041627] px-3 py-2 text-white shadow-lg">
+                      <div className="rounded-lg bg-ink-solid px-3 py-2 text-white shadow-lg">
                         <p className="text-xs font-bold mb-1">{label}</p>
                         <p className="text-[11px] flex items-center gap-2">
                           <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: item.color }} />
@@ -113,7 +115,7 @@ function RegionalBarChart() {
                         <Cell
                           key={region.region}
                           fillOpacity={hoveredBar && !selected ? 0.35 : 1}
-                          stroke={selected ? "#041627" : "transparent"}
+                          stroke={selected ? inkColor : "transparent"}
                           strokeWidth={selected ? 2 : 0}
                         />
                       );
@@ -126,7 +128,7 @@ function RegionalBarChart() {
         </div>
       )}
 
-      <div className="mt-4 pt-4 border-t border-[#e6e8ea] flex flex-wrap gap-x-5 gap-y-2">
+      <div className="mt-4 pt-4 border-t border-line flex flex-wrap gap-x-5 gap-y-2">
         {SERIES.map((series) => (
           <div key={series.key} className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: series.color }} />

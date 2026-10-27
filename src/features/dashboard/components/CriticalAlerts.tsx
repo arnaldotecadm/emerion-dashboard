@@ -33,8 +33,8 @@ const ALERTS: AlertItem[] = [
 /** Bottom section listing critical system alerts requiring action. */
 function CriticalAlerts() {
   return (
-    <section className="bg-[#e0e3e5] p-6 rounded-xl border border-[#c4c6cd]">
-      <div className="flex items-center gap-2 mb-4 text-[#ba1a1a]">
+    <section className="bg-surface-3 p-6 rounded-xl border border-line-strong">
+      <div className="flex items-center gap-2 mb-4 text-danger-fg">
         <span className="material-symbols-outlined">report</span>
         <h3 className="text-xl font-semibold">Alertas Críticos do Sistema</h3>
       </div>
@@ -42,21 +42,21 @@ function CriticalAlerts() {
         {ALERTS.map((alert) => (
           <div
             key={alert.title}
-            className={`bg-white p-4 rounded-lg flex gap-4 border ${
-              alert.severity === "error" ? "border-[#ba1a1a]/20" : "border-[#e6e8ea]"
+            className={`bg-card p-4 rounded-lg flex gap-4 border ${
+              alert.severity === "error" ? "border-danger-fg/20" : "border-line"
             }`}
           >
             <div
               className={`w-10 h-10 rounded flex items-center justify-center shrink-0 ${
-                alert.severity === "error" ? "bg-[#ffdad6] text-[#ba1a1a]" : "bg-[#eceef0] text-[#44474c]"
+                alert.severity === "error" ? "bg-danger-soft text-danger-fg" : "bg-surface-2 text-fg-muted"
               }`}
             >
               <span className="material-symbols-outlined">{alert.icon}</span>
             </div>
             <div>
-              <h4 className="text-sm font-bold text-[#041627]">{alert.title}</h4>
-              <p className="text-xs text-[#44474c]">{alert.description}</p>
-              <a className="text-[#006397] text-[10px] font-bold mt-2 inline-block" href="#">
+              <h4 className="text-sm font-bold text-fg-strong">{alert.title}</h4>
+              <p className="text-xs text-fg-muted">{alert.description}</p>
+              <a className="text-accent text-[10px] font-bold mt-2 inline-block" href="#">
                 {alert.ctaLabel}
               </a>
             </div>

@@ -28,7 +28,7 @@ function EmerionBrandLogo({
     <div className="flex items-center gap-3 sm:gap-4 select-none">
       <div className="relative shrink-0">
         <div className="absolute -inset-1 rounded-2xl bg-emerald-500/15 blur-md" />
-        <div className={`${styles.emblem} relative rounded-xl sm:rounded-2xl border border-emerald-200 bg-gradient-to-b from-white via-emerald-50 to-emerald-100 p-1.5 sm:p-2 shadow-md shadow-emerald-900/10`}>
+        <div className={`${styles.emblem} relative rounded-xl sm:rounded-2xl border border-emerald-200 bg-gradient-to-b from-card via-emerald-50 to-emerald-100 p-1.5 sm:p-2 shadow-md shadow-emerald-900/10`}>
           <svg
             viewBox="0 0 100 100"
             className="h-full w-full"

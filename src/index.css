@@ -37,11 +37,7 @@
   --color-neutral-800: #1f2937;
   --color-neutral-900: #111827;
 
-  /* Surfaces (page/card backgrounds), matching the Stitch surface tokens. */
-  --color-canvas: #f7f9fb;
   --color-surface-1: #f2f4f6;
-  --color-surface-2: #eceef0;
-  --color-surface-3: #e6e8ea;
 
   /* Text and outlines pulled from the on-surface / outline tokens. */
   --color-muted: #44474c;
@@ -53,11 +49,184 @@
   --color-danger: #ba1a1a;
   --color-danger-bg: #ffdad6;
   --color-danger-ink: #93000a;
-
-  /* Shared elevation for cards and floating popovers/menus throughout the app. */
-  --shadow-card: 0px 4px 12px rgba(26, 43, 60, 0.05);
-  --shadow-popover: 0px 8px 24px rgba(26, 43, 60, 0.15);
 }
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Semantic, theme-aware tokens; values swap under `.dark` on <html>. */
+@theme inline {
+  --color-canvas: var(--app-canvas);
+  --color-card: var(--app-card);
+  --color-surface-2: var(--app-surface-2);
+  --color-surface-3: var(--app-surface-3);
+  --color-line: var(--app-line);
+  --color-line-soft: var(--app-line-soft);
+  --color-line-strong: var(--app-line-strong);
+  --color-fg: var(--app-fg);
+  --color-fg-strong: var(--app-fg-strong);
+  --color-fg-muted: var(--app-fg-muted);
+  --color-fg-subtle: var(--app-fg-subtle);
+  --color-fg-faint: var(--app-fg-faint);
+  --color-accent: var(--app-accent);
+  --color-accent-solid: var(--app-accent-solid);
+  --color-accent-solid-hover: var(--app-accent-solid-hover);
+  --color-accent-soft: var(--app-accent-soft);
+  --color-accent-tint: var(--app-accent-tint);
+  --color-ink-solid: var(--app-ink-solid);
+  --color-ink-2: var(--app-ink-2);
+  --color-ink-3: var(--app-ink-3);
+  --color-sidebar: var(--app-sidebar);
+  --color-danger-fg: var(--app-danger-fg);
+  --color-danger-ink: var(--app-danger-ink);
+  --color-danger-soft: var(--app-danger-soft);
+  --color-danger-line: var(--app-danger-line);
+  --color-danger-solid: var(--app-danger-solid);
+  --shadow-card: var(--app-shadow-card);
+  --shadow-popover: var(--app-shadow-popover);
+}
+
+:root {
+  --app-canvas: #f7f9fb;
+  --app-card: #ffffff;
+  --app-surface-2: #eceef0;
+  --app-surface-3: #e0e3e5;
+  --app-line: #e6e8ea;
+  --app-line-soft: #eceef0;
+  --app-line-strong: #c4c6cd;
+  --app-fg: #191c1e;
+  --app-fg-strong: #041627;
+  --app-fg-muted: #44474c;
+  --app-fg-subtle: #8192a7;
+  --app-fg-faint: #c4c6cd;
+  --app-accent: #006397;
+  --app-accent-solid: #006397;
+  --app-accent-solid-hover: #004d7a;
+  --app-accent-soft: #cce5ff;
+  --app-accent-tint: #e3f2fa;
+  --app-ink-solid: #041627;
+  --app-ink-2: #1a2b3c;
+  --app-ink-3: #34475a;
+  --app-sidebar: #041627;
+  --app-danger-fg: #ba1a1a;
+  --app-danger-ink: #93000a;
+  --app-danger-soft: #ffdad6;
+  --app-danger-line: #ffb4ab;
+  --app-danger-solid: #ba1a1a;
+  --app-shadow-card: 0px 4px 12px rgba(26, 43, 60, 0.05);
+  --app-shadow-popover: 0px 8px 24px rgba(26, 43, 60, 0.15);
+}
+
+.dark {
+  color-scheme: dark;
+  --app-canvas: #0a121d;
+  --app-card: #111c2a;
+  --app-surface-2: #1a2738;
+  --app-surface-3: #223146;
+  --app-line: #223044;
+  --app-line-soft: #1b2738;
+  --app-line-strong: #34465e;
+  --app-fg: #dbe3ec;
+  --app-fg-strong: #f1f5f9;
+  --app-fg-muted: #b3bfcd;
+  --app-fg-subtle: #8a9bb1;
+  --app-fg-faint: #4a5b72;
+  --app-accent: #5cb6ee;
+  --app-accent-solid: #0a74b0;
+  --app-accent-solid-hover: #0b86cc;
+  --app-accent-soft: #123a5a;
+  --app-accent-tint: #0f2c44;
+  --app-ink-solid: #24354c;
+  --app-ink-2: #2c4058;
+  --app-ink-3: #3a5170;
+  --app-sidebar: #060d17;
+  --app-danger-fg: #ff8f85;
+  --app-danger-ink: #ffb4ab;
+  --app-danger-soft: #3d1618;
+  --app-danger-line: #6e2a2a;
+  --app-danger-solid: #c62828;
+  --app-shadow-card: 0px 4px 12px rgba(0, 0, 0, 0.35);
+  --app-shadow-popover: 0px 8px 24px rgba(0, 0, 0, 0.55);
+
+  --color-slate-50: #0f1826;
+  --color-slate-100: #172234;
+  --color-slate-200: #243246;
+  --color-slate-300: #34465e;
+  --color-slate-400: #6b7c93;
+  --color-slate-500: #94a3b8;
+  --color-slate-600: #a9b5c5;
+  --color-slate-700: #c7d1dd;
+  --color-slate-800: #e2e8f0;
+  --color-slate-900: #f1f5f9;
+  --color-slate-950: #f8fafc;
+}
+
+.dark {
+  --color-emerald-50: color-mix(in oklab, var(--color-emerald-500) 12%, transparent);
+  --color-emerald-100: color-mix(in oklab, var(--color-emerald-500) 20%, transparent);
+  --color-emerald-200: color-mix(in oklab, var(--color-emerald-500) 32%, transparent);
+  --color-emerald-700: color-mix(in oklab, var(--color-emerald-500) 65%, white);
+  --color-emerald-800: color-mix(in oklab, var(--color-emerald-500) 50%, white);
+  --color-red-50: color-mix(in oklab, var(--color-red-500) 14%, transparent);
+  --color-red-100: color-mix(in oklab, var(--color-red-500) 22%, transparent);
+  --color-red-700: color-mix(in oklab, var(--color-red-500) 65%, white);
+  --color-red-800: color-mix(in oklab, var(--color-red-500) 50%, white);
+  --color-amber-50: color-mix(in oklab, var(--color-amber-500) 12%, transparent);
+  --color-amber-100: color-mix(in oklab, var(--color-amber-500) 20%, transparent);
+  --color-amber-700: color-mix(in oklab, var(--color-amber-500) 65%, white);
+  --color-amber-800: color-mix(in oklab, var(--color-amber-500) 50%, white);
+  --color-blue-50: color-mix(in oklab, var(--color-blue-500) 14%, transparent);
+  --color-blue-100: color-mix(in oklab, var(--color-blue-500) 22%, transparent);
+  --color-blue-700: color-mix(in oklab, var(--color-blue-500) 60%, white);
+  --color-blue-800: color-mix(in oklab, var(--color-blue-500) 45%, white);
+  --color-orange-100: color-mix(in oklab, var(--color-orange-500) 22%, transparent);
+  --color-orange-700: color-mix(in oklab, var(--color-orange-500) 65%, white);
+  --color-yellow-800: color-mix(in oklab, var(--color-yellow-500) 55%, white);
+  --color-primary-800: #92ccff;
+  --color-primary-50: #123a5a;
+  --color-purple-800: color-mix(in oklab, var(--color-purple-500) 50%, white);
+  --color-purple-50: color-mix(in oklab, var(--color-purple-500) 14%, transparent);
+  --color-purple-100: color-mix(in oklab, var(--color-purple-500) 22%, transparent);
+  --color-rose-50: color-mix(in oklab, var(--color-rose-500) 14%, transparent);
+  --color-rose-100: color-mix(in oklab, var(--color-rose-500) 22%, transparent);
+  --color-teal-50: color-mix(in oklab, var(--color-teal-500) 14%, transparent);
+  --color-teal-100: color-mix(in oklab, var(--color-teal-500) 22%, transparent);
+  --color-sky-50: color-mix(in oklab, var(--color-sky-500) 14%, transparent);
+  --color-sky-100: color-mix(in oklab, var(--color-sky-500) 22%, transparent);
+  --color-indigo-50: color-mix(in oklab, var(--color-indigo-500) 14%, transparent);
+  --color-indigo-100: color-mix(in oklab, var(--color-indigo-500) 22%, transparent);
+  --color-yellow-50: color-mix(in oklab, var(--color-yellow-500) 14%, transparent);
+  --color-yellow-100: color-mix(in oklab, var(--color-yellow-500) 22%, transparent);
+  --color-orange-50: color-mix(in oklab, var(--color-orange-500) 14%, transparent);
+  --color-orange-100: color-mix(in oklab, var(--color-orange-500) 22%, transparent);
+}
+
+/* Recharts draws with SVG attributes; CSS overrides them in dark mode. */
+.dark .recharts-cartesian-grid line { stroke: var(--app-line); }
+.dark .recharts-cartesian-axis-tick text,
+.dark .recharts-cartesian-axis-tick-value { fill: var(--app-fg-muted); }
+.dark .recharts-tooltip-cursor { fill: var(--app-surface-2); stroke: var(--app-fg-subtle); }
+.dark .recharts-bar-background-rectangle path,
+.dark path.recharts-bar-background-rectangle,
+.dark .recharts-radial-bar-background-sector { fill: var(--app-surface-2); }
+.dark .recharts-dot { stroke: var(--app-card); }
+.dark .recharts-default-tooltip {
+  background-color: var(--app-card) !important;
+  border-color: var(--app-line) !important;
+  color: var(--app-fg);
+}
+
+@keyframes login-rise {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes theme-spin {
+  from { transform: rotate(-90deg) scale(0.6); opacity: 0; }
+  to { transform: rotate(0) scale(1); opacity: 1; }
+}
+
+html { transition: background-color 0.2s ease; }
+body { background-color: var(--app-canvas); }
 
 .material-symbols-outlined {
   font-family: "Material Symbols Outlined";
@@ -79,6 +248,11 @@
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+.dark .glass-card {
+  background: rgba(17, 28, 42, 0.8);
+  border-color: rgba(52, 70, 94, 0.5);
 }
 
 :root {

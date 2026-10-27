@@ -13,7 +13,7 @@ function ClientesPage() {
     <div>
       <Link
         to="/dashboard"
-        className="text-[#44474c] hover:text-[#006397] flex items-center gap-2 text-sm font-medium transition-colors mb-6 w-fit"
+        className="text-fg-muted hover:text-accent flex items-center gap-2 text-sm font-medium transition-colors mb-6 w-fit"
       >
         <span className="material-symbols-outlined text-base">arrow_back</span>
         Voltar para Visão Geral
@@ -22,11 +22,11 @@ function ClientesPage() {
       {/* Page intro: title + quick actions */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div>
-          <h2 className="text-3xl font-bold text-[#041627] tracking-tight">Clientes</h2>
-          <p className="text-[#8192a7] mt-1">Gerencie sua base de clientes e monitore a saúde da receita.</p>
+          <h2 className="text-3xl font-bold text-fg-strong tracking-tight">Clientes</h2>
+          <p className="text-fg-subtle mt-1">Gerencie sua base de clientes e monitore a saúde da receita.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="px-5 py-2.5 bg-white border border-[#e6e8ea] text-[#44474c] font-semibold rounded-xl hover:bg-[#f7f9fb] transition-all flex items-center gap-2">
+          <button className="px-5 py-2.5 bg-card border border-line text-fg-muted font-semibold rounded-xl hover:bg-canvas transition-all flex items-center gap-2">
             <span className="material-symbols-outlined text-lg">filter_list</span>
             Filtros Avançados
           </button>
@@ -38,12 +38,12 @@ function ClientesPage() {
         {CLIENTES_KPIS.map((kpi) => (
           <div
             key={kpi.label}
-            className="bg-white p-6 rounded-xl shadow-card border border-[#e6e8ea] flex flex-col"
+            className="bg-card p-6 rounded-xl shadow-card border border-line flex flex-col"
           >
             <div className="flex justify-between items-start mb-4">
               <div
                 className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0 ${
-                  kpi.danger ? "bg-[#ffdad6] text-[#ba1a1a]" : "bg-[#006397]/10 text-[#006397]"
+                  kpi.danger ? "bg-danger-soft text-danger-fg" : "bg-accent-solid/10 text-accent"
                 }`}
               >
                 <span className="material-symbols-outlined text-2xl">{kpi.icon}</span>
@@ -51,7 +51,7 @@ function ClientesPage() {
               {kpi.trend && (
                 <span
                   className={`px-2 py-1 text-xs font-bold rounded-md flex items-center ${
-                    kpi.trend.positive ? "bg-emerald-50 text-emerald-600" : "bg-[#ffdad6] text-[#93000a]"
+                    kpi.trend.positive ? "bg-emerald-50 text-emerald-600" : "bg-danger-soft text-danger-ink"
                   }`}
                 >
                   <span className="material-symbols-outlined text-xs mr-1">
@@ -61,16 +61,16 @@ function ClientesPage() {
                 </span>
               )}
               {kpi.danger && !kpi.trend && (
-                <span className="text-[#ba1a1a] font-bold text-xs uppercase tracking-tighter">Crítico</span>
+                <span className="text-danger-fg font-bold text-xs uppercase tracking-tighter">Crítico</span>
               )}
             </div>
-            <h3 className="text-[#8192a7] font-medium text-sm">{kpi.label}</h3>
-            <p className={`text-2xl font-bold mt-1 ${kpi.danger ? "text-[#ba1a1a]" : "text-[#041627]"}`}>
+            <h3 className="text-fg-subtle font-medium text-sm">{kpi.label}</h3>
+            <p className={`text-2xl font-bold mt-1 ${kpi.danger ? "text-danger-fg" : "text-fg-strong"}`}>
               {kpi.value}
             </p>
-            <p className="text-xs text-[#8192a7] mt-2">{kpi.hint}</p>
+            <p className="text-xs text-fg-subtle mt-2">{kpi.hint}</p>
             {kpi.progress !== undefined && (
-              <div className="w-full bg-[#eceef0] h-2 rounded-full mt-3">
+              <div className="w-full bg-surface-2 h-2 rounded-full mt-3">
                 <div className="bg-orange-500 h-full rounded-full" style={{ width: `${kpi.progress}%` }} />
               </div>
             )}

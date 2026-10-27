@@ -1,3 +1,4 @@
+import { useTheme } from "../../../theme/ThemeContext";
 import { Bar, BarChart, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 interface Channel {
@@ -15,11 +16,12 @@ const CHANNELS: Channel[] = [
 
 /** Breakdown of sales share by channel (e-commerce, field reps, telesales, partners). */
 function SalesChannelPanel() {
+  const inkColor = useTheme().theme === "dark" ? "#f1f5f9" : "#041627";
   return (
-    <div className="bg-white rounded-xl shadow-card border border-[#e6e8ea] p-6 h-full">
+    <div className="bg-card rounded-xl shadow-card border border-line p-6 h-full">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="font-bold text-[#041627]">Vendas por Canal</h3>
-        <span className="material-symbols-outlined text-[#8192a7]">pie_chart</span>
+        <h3 className="font-bold text-fg-strong">Vendas por Canal</h3>
+        <span className="material-symbols-outlined text-fg-subtle">pie_chart</span>
       </div>
       <div className="h-[208px] min-w-0">
         <ResponsiveContainer width="100%" height="100%">
@@ -45,7 +47,7 @@ function SalesChannelPanel() {
                 const channel = payload?.[0]?.payload as Channel | undefined;
                 if (!active || !channel) return null;
                 return (
-                  <div className="rounded-lg bg-[#041627] px-3 py-2 text-white shadow-lg">
+                  <div className="rounded-lg bg-ink-solid px-3 py-2 text-white shadow-lg">
                     <p className="text-xs font-bold">{channel.label}</p>
                     <p className="text-[11px]">{channel.pct}%</p>
                   </div>
@@ -58,7 +60,7 @@ function SalesChannelPanel() {
               barSize={8}
               radius={4}
               background={{ fill: "#eceef0", radius: 4 }}
-              activeBar={{ stroke: "#041627", strokeWidth: 1 }}
+              activeBar={{ stroke: inkColor, strokeWidth: 1 }}
               isAnimationActive
             >
               {CHANNELS.map((channel) => (
@@ -68,7 +70,7 @@ function SalesChannelPanel() {
                 dataKey="pct"
                 position="right"
                 formatter={(value) => `${value}%`}
-                style={{ fill: "#041627", fontSize: 12, fontWeight: 700 }}
+                style={{ fill: inkColor, fontSize: 12, fontWeight: 700 }}
               />
             </Bar>
           </BarChart>

@@ -16,6 +16,7 @@ import {
   Activity,
 } from 'lucide-react';
 import EmerionBrandLogo from '../components/EmerionBrandLogo';
+import ThemeToggle from '../theme/ThemeToggle';
 import cockpitImg from '../assets/images/cockpit_executivo_1787559312663.jpg';
 import comercialImg from '../assets/images/inteligencia_comercial_1787559324051.jpg';
 import financeiroImg from '../assets/images/saude_financeira_1787559337003.jpg';
@@ -125,7 +126,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
       )}
 
       {/* Top Header Imponente */}
-      <header className="sticky top-0 z-40 relative border-b border-slate-200 bg-white/95 px-6 py-3.5 shadow-md shadow-slate-900/5 backdrop-blur-xl transition-all sm:px-10 sm:py-4">
+      <header className="sticky top-0 z-40 relative border-b border-slate-200 bg-card/95 px-6 py-3.5 shadow-md shadow-slate-900/5 backdrop-blur-xl transition-all sm:px-10 sm:py-4">
         <div className="pointer-events-none absolute left-0 right-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500/70 to-transparent" />
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <button
@@ -141,6 +142,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
           </button>
 
           <div className="flex items-center space-x-3 sm:space-x-5">
+            <ThemeToggle />
             <button
               onClick={onSignIn}
               className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 px-5 py-2.5 text-xs font-black uppercase tracking-wide text-white shadow-lg shadow-emerald-700/20 ring-1 ring-emerald-300/40 transition-all hover:scale-[1.02] hover:shadow-emerald-700/30 active:scale-[0.98] sm:text-sm"
@@ -163,7 +165,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
 
             <div className="relative z-10 space-y-4">
               {/* Badge Factual */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-emerald-200 text-emerald-800 text-xs font-medium shadow-sm">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-card border border-emerald-200 text-emerald-800 text-xs font-medium shadow-sm">
                 <Network className="w-3.5 h-3.5" />
                 <span>Ferramenta de extração de dados conectável a qualquer sistema via API</span>
               </div>
@@ -191,7 +193,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
 
                 <a
                   href="#contato"
-                  className="px-5 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 font-semibold text-xs sm:text-sm transition"
+                  className="px-5 py-2.5 rounded-xl bg-card hover:bg-slate-100 text-slate-700 border border-slate-200 font-semibold text-xs sm:text-sm transition"
                 >
                   Solicitar Integração de Sistema
                 </a>
@@ -215,7 +217,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
                       className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
                         isActive
                           ? 'bg-emerald-600 text-white shadow-md shadow-emerald-700/20 font-bold'
-                          : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
+                          : 'bg-card text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200'
                       }`}
                     >
                       <Icon className="w-3.5 h-3.5" />
@@ -226,7 +228,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
               </div>
 
               {/* Moldura da Tela / Screenshot com Poucas Informações e Foco Visual */}
-              <div className="rounded-3xl bg-white border border-slate-200 p-4 sm:p-6 shadow-xl relative overflow-hidden">
+              <div className="rounded-3xl bg-card border border-slate-200 p-4 sm:p-6 shadow-xl relative overflow-hidden">
                 
                 {/* Header da Moldura com Informações Resumidas */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-4 border-b border-slate-200">
@@ -285,7 +287,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
                   </div>
                 ) : (
                   /* Card Especial: Módulo de Notas Fiscais (NF-e) que será adicionado em pouco tempo */
-                  <div className="aspect-video w-full rounded-2xl bg-gradient-to-tr from-slate-50 via-white to-emerald-50 border border-emerald-200 p-8 flex flex-col justify-between">
+                  <div className="aspect-video w-full rounded-2xl bg-gradient-to-tr from-slate-50 via-card to-emerald-50 border border-emerald-200 p-8 flex flex-col justify-between">
                     <div>
                       <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold uppercase tracking-wider mb-4">
                         <Receipt className="w-3.5 h-3.5" />
@@ -300,15 +302,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 text-xs font-mono">
-                      <div className="p-3 rounded-xl bg-white/80 border border-slate-200">
+                      <div className="p-3 rounded-xl bg-card/80 border border-slate-200">
                         <span className="text-slate-500 block text-[10px]">Entradas vs Saídas</span>
                         <strong className="text-emerald-800">Margem Líquida Real</strong>
                       </div>
-                      <div className="p-3 rounded-xl bg-white/80 border border-slate-200">
+                      <div className="p-3 rounded-xl bg-card/80 border border-slate-200">
                         <span className="text-slate-500 block text-[10px]">Apuração de Impostos</span>
                         <strong className="text-cyan-400">ICMS-ST, DIFAL & IPI</strong>
                       </div>
-                      <div className="p-3 rounded-xl bg-white/80 border border-slate-200">
+                      <div className="p-3 rounded-xl bg-card/80 border border-slate-200">
                         <span className="text-slate-500 block text-[10px]">Validação SEFAZ</span>
                         <strong className="text-purple-400">Zero Divergência Fiscal</strong>
                       </div>
@@ -324,7 +326,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
           <section className="px-6 sm:px-10 max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               
-              <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
+              <div className="p-6 rounded-2xl bg-card border border-slate-200 shadow-sm space-y-2">
                 <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
                   <Database className="w-4 h-4" />
                 </div>
@@ -334,7 +336,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
                 </p>
               </div>
 
-              <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
+              <div className="p-6 rounded-2xl bg-card border border-slate-200 shadow-sm space-y-2">
                 <div className="w-9 h-9 rounded-xl bg-cyan-50 text-cyan-700 flex items-center justify-center font-bold">
                   <Activity className="w-4 h-4" />
                 </div>
@@ -344,7 +346,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
                 </p>
               </div>
 
-              <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-2">
+              <div className="p-6 rounded-2xl bg-card border border-slate-200 shadow-sm space-y-2">
                 <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold">
                   <Receipt className="w-4 h-4" />
                 </div>
@@ -359,7 +361,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
 
           {/* Área de Contato e Dúvidas Limpa */}
           <section id="contato" className="px-6 sm:px-10 max-w-6xl mx-auto pt-6">
-            <div className="p-8 sm:p-10 rounded-3xl bg-white border border-slate-200 shadow-xl">
+            <div className="p-8 sm:p-10 rounded-3xl bg-card border border-slate-200 shadow-xl">
               
               <div className="text-center max-w-xl mx-auto mb-6">
                 <span className="text-xs font-mono uppercase tracking-wider text-emerald-800 font-bold px-2.5 py-1 rounded bg-emerald-50 border border-emerald-200">
@@ -398,7 +400,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
                         placeholder="Seu nome"
                         value={contactName}
                         onChange={(e) => setContactName(e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-card border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
                       />
                     </div>
                     <div>
@@ -409,7 +411,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
                         placeholder="seuemail@empresa.com.br"
                         value={contactEmail}
                         onChange={(e) => setContactEmail(e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-card border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
                       />
                     </div>
                   </div>
@@ -421,7 +423,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
                       placeholder="Nome da empresa e sistema ERP utilizado"
                       value={contactCompany}
                       onChange={(e) => setContactCompany(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-card border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
                     />
                   </div>
 
@@ -432,7 +434,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
                       placeholder="Descreva observações ou parâmetros desejados..."
                       value={contactMessage}
                       onChange={(e) => setContactMessage(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-card border border-slate-300 text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-600"
                     />
                   </div>
 
@@ -458,7 +460,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
         </main>
 
       {/* Rodapé */}
-      <footer className="border-t border-slate-200 bg-white px-6 py-8 text-xs text-slate-500 sm:px-10">
+      <footer className="border-t border-slate-200 bg-card px-6 py-8 text-xs text-slate-500 sm:px-10">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <EmerionBrandLogo
             size="sm"

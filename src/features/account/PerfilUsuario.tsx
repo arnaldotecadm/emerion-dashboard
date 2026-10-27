@@ -193,7 +193,7 @@ function PerfilUsuario() {
         </p>
       </div>
 
-      <section className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="relative overflow-hidden rounded-2xl border border-slate-200 bg-card p-6 shadow-sm">
         <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
           <div className="group relative shrink-0">
             <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 text-3xl font-bold text-white shadow-md ring-4 ring-slate-100">
@@ -204,7 +204,7 @@ function PerfilUsuario() {
               title="Alterar foto de perfil"
               aria-label="Alterar foto de perfil"
               disabled
-              className="absolute bottom-2 right-3 flex h-9 w-9 cursor-not-allowed items-center justify-center rounded-full border-2 border-white bg-slate-900 p-0 text-white shadow-md"
+              className="absolute bottom-2 right-3 flex h-9 w-9 cursor-not-allowed items-center justify-center rounded-full border-2 border-card bg-ink-solid p-0 text-white shadow-md"
             >
               <Camera aria-hidden="true" className="block h-4 w-4 shrink-0" />
             </button>
@@ -298,7 +298,7 @@ function PerfilUsuario() {
 
       <form onSubmit={handleSave} className="space-y-6">
         {activeTab === "info" ? (
-          <section className="space-y-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <section className="space-y-5 rounded-2xl border border-slate-200 bg-card p-6 shadow-sm">
             <h3 className="flex items-center gap-2 text-sm font-bold text-slate-900">
               <User className="h-4 w-4 text-emerald-500" />
               <span>Dados Cadastrais</span>
@@ -385,7 +385,7 @@ function PerfilUsuario() {
             </div>
           </section>
         ) : (
-          <section className="space-y-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <section className="space-y-6 rounded-2xl border border-slate-200 bg-card p-6 shadow-sm">
             <div className="space-y-4">
               <h3 className="flex items-center gap-2 text-sm font-bold text-slate-900">
                 <Phone className="h-4 w-4 text-emerald-500" />

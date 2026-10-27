@@ -2,6 +2,7 @@ import { useLocation } from "react-router-dom";
 import UserMenu from "./UserMenu";
 import NotificationsMenu from "./NotificationsMenu";
 import HelpTip from "./HelpTip";
+import ThemeToggle from "../../../theme/ThemeToggle";
 import { useCustomer } from "../hooks/useCustomer";
 import { useNotification } from "../hooks/useNotification";
 
@@ -52,12 +53,13 @@ function TopBar({
 
   return (
     <header
-      className={`fixed left-0 right-0 top-0 z-40 flex h-16 items-center justify-between bg-[#f7f9fb] pr-6 shadow-card transition-[padding] duration-300 ${
+      className={`fixed left-0 right-0 top-0 z-40 flex h-16 items-center justify-between bg-canvas pr-6 shadow-card transition-[padding] duration-300 ${
         sidebarCollapsed ? "pl-20" : "pl-72"
       }`}
     >
-      <h1 className="text-2xl font-semibold text-[#041627]">{title}</h1>
+      <h1 className="text-2xl font-semibold text-fg-strong">{title}</h1>
       <div className="flex items-center gap-4">
+        <ThemeToggle />
         <NotificationsMenu />
         <HelpTip />
         <UserMenu userName={userName} userEmail={userEmail} userGroups={userGroups} onSignOut={onSignOut} />

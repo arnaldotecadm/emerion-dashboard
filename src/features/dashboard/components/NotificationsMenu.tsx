@@ -112,14 +112,14 @@ function NotificationsMenu() {
       <Tooltip label="Notificações">
         <button
           onClick={() => setOpen((prev) => !prev)}
-          className="relative p-2 text-[#44474c] hover:bg-[#eceef0] rounded-full transition-colors"
+          className="relative p-2 text-fg-muted hover:bg-surface-2 rounded-full transition-colors"
           aria-haspopup="menu"
           aria-expanded={open}
           aria-label="Notificações"
         >
           <span className="material-symbols-outlined">notifications</span>
           {unreadCount > 0 && (
-            <span className="absolute top-1 right-1 h-4 min-w-4 px-1 rounded-full bg-[#ba1a1a] text-white text-[9px] font-bold flex items-center justify-center">
+            <span className="absolute top-1 right-1 h-4 min-w-4 px-1 rounded-full bg-danger-solid text-white text-[9px] font-bold flex items-center justify-center">
               {unreadCount}
             </span>
           )}
@@ -129,22 +129,22 @@ function NotificationsMenu() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-popover border border-[#e6e8ea] overflow-hidden z-50"
+          className="absolute right-0 mt-2 w-80 bg-card rounded-xl shadow-popover border border-line overflow-hidden z-50"
         >
-          <div className="px-4 py-3 border-b border-[#eceef0] flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-[#041627]">Notificações</h3>
+          <div className="px-4 py-3 border-b border-line-soft flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-fg-strong">Notificações</h3>
             {unreadCount > 0 && (
-              <span className="text-[10px] font-bold uppercase tracking-wide text-[#006397] bg-[#cce5ff] px-2 py-0.5 rounded-full">
+              <span className="text-[10px] font-bold uppercase tracking-wide text-accent bg-accent-soft px-2 py-0.5 rounded-full">
                 {unreadCount} novas
               </span>
             )}
           </div>
-          <div className="max-h-96 overflow-y-auto divide-y divide-[#eceef0]">
-            {dismissError && <div className="px-4 py-2 text-xs text-[#ba1a1a]">{dismissError}</div>}
+          <div className="max-h-96 overflow-y-auto divide-y divide-line-soft">
+            {dismissError && <div className="px-4 py-2 text-xs text-danger-fg">{dismissError}</div>}
             {!hasAtLeastOneCategoryEnabled && (
-              <div className="p-4 text-center text-xs text-[#8192a7] space-y-2">
+              <div className="p-4 text-center text-xs text-fg-subtle space-y-2">
                 <p>Você desabilitou todos os tipos de notificações.</p>
-                <button onClick={goToSettings} className="text-xs font-semibold text-[#006397] hover:underline">
+                <button onClick={goToSettings} className="text-xs font-semibold text-accent hover:underline">
                   Ajustar preferências
                 </button>
               </div>
@@ -153,21 +153,21 @@ function NotificationsMenu() {
               hasAtLeastOneCategoryEnabled &&
               Array.from({ length: 4 }).map((_, index) => (
                 <div key={index} className="px-4 py-3 flex gap-3 animate-pulse">
-                  <div className="w-9 h-9 rounded-full bg-[#eceef0] shrink-0" />
+                  <div className="w-9 h-9 rounded-full bg-surface-2 shrink-0" />
                   <div className="min-w-0 flex-1 space-y-2">
-                    <div className="h-3.5 w-40 bg-[#eceef0] rounded-full" />
-                    <div className="h-3 w-full bg-[#eceef0] rounded-full" />
-                    <div className="h-2.5 w-24 bg-[#eceef0] rounded-full" />
+                    <div className="h-3.5 w-40 bg-surface-2 rounded-full" />
+                    <div className="h-3 w-full bg-surface-2 rounded-full" />
+                    <div className="h-2.5 w-24 bg-surface-2 rounded-full" />
                   </div>
                 </div>
               ))}
 
             {!notificationsLoading && notificationsError && (
               <div className="p-4 text-center">
-                <p className="text-xs text-[#ba1a1a] mb-2">{notificationsError}</p>
+                <p className="text-xs text-danger-fg mb-2">{notificationsError}</p>
                 <button
                   onClick={refetchNotifications}
-                  className="text-xs font-semibold text-[#006397] hover:underline"
+                  className="text-xs font-semibold text-accent hover:underline"
                 >
                   Tentar novamente
                 </button>
@@ -175,7 +175,7 @@ function NotificationsMenu() {
             )}
 
             {!notificationsLoading && !notificationsError && notifications.length === 0 && (
-              <div className="p-4 text-center text-xs text-[#8192a7]">Nenhuma notificação encontrada.</div>
+              <div className="p-4 text-center text-xs text-fg-subtle">Nenhuma notificação encontrada.</div>
             )}
 
             {!notificationsLoading &&
@@ -187,27 +187,27 @@ function NotificationsMenu() {
                     <button
                       type="button"
                       onClick={() => goToNotification(item.id)}
-                      className="flex-1 flex gap-3 px-4 py-3 text-left hover:bg-[#f7f9fb] transition-colors"
+                      className="flex-1 flex gap-3 px-4 py-3 text-left hover:bg-canvas transition-colors"
                     >
                       <span
                         className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
-                          unread ? "bg-[#cce5ff] text-[#006397]" : "bg-[#eceef0] text-[#44474c]"
+                          unread ? "bg-accent-soft text-accent" : "bg-surface-2 text-fg-muted"
                         }`}
                       >
                         <span className="material-symbols-outlined text-lg">{iconByCategory(item.category)}</span>
                       </span>
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-[#191c1e] truncate">{item.name}</p>
-                        <p className="text-xs text-[#44474c] line-clamp-2">{item.description}</p>
-                        <p className="text-[10px] text-[#8192a7] mt-1">{formatDateTime(item.createdAt)}</p>
+                        <p className="text-sm font-semibold text-fg truncate">{item.name}</p>
+                        <p className="text-xs text-fg-muted line-clamp-2">{item.description}</p>
+                        <p className="text-[10px] text-fg-subtle mt-1">{formatDateTime(item.createdAt)}</p>
                       </div>
-                      {unread && <span className="w-2 h-2 rounded-full bg-[#006397] shrink-0 mt-1.5" aria-hidden />}
+                      {unread && <span className="w-2 h-2 rounded-full bg-accent-solid shrink-0 mt-1.5" aria-hidden />}
                     </button>
                     <button
                       type="button"
                       onClick={() => handleDismiss(item.id)}
                       disabled={item.status === "DISMISSED" || dismissingId === item.id}
-                      className="mx-2 mt-3 p-1.5 rounded-md text-[#8192a7] hover:text-[#93000a] hover:bg-[#ffdad6] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                      className="mx-2 mt-3 p-1.5 rounded-md text-fg-subtle hover:text-danger-ink hover:bg-danger-soft disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                       aria-label={item.status === "DISMISSED" ? "Notificação dispensada" : "Dispensar notificação"}
                       title={item.status === "DISMISSED" ? "Notificação dispensada" : "Dispensar notificação"}
                     >
@@ -219,11 +219,11 @@ function NotificationsMenu() {
                 );
               })}
           </div>
-          <div className="px-4 py-2.5 border-t border-[#eceef0] text-center">
+          <div className="px-4 py-2.5 border-t border-line-soft text-center">
             <button
               onClick={goToNotificationsList}
               disabled={!hasAtLeastOneCategoryEnabled}
-              className="text-xs font-semibold text-[#006397] hover:underline disabled:text-[#8192a7] disabled:no-underline"
+              className="text-xs font-semibold text-accent hover:underline disabled:text-fg-subtle disabled:no-underline"
             >
               Ver todas as notificações
             </button>

@@ -9,7 +9,7 @@ import type { Notification } from "../types/notification";
 const BackLink = () => (
   <Link
     to="/dashboard/notificacoes"
-    className="text-[#44474c] hover:text-[#006397] flex items-center gap-2 text-sm font-medium transition-colors mb-6 w-fit"
+    className="text-fg-muted hover:text-accent flex items-center gap-2 text-sm font-medium transition-colors mb-6 w-fit"
   >
     <span className="material-symbols-outlined text-base">arrow_back</span>
     Voltar para Notificações
@@ -88,10 +88,10 @@ function NotificationDetailPage() {
     return (
       <div>
         <BackLink />
-        <div className="bg-white rounded-xl shadow-card border border-[#e6e8ea] p-10 flex flex-col items-center text-center gap-3">
-          <span className="material-symbols-outlined text-4xl text-[#ba1a1a]">error</span>
-          <h3 className="text-lg font-bold text-[#041627]">Não foi possível carregar a notificação</h3>
-          <p className="text-sm text-[#8192a7]">{error}</p>
+        <div className="bg-card rounded-xl shadow-card border border-line p-10 flex flex-col items-center text-center gap-3">
+          <span className="material-symbols-outlined text-4xl text-danger-fg">error</span>
+          <h3 className="text-lg font-bold text-fg-strong">Não foi possível carregar a notificação</h3>
+          <p className="text-sm text-fg-subtle">{error}</p>
         </div>
       </div>
     );
@@ -101,22 +101,22 @@ function NotificationDetailPage() {
     return (
       <div>
         <BackLink />
-        <div className="bg-white rounded-xl shadow-card border border-[#e6e8ea] p-8 max-w-2xl animate-pulse">
+        <div className="bg-card rounded-xl shadow-card border border-line p-8 max-w-2xl animate-pulse">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-11 h-11 rounded-full bg-[#eceef0]" />
+            <div className="w-11 h-11 rounded-full bg-surface-2" />
             <div className="space-y-2">
-              <div className="h-3 w-24 bg-[#eceef0] rounded-full" />
-              <div className="h-3 w-20 bg-[#eceef0] rounded-full" />
+              <div className="h-3 w-24 bg-surface-2 rounded-full" />
+              <div className="h-3 w-20 bg-surface-2 rounded-full" />
             </div>
           </div>
-          <div className="h-6 w-64 bg-[#eceef0] rounded-full mb-3" />
-          <div className="h-3 w-40 bg-[#eceef0] rounded-full mb-6" />
-          <div className="h-16 w-full bg-[#eceef0] rounded-lg mb-6" />
-          <div className="grid grid-cols-3 gap-4 pt-4 border-t border-[#eceef0]">
+          <div className="h-6 w-64 bg-surface-2 rounded-full mb-3" />
+          <div className="h-3 w-40 bg-surface-2 rounded-full mb-6" />
+          <div className="h-16 w-full bg-surface-2 rounded-lg mb-6" />
+          <div className="grid grid-cols-3 gap-4 pt-4 border-t border-line-soft">
             {Array.from({ length: 3 }).map((_, index) => (
               <div key={index} className="space-y-2">
-                <div className="h-2.5 w-20 bg-[#eceef0] rounded-full" />
-                <div className="h-3 w-24 bg-[#eceef0] rounded-full" />
+                <div className="h-2.5 w-20 bg-surface-2 rounded-full" />
+                <div className="h-3 w-24 bg-surface-2 rounded-full" />
               </div>
             ))}
           </div>
@@ -130,68 +130,68 @@ function NotificationDetailPage() {
   return (
     <div>
       <BackLink />
-      <div className="bg-white rounded-xl shadow-card border border-[#e6e8ea] p-8 max-w-3xl">
+      <div className="bg-card rounded-xl shadow-card border border-line p-8 max-w-3xl">
         <div className="flex items-center gap-3 mb-4">
           <span
             className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${
-              unread ? "bg-[#cce5ff] text-[#006397]" : "bg-[#eceef0] text-[#44474c]"
+              unread ? "bg-accent-soft text-accent" : "bg-surface-2 text-fg-muted"
             }`}
           >
             <span className="material-symbols-outlined text-xl">{iconByCategory(notification.category)}</span>
           </span>
           <div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#006397] bg-[#cce5ff] px-2 py-0.5 rounded-full">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-accent bg-accent-soft px-2 py-0.5 rounded-full">
               {categoryLabel(notification.category)}
             </span>
             {unread && (
-              <span className="ml-2 text-[10px] font-bold uppercase tracking-wider text-[#ba1a1a] bg-[#fddede] px-2 py-0.5 rounded-full">
+              <span className="ml-2 text-[10px] font-bold uppercase tracking-wider text-danger-fg bg-danger-soft px-2 py-0.5 rounded-full">
                 Não lida
               </span>
             )}
           </div>
         </div>
 
-        <h2 className="text-xl font-semibold text-[#041627] mb-1">{notification.name}</h2>
-        <p className="text-xs text-[#8192a7] mb-6">{formatDateTime(notification.createdAt)}</p>
+        <h2 className="text-xl font-semibold text-fg-strong mb-1">{notification.name}</h2>
+        <p className="text-xs text-fg-subtle mb-6">{formatDateTime(notification.createdAt)}</p>
 
-        <p className="text-sm text-[#44474c] leading-relaxed mb-8">{notification.description}</p>
+        <p className="text-sm text-fg-muted leading-relaxed mb-8">{notification.description}</p>
 
-        {updatingRead && <p className="text-xs text-[#8192a7] mb-6">Marcando como lida...</p>}
+        {updatingRead && <p className="text-xs text-fg-subtle mb-6">Marcando como lida...</p>}
 
         {mutationError && (
-          <p className="text-xs text-[#ba1a1a] mb-4" role="alert">
+          <p className="text-xs text-danger-fg mb-4" role="alert">
             {mutationError}
           </p>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 border-t border-[#eceef0] pt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 border-t border-line-soft pt-4">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#8192a7]">Status</p>
-            <p className="text-sm text-[#191c1e]">{notification.status}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-fg-subtle">Status</p>
+            <p className="text-sm text-fg">{notification.status}</p>
           </div>
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#8192a7]">Prioridade</p>
-            <p className="text-sm text-[#191c1e]">{notification.priority}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-fg-subtle">Prioridade</p>
+            <p className="text-sm text-fg">{notification.priority}</p>
           </div>
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#8192a7]">Categoria</p>
-            <p className="text-sm text-[#191c1e]">{categoryLabel(notification.category)}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-fg-subtle">Categoria</p>
+            <p className="text-sm text-fg">{categoryLabel(notification.category)}</p>
           </div>
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#8192a7]">Referência</p>
-            <p className="text-sm text-[#191c1e]">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-fg-subtle">Referência</p>
+            <p className="text-sm text-fg">
               {notification.referenceType && notification.referenceId
                 ? `${notification.referenceType} #${notification.referenceId}`
                 : notification.referenceType ?? notification.referenceId ?? "—"}
             </p>
           </div>
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#8192a7]">Lida em</p>
-            <p className="text-sm text-[#191c1e]">{formatDateTime(notification.readAt)}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-fg-subtle">Lida em</p>
+            <p className="text-sm text-fg">{formatDateTime(notification.readAt)}</p>
           </div>
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#8192a7]">Dispensada em</p>
-            <p className="text-sm text-[#191c1e]">{formatDateTime(notification.dismissedAt)}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-fg-subtle">Dispensada em</p>
+            <p className="text-sm text-fg">{formatDateTime(notification.dismissedAt)}</p>
           </div>
         </div>
       </div>

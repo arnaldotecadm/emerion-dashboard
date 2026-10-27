@@ -149,34 +149,34 @@ function VendasTotaisPage() {
     <div>
       <Link
         to="/dashboard"
-        className="text-[#44474c] hover:text-[#006397] flex items-center gap-2 text-sm font-medium transition-colors mb-6 w-fit"
+        className="text-fg-muted hover:text-accent flex items-center gap-2 text-sm font-medium transition-colors mb-6 w-fit"
       >
         <span className="material-symbols-outlined text-base">arrow_back</span>
         Voltar para Visão Geral
       </Link>
 
       {/* Header card: total value, comparison badge, granularity toggle, trend chart */}
-      <section className="bg-white rounded-xl p-8 shadow-card border border-[#e6e8ea] mb-8">
+      <section className="bg-card rounded-xl p-8 shadow-card border border-line mb-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <span className="text-[#8192a7] text-sm font-medium mb-1 block uppercase tracking-wider">
+            <span className="text-fg-subtle text-sm font-medium mb-1 block uppercase tracking-wider">
               Total de Vendas · {summaryIntervalLabel}
             </span>
             <div className="flex items-baseline gap-4 flex-wrap">
-              <h3 className="text-4xl font-extrabold text-[#041627] tracking-tight">
+              <h3 className="text-4xl font-extrabold text-fg-strong tracking-tight">
                 {loading ? "Carregando..." : error ? "Indisponível" : formatCurrency(totalSales)}
               </h3>
             </div>
-            {error && <p role="alert" className="text-[#ba1a1a] text-xs mt-2">{error}</p>}
+            {error && <p role="alert" className="text-danger-fg text-xs mt-2">{error}</p>}
             {!error && !loading && (
-              <p className="text-[#8192a7] text-xs mt-2 italic">
+              <p className="text-fg-subtle text-xs mt-2 italic">
                 {granularity === "mes" ? "Agrupado por mês" : "Agrupado por trimestre"}
               </p>
             )}
           </div>
 
           <div className="flex flex-wrap items-center justify-end gap-3">
-            <div className="flex rounded-lg bg-[#eceef0] p-1" aria-label="Filtrar período dos dados de vendas">
+            <div className="flex rounded-lg bg-surface-2 p-1" aria-label="Filtrar período dos dados de vendas">
               {YEAR_FILTER_OPTIONS.map((option) => (
                 <button
                   key={option.value}
@@ -188,15 +188,15 @@ function VendasTotaisPage() {
                   }}
                   className={`rounded-md px-3 py-2 text-xs font-semibold transition-all ${
                     summaryYearFilter === option.value
-                      ? "bg-white text-[#006397] shadow-sm"
-                      : "text-[#44474c] hover:text-[#041627]"
+                      ? "bg-card text-accent shadow-sm"
+                      : "text-fg-muted hover:text-fg-strong"
                   }`}
                 >
                   {option.label}
                 </button>
               ))}
             </div>
-            <div className="bg-[#eceef0] p-1 rounded-lg flex items-center">
+            <div className="bg-surface-2 p-1 rounded-lg flex items-center">
               {GRANULARITY_OPTIONS.map((option) => (
                 <button
                   key={option.value}
@@ -208,8 +208,8 @@ function VendasTotaisPage() {
                   }}
                   className={`px-4 py-2 text-sm font-semibold rounded-md transition-all ${
                     granularity === option.value
-                      ? "bg-white text-[#006397] shadow-sm"
-                      : "text-[#44474c] hover:text-[#041627]"
+                      ? "bg-card text-accent shadow-sm"
+                      : "text-fg-muted hover:text-fg-strong"
                   }`}
                 >
                   {option.label}
@@ -263,7 +263,7 @@ function VendasTotaisPage() {
                     const point = payload?.[0]?.payload as SalesPeriodPoint | undefined;
                     if (!active || !point) return null;
                     return (
-                      <div className="rounded-lg bg-[#041627] px-3 py-2 text-white shadow-lg">
+                      <div className="rounded-lg bg-ink-solid px-3 py-2 text-white shadow-lg">
                         <p className="text-xs font-bold mb-1">{point.label}</p>
                         <p className="text-[11px]">Vendas: {formatCurrency(point.amountSold)}</p>
                         <p className="text-[11px]">Pedidos: {point.orderCount.toLocaleString("pt-BR")}</p>
@@ -289,13 +289,13 @@ function VendasTotaisPage() {
             </ResponsiveContainer>
           )}
           {!error && !loading && summaryPeriods.length === 0 && (
-            <p className="flex h-full items-center justify-center text-sm text-[#8192a7]">
+            <p className="flex h-full items-center justify-center text-sm text-fg-subtle">
               Nenhuma venda encontrada entre {summaryIntervalLabel}.
             </p>
           )}
-          {loading && <div className="h-full animate-pulse rounded-lg bg-[#eceef0]" />}
+          {loading && <div className="h-full animate-pulse rounded-lg bg-surface-2" />}
           {error && (
-            <p role="alert" className="flex h-full items-center justify-center text-sm text-[#ba1a1a]">
+            <p role="alert" className="flex h-full items-center justify-center text-sm text-danger-fg">
               Não foi possível carregar o gráfico de vendas.
             </p>
           )}
@@ -303,8 +303,8 @@ function VendasTotaisPage() {
 
         <div className="flex gap-4 mt-6">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-[#006397] rounded-full" />
-            <span className="text-xs text-[#44474c]">Vendas</span>
+            <div className="w-3 h-3 bg-accent-solid rounded-full" />
+            <span className="text-xs text-fg-muted">Vendas</span>
           </div>
         </div>
       </section>
@@ -357,11 +357,11 @@ function VendasTotaisPage() {
       </section>
 
       {/* Data table */}
-      <section className="bg-white rounded-xl shadow-card border border-[#e6e8ea] overflow-hidden">
-        <div className="px-8 py-6 border-b border-[#e6e8ea] flex flex-wrap justify-between items-center gap-4">
-          <h3 className="font-bold text-[#041627]">Detalhamento por Período</h3>
+      <section className="bg-card rounded-xl shadow-card border border-line overflow-hidden">
+        <div className="px-8 py-6 border-b border-line flex flex-wrap justify-between items-center gap-4">
+          <h3 className="font-bold text-fg-strong">Detalhamento por Período</h3>
           <div className="flex flex-wrap items-center justify-end gap-2">
-            <div className="flex rounded-lg bg-[#eceef0] p-1" aria-label="Filtrar tabela por ano">
+            <div className="flex rounded-lg bg-surface-2 p-1" aria-label="Filtrar tabela por ano">
               {YEAR_FILTER_OPTIONS.map((option) => (
                 <button
                   key={option.value}
@@ -370,8 +370,8 @@ function VendasTotaisPage() {
                   onClick={() => setTableYearFilter(option.value)}
                   className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${
                     tableYearFilter === option.value
-                      ? "bg-white text-[#006397] shadow-sm"
-                      : "text-[#44474c] hover:text-[#041627]"
+                      ? "bg-card text-accent shadow-sm"
+                      : "text-fg-muted hover:text-fg-strong"
                   }`}
                 >
                   {option.label}
@@ -381,14 +381,14 @@ function VendasTotaisPage() {
             <button
               type="button"
               aria-label="Baixar detalhamento"
-              className="p-2 text-[#8192a7] hover:text-[#44474c] border border-[#e6e8ea] rounded-md transition-colors"
+              className="p-2 text-fg-subtle hover:text-fg-muted border border-line rounded-md transition-colors"
             >
               <span className="material-symbols-outlined text-sm">download</span>
             </button>
             <button
               type="button"
               aria-label="Imprimir detalhamento"
-              className="p-2 text-[#8192a7] hover:text-[#44474c] border border-[#e6e8ea] rounded-md transition-colors"
+              className="p-2 text-fg-subtle hover:text-fg-muted border border-line rounded-md transition-colors"
             >
               <span className="material-symbols-outlined text-sm">print</span>
             </button>
@@ -396,23 +396,23 @@ function VendasTotaisPage() {
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
-            <thead className="bg-[#f7f9fb]">
+            <thead className="bg-canvas">
               <tr>
-                <th className="px-8 py-4 text-[11px] font-bold text-[#8192a7] uppercase tracking-widest">
+                <th className="px-8 py-4 text-[11px] font-bold text-fg-subtle uppercase tracking-widest">
                   Data / Período
                 </th>
-                <th className="px-8 py-4 text-[11px] font-bold text-[#8192a7] uppercase tracking-widest">
+                <th className="px-8 py-4 text-[11px] font-bold text-fg-subtle uppercase tracking-widest">
                   Valor Vendido
                 </th>
-                <th className="px-8 py-4 text-[11px] font-bold text-[#8192a7] uppercase tracking-widest text-center">
+                <th className="px-8 py-4 text-[11px] font-bold text-fg-subtle uppercase tracking-widest text-center">
                   Nº de Pedidos
                 </th>
-                <th className="px-8 py-4 text-[11px] font-bold text-[#8192a7] uppercase tracking-widest text-right">
+                <th className="px-8 py-4 text-[11px] font-bold text-fg-subtle uppercase tracking-widest text-right">
                   Variação %
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#e6e8ea]">
+            <tbody className="divide-y divide-line">
               {tablePeriods.map((period) => {
                 const previousPeriod = tableGroupedPeriods.find(({ key }) => key === period.previousKey);
                 const variation =
@@ -427,24 +427,24 @@ function VendasTotaisPage() {
                     key={period.key}
                     className={
                       isBest
-                        ? "bg-[#006397]/5 hover:bg-[#006397]/10 transition-colors border-l-4 border-[#006397]"
-                        : "hover:bg-[#f7f9fb] transition-colors"
+                        ? "bg-accent-solid/5 hover:bg-accent-solid/10 transition-colors border-l-4 border-accent"
+                        : "hover:bg-canvas transition-colors"
                     }
                   >
-                    <td className="px-8 py-4 font-semibold text-[#041627]">
+                    <td className="px-8 py-4 font-semibold text-fg-strong">
                       {period.label}
-                      {isBest && <span className="text-[#006397] font-normal"> (Pico)</span>}
+                      {isBest && <span className="text-accent font-normal"> (Pico)</span>}
                     </td>
-                    <td className={`px-8 py-4 font-bold ${isBest ? "text-[#006397]" : "text-[#041627]"}`}>
+                    <td className={`px-8 py-4 font-bold ${isBest ? "text-accent" : "text-fg-strong"}`}>
                       {formatCurrency(period.amountSold)}
                     </td>
-                    <td className="px-8 py-4 text-center text-[#44474c]">
+                    <td className="px-8 py-4 text-center text-fg-muted">
                       {period.orderCount.toLocaleString("pt-BR")}
                     </td>
                     <td className="px-8 py-4 text-right">
                       <span
                         className={`font-bold flex items-center justify-end gap-1 ${
-                          isFlat ? "text-[#8192a7] font-medium" : isUp ? "text-emerald-600" : "text-[#ba1a1a]"
+                          isFlat ? "text-fg-subtle font-medium" : isUp ? "text-emerald-600" : "text-danger-fg"
                         }`}
                       >
                         <span className="material-symbols-outlined text-xs">
@@ -458,21 +458,21 @@ function VendasTotaisPage() {
               })}
               {!loading && !error && tablePeriods.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-8 py-8 text-center text-sm text-[#8192a7]">
+                  <td colSpan={4} className="px-8 py-8 text-center text-sm text-fg-subtle">
                     Nenhuma venda encontrada entre {tableIntervalLabel}.
                   </td>
                 </tr>
               )}
               {loading && (
                 <tr>
-                  <td colSpan={4} className="px-8 py-8 text-center text-sm text-[#8192a7]">
+                  <td colSpan={4} className="px-8 py-8 text-center text-sm text-fg-subtle">
                     Carregando detalhamento...
                   </td>
                 </tr>
               )}
               {error && (
                 <tr>
-                  <td colSpan={4} className="px-8 py-8 text-center text-sm text-[#ba1a1a]">
+                  <td colSpan={4} className="px-8 py-8 text-center text-sm text-danger-fg">
                     Não foi possível carregar o detalhamento por período.
                   </td>
                 </tr>
@@ -480,8 +480,8 @@ function VendasTotaisPage() {
             </tbody>
           </table>
         </div>
-        <div className="px-8 py-4 bg-[#f7f9fb] border-t border-[#e6e8ea]">
-          <p className="text-xs text-[#8192a7]">
+        <div className="px-8 py-4 bg-canvas border-t border-line">
+          <p className="text-xs text-fg-subtle">
             {loading
               ? "Carregando dados..."
               : `Intervalo: ${tableIntervalLabel}. Exibindo ${tablePeriods.length} períodos agrupados por ${
@@ -496,14 +496,14 @@ function VendasTotaisPage() {
 
 function StatCard({ icon, label, value, hint }: { icon: string; label: string; value: string; hint: string }) {
   return (
-    <div className="bg-white p-6 rounded-xl shadow-card border border-[#e6e8ea] flex items-start gap-4 hover:border-[#c4c6cd] transition-all group">
-      <div className="w-12 h-12 bg-[#006397]/10 rounded-lg flex items-center justify-center text-[#006397] group-hover:bg-[#006397] group-hover:text-white transition-colors shrink-0">
+    <div className="bg-card p-6 rounded-xl shadow-card border border-line flex items-start gap-4 hover:border-line-strong transition-all group">
+      <div className="w-12 h-12 bg-accent-solid/10 rounded-lg flex items-center justify-center text-accent group-hover:bg-accent-solid group-hover:text-white transition-colors shrink-0">
         <span className="material-symbols-outlined">{icon}</span>
       </div>
       <div>
-        <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">{label}</p>
-        <h4 className="text-xl font-bold text-[#041627]">{value}</h4>
-        <p className="text-[10px] text-[#8192a7] mt-1">{hint}</p>
+        <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">{label}</p>
+        <h4 className="text-xl font-bold text-fg-strong">{value}</h4>
+        <p className="text-[10px] text-fg-subtle mt-1">{hint}</p>
       </div>
     </div>
   );

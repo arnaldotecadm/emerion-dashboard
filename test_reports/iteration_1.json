@@ -1,0 +1,33 @@
+{
+  "summary": "Frontend-only E2E test (Playwright, desktop 1920 + mobile 390) of the custom Cognito login page plus a dark-theme check on the dashboard pages. Every requested auth flow passes: all 3 landing CTAs ('Acessar Painel', 'Acessar o Painel', 'Acessar Painel do Usuário') go to /login with no Cognito Hosted UI redirect; the theme toggle sets the html.dark class and saves 'emerion-theme' in localStorage across reloads; a wrong password shows signin-error 'E-mail ou senha incorretos.'; the correct password lands on /dashboard and the session survives a reload; a logged-in visit to /login redirects to /dashboard; sign out goes to /login, clears all Cognito localStorage keys, and /dashboard then shows the landing page; the password visibility toggle works; the forgot-password form opens and its back link works; sending a code for the fake email nobody-test-123@example.com moves on to the code step (the pool hides whether a user exists). The confirm/reset step was NOT submitted, on purpose. Mobile 390: brand panel hidden, no horizontal scroll, form usable. Dark dashboard pages (/dashboard, /cockpit, /clientes, /conta, /pedidos) are mostly readable. Two dark-mode contrast problems were found (details under design_issues). HTTP 502 widget errors are expected, since there is no ERP backend.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Landing page '/' in dark theme", "issues": ["The header uses hardcoded light classes (bg-white/95, border-slate-200, LandingPage.tsx line 128), so in dark mode it stays a white bar while the 'EMERION' title text turns white and becomes invisible. The 'Web' badge also washes out. The header needs dark: variants or theme tokens (bg-card/border-line). Several other bg-white/80 + border-slate-200 boxes (around lines 303-311) are probably affected too."]},
+      {"screen": "/dashboard/conta (PerfilUsuario) in dark theme", "issues": ["The group badges 'COMPANY' / 'ADMIN' show light-blue text on a near-white background, so contrast is very low."]},
+      {"screen": "Login FormMessage success notice", "issues": ["The success style is hardcoded (border-emerald-200 bg-emerald-50 text-emerald-800, fields.tsx line 71), so the 'Senha alterada com sucesso' notice will be a bright light box in dark mode. It should use theme tokens or dark: variants. Not exercised live, because that would have required a real password reset."]},
+      {"screen": "Landing page", "issues": ["There is no theme toggle on the landing page, so a user can only switch theme from /login or the dashboard. Minor, and possibly intended."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Make the LandingPage header (and its other bg-white/slate-200 boxes) theme-aware, so the EMERION title is visible in dark mode",
+    "Fix the contrast of the COMPANY/ADMIN group badges on /dashboard/conta in dark mode",
+    "Make the FormMessage success variant theme-aware (fields.tsx)"
+  ],
+  "critical_code_review_comments": [
+    "In ForgotPasswordForm, a UserNotFoundException maps to 'E-mail ou senha incorretos.', which reads oddly in the reset flow. Not hit with the current pool, which hides whether a user exists, but a reset-specific message would be better.",
+    "signOut() is local-only (no globalSignOut), so the refresh token stays valid on the server until it expires. Acceptable, but worth noting.",
+    "The sign-out button in SideNav had no data-testid. I added data-testid='sidenav-signout-button'.",
+    "In Vite dev, a cold deep-link load briefly shows a white page before the CSS is injected, even in dark mode. Setting the html/body background inline in index.html would avoid the flash. One early screenshot of /dashboard/conta and /dashboard/pedidos caught this blank state; on retest both pages rendered correctly."
+  ],
+  "updated_files": ["/app/src/features/dashboard/components/SideNav.tsx (added data-testid='sidenav-signout-button')"],
+  "success_rate": {"backend": "N/A", "frontend": "100% of requested functional flows; 2 dark-mode contrast issues"},
+  "test_credentials": "/app/memory/test_credentials.md is missing. Used the credentials from the review request: arnaldotecadm@hotmail.com / @ADMINar98",
+  "seed_data_creation": "none",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Vite dev server on port 3000 behind the preview URL. The dashboard never reaches networkidle (502 polling), so use wait_until='domcontentloaded'. Only 1 wrong-password attempt was made. The forgot flow was tested only with a fake email, up to the code step. Sign out selector: [data-testid=sidenav-signout-button]."
+}

@@ -20,10 +20,10 @@ function DashboardYearsFilter() {
   return (
     <section className="flex flex-wrap items-center justify-between gap-3 mb-6">
       <div>
-        <h2 className="text-sm font-semibold text-[#041627]">Período dos dados</h2>
-        <p className="text-xs text-[#8192a7]">Filtro aplicado a toda a visão geral</p>
+        <h2 className="text-sm font-semibold text-fg-strong">Período dos dados</h2>
+        <p className="text-xs text-fg-subtle">Filtro aplicado a toda a visão geral</p>
       </div>
-      <div className="flex bg-white rounded-lg border border-[#e6e8ea] p-1" aria-label="Filtrar dados por ano">
+      <div className="flex bg-card rounded-lg border border-line p-1" aria-label="Filtrar dados por ano">
         {YEARS_OPTIONS.map((option) => (
           <button
             key={option.label}
@@ -32,8 +32,8 @@ function DashboardYearsFilter() {
             onClick={() => setYears(option.value)}
             className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
               years === option.value
-                ? "bg-[#006397] text-white shadow-sm"
-                : "text-[#44474c] hover:text-[#041627]"
+                ? "bg-accent-solid text-white shadow-sm"
+                : "text-fg-muted hover:text-fg-strong"
             }`}
           >
             {option.label}

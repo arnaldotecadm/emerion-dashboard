@@ -26,14 +26,14 @@ function CockpitExecutivoPage() {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-3xl font-bold tracking-tight text-[#041627]">Cockpit Executivo & Funil de Vendas</h2>
-        <p className="mt-1 text-[#8192a7]">Visão executiva de faturamento, conversão e pedidos em andamento.</p>
+        <h2 className="text-3xl font-bold tracking-tight text-fg-strong">Cockpit Executivo & Funil de Vendas</h2>
+        <p className="mt-1 text-fg-subtle">Visão executiva de faturamento, conversão e pedidos em andamento.</p>
       </div>
 
       {toastMessage && (
         <div
           role="status"
-          className="fixed bottom-5 right-5 z-50 flex items-center gap-3 rounded-xl border border-emerald-500 bg-[#041627] px-4 py-3 text-white shadow-xl"
+          className="fixed bottom-5 right-5 z-50 flex items-center gap-3 rounded-xl border border-emerald-500 bg-ink-solid px-4 py-3 text-white shadow-xl"
         >
           <span className="material-symbols-outlined text-emerald-400">check_circle</span>
           <span className="text-xs font-medium">{toastMessage}</span>
@@ -62,7 +62,7 @@ function CockpitExecutivoPage() {
           icon="bolt"
           iconClass="bg-amber-50 text-amber-600"
           badge="64 Pedidos"
-          badgeClass="bg-[#eceef0] text-[#44474c]"
+          badgeClass="bg-surface-2 text-fg-muted"
           title="Pipeline Faturamento"
           value="R$ 450.000"
         />
@@ -78,8 +78,8 @@ function CockpitExecutivoPage() {
       </section>
 
       <section className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <article className="rounded-2xl border border-[#e6e8ea] bg-white p-6 shadow-card lg:col-span-2">
-          <h3 className="mb-6 flex items-center gap-2 text-base font-bold text-[#041627]">
+        <article className="rounded-2xl border border-line bg-card p-6 shadow-card lg:col-span-2">
+          <h3 className="mb-6 flex items-center gap-2 text-base font-bold text-fg-strong">
             <span className="material-symbols-outlined text-lg text-emerald-600">trending_up</span>
             Funil de Conversão de Vendas
           </h3>
@@ -89,10 +89,10 @@ function CockpitExecutivoPage() {
                 key={stage.label}
                 className={`relative mx-auto flex h-16 items-center justify-between overflow-hidden px-4 text-white shadow-sm sm:px-6 ${
                   index === 0
-                    ? "w-full rounded-t-xl bg-[#041627]"
+                    ? "w-full rounded-t-xl bg-ink-solid"
                     : index === 1
-                      ? "w-[82%] rounded-md bg-[#1a2b3c]"
-                      : "w-[64%] rounded-b-xl bg-[#34475a]"
+                      ? "w-[82%] rounded-md bg-ink-2"
+                      : "w-[64%] rounded-b-xl bg-ink-3"
                 }`}
               >
                 <span className={`absolute inset-0 opacity-20 ${stage.color}`} />
@@ -102,17 +102,17 @@ function CockpitExecutivoPage() {
                 <span className="relative z-10 text-xs font-bold sm:text-base">{stage.value}</span>
               </div>
             ))}
-            <div className="mt-2 border-t border-[#eceef0] pt-4 text-center">
-              <div className="text-xs font-bold uppercase tracking-widest text-[#8192a7]">
+            <div className="mt-2 border-t border-line-soft pt-4 text-center">
+              <div className="text-xs font-bold uppercase tracking-widest text-fg-subtle">
                 Eficiência de Conversão Total
               </div>
-              <div className="mt-0.5 text-3xl font-black text-[#041627]">32.6%</div>
+              <div className="mt-0.5 text-3xl font-black text-fg-strong">32.6%</div>
             </div>
           </div>
         </article>
 
-        <article className="flex flex-col rounded-2xl border border-[#e6e8ea] bg-white p-6 shadow-card">
-          <h3 className="mb-4 flex items-center gap-2 text-base font-bold text-[#041627]">
+        <article className="flex flex-col rounded-2xl border border-line bg-card p-6 shadow-card">
+          <h3 className="mb-4 flex items-center gap-2 text-base font-bold text-fg-strong">
             <span className="material-symbols-outlined text-lg text-amber-500">gpp_maybe</span>
             Alertas de Atenção
           </h3>
@@ -139,23 +139,23 @@ function CockpitExecutivoPage() {
         </article>
       </section>
 
-      <section className="rounded-2xl border border-[#e6e8ea] bg-white p-6 shadow-card">
+      <section className="rounded-2xl border border-line bg-card p-6 shadow-card">
         <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
           <div>
-            <h3 className="flex items-center gap-2 text-base font-bold text-[#041627]">
+            <h3 className="flex items-center gap-2 text-base font-bold text-fg-strong">
               <span className="material-symbols-outlined text-lg text-emerald-600">bolt</span>
               Pedidos em Andamento & Status Delphi
             </h3>
-            <p className="mt-0.5 text-xs text-[#8192a7]">
+            <p className="mt-0.5 text-xs text-fg-subtle">
               Pedidos sincronizados em tempo real com controle de margem e cobrança
             </p>
           </div>
-          <div className="text-xs font-medium text-[#8192a7]">Mostrando {cockpitOrders.length} pedidos</div>
+          <div className="text-xs font-medium text-fg-subtle">Mostrando {cockpitOrders.length} pedidos</div>
         </div>
 
-        <div className="overflow-x-auto rounded-xl border border-[#e6e8ea]">
+        <div className="overflow-x-auto rounded-xl border border-line">
           <table className="w-full min-w-[900px] text-left text-xs">
-            <thead className="border-b border-[#e6e8ea] bg-[#f7f9fb] text-[#44474c]">
+            <thead className="border-b border-line bg-canvas text-fg-muted">
               <tr>
                 <th className="px-4 py-3 font-semibold">Nº Pedido</th>
                 <th className="px-4 py-3 font-semibold">Cliente</th>
@@ -166,7 +166,7 @@ function CockpitExecutivoPage() {
                 <th className="px-4 py-3 text-right font-semibold">Ação</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#eceef0]">
+            <tbody className="divide-y divide-line-soft">
               {cockpitOrders.map((order) => (
                 <tr
                   key={order.id}
@@ -178,17 +178,17 @@ function CockpitExecutivoPage() {
                       setSelectedOrder(order);
                     }
                   }}
-                  className="cursor-pointer transition hover:bg-[#f7f9fb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#006397]"
+                  className="cursor-pointer transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
                 >
-                  <td className="px-4 py-3 font-mono font-bold text-[#006397]">{order.id}</td>
-                  <td className="max-w-xs truncate px-4 py-3 font-medium text-[#191c1e]">
+                  <td className="px-4 py-3 font-mono font-bold text-accent">{order.id}</td>
+                  <td className="max-w-xs truncate px-4 py-3 font-medium text-fg">
                     {order.client}
-                    <div className="text-[10px] text-[#8192a7]">
+                    <div className="text-[10px] text-fg-subtle">
                       {order.city} - {order.uf}
                     </div>
                   </td>
-                  <td className="px-4 py-3 font-medium text-[#44474c]">{order.seller}</td>
-                  <td className="px-4 py-3 text-right font-mono font-bold text-[#191c1e]">
+                  <td className="px-4 py-3 font-medium text-fg-muted">{order.seller}</td>
+                  <td className="px-4 py-3 text-right font-mono font-bold text-fg">
                     {currencyFormatter.format(order.totalValue)}
                   </td>
                   <td className="px-4 py-3 text-right font-semibold">
@@ -219,7 +219,7 @@ function CockpitExecutivoPage() {
                       <button
                         type="button"
                         onClick={() => setSelectedOrder(order)}
-                        className="rounded-lg p-1.5 text-[#8192a7] transition hover:bg-[#eceef0] hover:text-[#006397]"
+                        className="rounded-lg p-1.5 text-fg-subtle transition hover:bg-surface-2 hover:text-accent"
                         aria-label={`Ver detalhes do pedido ${order.id}`}
                       >
                         <span className="material-symbols-outlined text-lg">chevron_right</span>
@@ -247,7 +247,7 @@ function MetricCard({
   badgeClass,
   title,
   value,
-  valueClass = "text-[#041627]",
+  valueClass = "text-fg-strong",
 }: {
   icon: string;
   iconClass: string;
@@ -258,12 +258,12 @@ function MetricCard({
   valueClass?: string;
 }) {
   return (
-    <article className="rounded-2xl border border-[#e6e8ea] bg-white p-6 shadow-card">
+    <article className="rounded-2xl border border-line bg-card p-6 shadow-card">
       <div className="mb-4 flex items-start justify-between gap-2">
         <span className={`material-symbols-outlined rounded-lg p-2 ${iconClass}`}>{icon}</span>
         <span className={`rounded px-2 py-1 text-xs font-bold ${badgeClass}`}>{badge}</span>
       </div>
-      <div className="text-sm font-medium text-[#8192a7]">{title}</div>
+      <div className="text-sm font-medium text-fg-subtle">{title}</div>
       <div className={`mt-1 text-2xl font-bold ${valueClass}`}>{value}</div>
     </article>
   );
@@ -289,8 +289,8 @@ function AlertCard({
   return (
     <div className={`rounded-r-lg border-l-4 p-4 ${colorClasses}`}>
       <div className="mb-1 text-xs font-bold uppercase">{title}</div>
-      <div className="text-sm font-semibold text-[#191c1e]">{primary}</div>
-      <div className="mt-1 text-xs text-[#8192a7]">{detail}</div>
+      <div className="text-sm font-semibold text-fg">{primary}</div>
+      <div className="mt-1 text-xs text-fg-subtle">{detail}</div>
     </div>
   );
 }
@@ -318,7 +318,7 @@ function OrderDetailsDrawer({ order, onClose }: { order: CockpitOrder; onClose: 
     <div className="fixed inset-0 z-[60] flex justify-end" role="presentation">
       <button
         type="button"
-        className="absolute inset-0 bg-[#041627]/50"
+        className="absolute inset-0 bg-ink-solid/50"
         onClick={onClose}
         aria-label="Fechar detalhes do pedido"
       />
@@ -326,26 +326,26 @@ function OrderDetailsDrawer({ order, onClose }: { order: CockpitOrder; onClose: 
         role="dialog"
         aria-modal="true"
         aria-labelledby="cockpit-order-title"
-        className="relative z-10 flex h-full w-full max-w-2xl flex-col border-l border-[#e6e8ea] bg-white shadow-2xl"
+        className="relative z-10 flex h-full w-full max-w-2xl flex-col border-l border-line bg-card shadow-2xl"
       >
-        <header className="flex items-center justify-between border-b border-[#e6e8ea] bg-[#f7f9fb] p-5">
+        <header className="flex items-center justify-between border-b border-line bg-canvas p-5">
           <div>
             <div className="mb-1 flex items-center gap-2">
-              <span className="rounded border border-[#cce5ff] bg-[#eaf4fa] px-2 py-0.5 font-mono text-xs font-bold text-[#006397]">
+              <span className="rounded border border-accent-soft bg-accent-tint px-2 py-0.5 font-mono text-xs font-bold text-accent">
                 {order.id}
               </span>
               <span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${statusClass(order.status)}`}>
                 {order.status}
               </span>
             </div>
-            <h2 id="cockpit-order-title" className="text-base font-bold text-[#041627]">
+            <h2 id="cockpit-order-title" className="text-base font-bold text-fg-strong">
               {order.client}
             </h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-[#8192a7] transition hover:bg-[#eceef0] hover:text-[#041627]"
+            className="rounded-lg p-2 text-fg-subtle transition hover:bg-surface-2 hover:text-fg-strong"
             aria-label="Fechar"
           >
             <span className="material-symbols-outlined">close</span>
@@ -360,8 +360,8 @@ function OrderDetailsDrawer({ order, onClose }: { order: CockpitOrder; onClose: 
             <DetailMetric title="Vendedor" value={order.seller} />
           </div>
 
-          <section className="space-y-3 rounded-xl border border-[#e6e8ea] p-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[#8192a7]">
+          <section className="space-y-3 rounded-xl border border-line p-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-fg-subtle">
               Dados do Cliente & Logística
             </h3>
             <div className="grid grid-cols-1 gap-3 text-xs sm:grid-cols-2">
@@ -373,12 +373,12 @@ function OrderDetailsDrawer({ order, onClose }: { order: CockpitOrder; onClose: 
           </section>
 
           <section className="space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[#8192a7]">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-fg-subtle">
               Itens do Pedido ({order.itemsCount} itens)
             </h3>
-            <div className="overflow-x-auto rounded-xl border border-[#e6e8ea]">
+            <div className="overflow-x-auto rounded-xl border border-line">
               <table className="w-full min-w-[440px] text-left text-xs">
-                <thead className="bg-[#f7f9fb] text-[#44474c]">
+                <thead className="bg-canvas text-fg-muted">
                   <tr>
                     <th className="px-3 py-2.5 font-semibold">Produto</th>
                     <th className="px-3 py-2.5 text-right font-semibold">Qtd</th>
@@ -386,7 +386,7 @@ function OrderDetailsDrawer({ order, onClose }: { order: CockpitOrder; onClose: 
                     <th className="px-3 py-2.5 text-right font-semibold">Total</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#eceef0]">
+                <tbody className="divide-y divide-line-soft">
                   {items.map((item) => (
                     <tr key={item.name}>
                       <td className="px-3 py-2.5 font-medium">{item.name}</td>
@@ -402,27 +402,27 @@ function OrderDetailsDrawer({ order, onClose }: { order: CockpitOrder; onClose: 
             </div>
           </section>
 
-          <div className="space-y-2 rounded-xl border border-[#e6e8ea] bg-[#f7f9fb] p-4 text-xs">
-            <div className="flex justify-between text-[#44474c]">
+          <div className="space-y-2 rounded-xl border border-line bg-canvas p-4 text-xs">
+            <div className="flex justify-between text-fg-muted">
               <span>Subtotal dos Produtos:</span>
               <span className="font-semibold">{currencyFormatter.format(order.totalValue * 0.92)}</span>
             </div>
-            <div className="flex justify-between text-[#44474c]">
+            <div className="flex justify-between text-fg-muted">
               <span>ICMS ST / Tributos Retidos (NF-e):</span>
               <span className="font-semibold">{currencyFormatter.format(order.totalValue * 0.08)}</span>
             </div>
-            <div className="flex justify-between border-t border-[#e6e8ea] pt-2 text-sm font-bold text-[#041627]">
+            <div className="flex justify-between border-t border-line pt-2 text-sm font-bold text-fg-strong">
               <span>Total com Impostos:</span>
-              <span className="text-[#006397]">{currencyFormatter.format(order.totalValue)}</span>
+              <span className="text-accent">{currencyFormatter.format(order.totalValue)}</span>
             </div>
           </div>
         </div>
 
-        <footer className="flex justify-end border-t border-[#e6e8ea] p-4">
+        <footer className="flex justify-end border-t border-line p-4">
           <button
             type="button"
             onClick={onClose}
-            className="flex items-center gap-1.5 rounded-xl bg-[#006397] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#004d7a]"
+            className="flex items-center gap-1.5 rounded-xl bg-accent-solid px-4 py-2 text-xs font-semibold text-white transition hover:bg-accent-solid-hover"
           >
             <span className="material-symbols-outlined text-sm">check_circle</span>
             Liberar p/ Próxima Fase
@@ -435,9 +435,9 @@ function OrderDetailsDrawer({ order, onClose }: { order: CockpitOrder; onClose: 
 
 function DetailMetric({ title, value }: { title: string; value: string }) {
   return (
-    <div className="min-w-0 rounded-xl border border-[#e6e8ea] bg-[#f7f9fb] p-3">
-      <div className="text-[11px] font-medium text-[#8192a7]">{title}</div>
-      <div className="truncate text-sm font-bold text-[#041627]">{value}</div>
+    <div className="min-w-0 rounded-xl border border-line bg-canvas p-3">
+      <div className="text-[11px] font-medium text-fg-subtle">{title}</div>
+      <div className="truncate text-sm font-bold text-fg-strong">{value}</div>
     </div>
   );
 }
@@ -445,8 +445,8 @@ function DetailMetric({ title, value }: { title: string; value: string }) {
 function DetailField({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <span className="text-[#8192a7]">{label}: </span>
-      <span className="font-medium text-[#44474c]">{value}</span>
+      <span className="text-fg-subtle">{label}: </span>
+      <span className="font-medium text-fg-muted">{value}</span>
     </div>
   );
 }
