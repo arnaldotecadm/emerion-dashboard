@@ -16,6 +16,7 @@
         var t = localStorage.getItem("emerion-theme");
         if (t === "dark" || (!t && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
           document.documentElement.classList.add("dark");
+          document.documentElement.style.backgroundColor = "#0a121d";
         }
       })();
     </script>

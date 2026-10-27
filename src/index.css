@@ -182,6 +182,7 @@
   --color-orange-700: color-mix(in oklab, var(--color-orange-500) 65%, white);
   --color-yellow-800: color-mix(in oklab, var(--color-yellow-500) 55%, white);
   --color-primary-800: #92ccff;
+  --color-primary-50: #123a5a;
   --color-purple-800: color-mix(in oklab, var(--color-purple-500) 50%, white);
   --color-purple-50: color-mix(in oklab, var(--color-purple-500) 14%, transparent);
   --color-purple-100: color-mix(in oklab, var(--color-purple-500) 22%, transparent);

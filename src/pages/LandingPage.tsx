@@ -16,6 +16,7 @@ import {
   Activity,
 } from 'lucide-react';
 import EmerionBrandLogo from '../components/EmerionBrandLogo';
+import ThemeToggle from '../theme/ThemeToggle';
 import cockpitImg from '../assets/images/cockpit_executivo_1787559312663.jpg';
 import comercialImg from '../assets/images/inteligencia_comercial_1787559324051.jpg';
 import financeiroImg from '../assets/images/saude_financeira_1787559337003.jpg';
@@ -125,7 +126,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
       )}
 
       {/* Top Header Imponente */}
-      <header className="sticky top-0 z-40 relative border-b border-slate-200 bg-white/95 px-6 py-3.5 shadow-md shadow-slate-900/5 backdrop-blur-xl transition-all sm:px-10 sm:py-4">
+      <header className="sticky top-0 z-40 relative border-b border-slate-200 bg-card/95 px-6 py-3.5 shadow-md shadow-slate-900/5 backdrop-blur-xl transition-all sm:px-10 sm:py-4">
         <div className="pointer-events-none absolute left-0 right-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500/70 to-transparent" />
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <button
@@ -141,6 +142,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
           </button>
 
           <div className="flex items-center space-x-3 sm:space-x-5">
+            <ThemeToggle />
             <button
               onClick={onSignIn}
               className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 px-5 py-2.5 text-xs font-black uppercase tracking-wide text-white shadow-lg shadow-emerald-700/20 ring-1 ring-emerald-300/40 transition-all hover:scale-[1.02] hover:shadow-emerald-700/30 active:scale-[0.98] sm:text-sm"
@@ -300,15 +302,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSignIn }) => {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 text-xs font-mono">
-                      <div className="p-3 rounded-xl bg-white/80 border border-slate-200">
+                      <div className="p-3 rounded-xl bg-card/80 border border-slate-200">
                         <span className="text-slate-500 block text-[10px]">Entradas vs Saídas</span>
                         <strong className="text-emerald-800">Margem Líquida Real</strong>
                       </div>
-                      <div className="p-3 rounded-xl bg-white/80 border border-slate-200">
+                      <div className="p-3 rounded-xl bg-card/80 border border-slate-200">
                         <span className="text-slate-500 block text-[10px]">Apuração de Impostos</span>
                         <strong className="text-cyan-400">ICMS-ST, DIFAL & IPI</strong>
                       </div>
-                      <div className="p-3 rounded-xl bg-white/80 border border-slate-200">
+                      <div className="p-3 rounded-xl bg-card/80 border border-slate-200">
                         <span className="text-slate-500 block text-[10px]">Validação SEFAZ</span>
                         <strong className="text-purple-400">Zero Divergência Fiscal</strong>
                       </div>

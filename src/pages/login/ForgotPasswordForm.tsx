@@ -23,7 +23,7 @@ function ForgotPasswordForm({ email, onEmailChange, onBack, onDone }: ForgotPass
     try {
       await action();
     } catch (err) {
-      setError(authErrorMessage(err));
+      setError(authErrorMessage(err, "reset"));
     } finally {
       setBusy(false);
     }

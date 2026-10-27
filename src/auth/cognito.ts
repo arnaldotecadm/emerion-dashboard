@@ -97,7 +97,10 @@ const MESSAGES: Record<string, string> = {
   MfaRequired: "Sua conta exige verificação em duas etapas, ainda não suportada nesta tela.",
 };
 
-export function authErrorMessage(error: unknown): string {
+export function authErrorMessage(error: unknown, context: "signin" | "reset" = "signin"): string {
   const code = (error as { code?: string; name?: string })?.code ?? (error as { name?: string })?.name;
+  if (context === "reset" && code === "UserNotFoundException") {
+    return "Não foi possível enviar o código para este e-mail. Verifique o endereço informado.";
+  }
   return (code && MESSAGES[code]) || "Não foi possível concluir a operação. Tente novamente.";
 }

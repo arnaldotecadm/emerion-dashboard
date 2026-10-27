@@ -120,6 +120,7 @@ function SideNav({ onSignOut, collapsed, onToggleCollapsed }: SideNavProps) {
           onClick={onSignOut}
           title={collapsed ? "Sair" : undefined}
           aria-label="Sair"
+          data-testid="sidenav-signout-button"
           className={`group flex w-full items-center rounded-lg border border-red-400/20 bg-red-500/10 py-3 text-left text-red-300 shadow-sm transition-all hover:border-red-400/40 hover:bg-red-500/80 hover:text-white ${
             collapsed ? "justify-center px-0" : "gap-3 px-4"
           }`}
