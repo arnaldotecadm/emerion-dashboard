@@ -1,6 +1,8 @@
 import type { CustomerOrder, CustomerOrderPage } from "../types/customerOrder";
 import { API_BASE_URL, apiFetch } from "./apiConfig";
 
+export type CustomerOrdersPeriod = "WEEK" | "MONTH" | "YEAR" | "ALL";
+
 /**
  * Fetches a page of customer orders from the ERP backend.
  * @param page zero-based page index.
@@ -8,6 +10,7 @@ import { API_BASE_URL, apiFetch } from "./apiConfig";
  * @param codigoCliente optional exact match on the customer code.
  * @param statusPedido optional exact match on order status.
  * @param numeroPedido optional fragment match on the order number.
+ * @param period optional date range preset supported by the backend.
  */
 export async function fetchCustomerOrders(
   page: number,
@@ -15,13 +18,15 @@ export async function fetchCustomerOrders(
   codigoCliente?: number,
   statusPedido?: string,
   codigoEmpresa?: number,
-  numeroPedido?: string
+  numeroPedido?: string,
+  period?: CustomerOrdersPeriod
 ): Promise<CustomerOrderPage> {
   const params = new URLSearchParams({ page: String(page), size: String(size) });
   if (codigoCliente !== undefined) params.set("codigoCliente", String(codigoCliente));
   if (statusPedido) params.set("statusPedido", statusPedido);
   if (codigoEmpresa !== undefined) params.set("codigoEmpresa", String(codigoEmpresa));
   if (numeroPedido?.trim()) params.set("numeroPedido", numeroPedido.trim());
+  if (period) params.set("period", period);
 
   const response = await apiFetch(`${API_BASE_URL}/customer-orders?${params.toString()}`);
 

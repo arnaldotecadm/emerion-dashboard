@@ -76,6 +76,7 @@ export interface CustomerOrder {
   externalId: string;
   codigoEmpresa: number | null;
   codigoCliente: number | null;
+  nomeFantasia: string | null;
   cpfCnpj: string | null;
   numeroPedido: string | null;
   dataPedido: string | null;

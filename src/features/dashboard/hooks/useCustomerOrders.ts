@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { fetchCustomerOrders } from "../services/customerOrderService";
+import type { CustomerOrdersPeriod } from "../services/customerOrderService";
 import type { CustomerOrderPage } from "../types/customerOrder";
 
 export interface UseCustomerOrdersResult {
@@ -20,38 +21,49 @@ export function useCustomerOrders(
   codigoCliente?: number,
   statusPedido?: string,
   codigoEmpresa?: number,
-  numeroPedido?: string
+  numeroPedido?: string,
+  period?: CustomerOrdersPeriod
 ): UseCustomerOrdersResult {
   const [page, setPage] = useState(initialPage);
   const [size, setSize] = useState(initialSize);
-  const [data, setData] = useState<CustomerOrderPage | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
+  const requestKey = JSON.stringify([
+    page,
+    size,
+    codigoCliente,
+    statusPedido,
+    codigoEmpresa,
+    numeroPedido,
+    period,
+    reloadToken,
+  ]);
+  const [result, setResult] = useState<{
+    key: string;
+    data: CustomerOrderPage | null;
+    error: string | null;
+  } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
-    setLoading(true);
-    setError(null);
-
-    fetchCustomerOrders(page, size, codigoCliente, statusPedido, codigoEmpresa, numeroPedido)
+    fetchCustomerOrders(page, size, codigoCliente, statusPedido, codigoEmpresa, numeroPedido, period)
       .then((result) => {
-        if (!cancelled) setData(result);
+        if (!cancelled) setResult({ key: requestKey, data: result, error: null });
       })
       .catch((err: unknown) => {
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : "Não foi possível carregar os pedidos.");
+          setResult({
+            key: requestKey,
+            data: null,
+            error: err instanceof Error ? err.message : "Não foi possível carregar os pedidos.",
+          });
         }
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
       });
 
     return () => {
       cancelled = true;
     };
-  }, [page, size, codigoCliente, statusPedido, codigoEmpresa, numeroPedido, reloadToken]);
+  }, [page, size, codigoCliente, statusPedido, codigoEmpresa, numeroPedido, period, reloadToken, requestKey]);
 
   const refetch = useCallback(() => setReloadToken((token) => token + 1), []);
 
@@ -60,5 +72,16 @@ export function useCustomerOrders(
     setPage(0);
   }, []);
 
-  return { data, loading, error, page, size, setPage, setSize: changeSize, refetch };
+  const isCurrentResult = result?.key === requestKey;
+
+  return {
+    data: isCurrentResult ? result.data : null,
+    loading: !isCurrentResult,
+    error: isCurrentResult ? result.error : null,
+    page,
+    size,
+    setPage,
+    setSize: changeSize,
+    refetch,
+  };
 }

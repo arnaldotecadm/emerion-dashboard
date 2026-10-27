@@ -1,10 +1,26 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCustomerOrders } from "../hooks/useCustomerOrders";
-import { useCustomerNamesByExternalId } from "../hooks/useCustomerNamesByExternalId";
+import type { CustomerOrdersPeriod } from "../services/customerOrderService";
 import { formatCurrency, formatDate } from "../utils/format";
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
+const ORDER_STATUS_OPTIONS = [
+  "Aguardando Complemento",
+  "Aguardando Liberacao do Depto Financeiro",
+  "Aguardando Periodo de Programacao",
+  "Cancelado",
+  "Faturado",
+  "Nao Concluido",
+  "Parcialmente Faturado",
+  "Pronto para Faturar",
+];
+const PERIOD_OPTIONS: { value: CustomerOrdersPeriod; label: string }[] = [
+  { value: "WEEK", label: "Esta semana" },
+  { value: "MONTH", label: "Este mês" },
+  { value: "YEAR", label: "Este ano" },
+  { value: "ALL", label: "Todos" },
+];
 
 function getOrderStatusClasses(status: string | null): string {
   const normalizedStatus = status?.trim().toLocaleLowerCase("pt-BR") ?? "";
@@ -26,18 +42,17 @@ function OrdersDirectoryTable() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [orderNumberQuery, setOrderNumberQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [periodFilter, setPeriodFilter] = useState<CustomerOrdersPeriod>("ALL");
   const { data, loading, error, page, size, setPage, setSize, refetch } = useCustomerOrders(
     0,
     10,
     undefined,
+    statusFilter || undefined,
     undefined,
-    undefined,
-    orderNumberQuery
+    orderNumberQuery,
+    periodFilter
   );
-  const customerNames = useCustomerNamesByExternalId(
-    data?.data.filter((row) => row.codigoCliente !== null).map((row) => String(row.codigoCliente)) ?? []
-  );
-
   useEffect(() => {
     const timeoutId = window.setTimeout(() => setOrderNumberQuery(search.trim()), 300);
     return () => window.clearTimeout(timeoutId);
@@ -55,8 +70,8 @@ function OrdersDirectoryTable() {
     <section id="todos-pedidos" className="bg-white rounded-xl shadow-card border border-[#e6e8ea] overflow-hidden">
       <div className="p-6 border-b border-[#e6e8ea] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h3 className="font-bold text-[#041627] text-lg">Todos os Pedidos</h3>
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-          <div className="relative flex-1 sm:w-[26rem] lg:w-[30rem]">
+        <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
+          <div className="relative w-full sm:w-[26rem] lg:w-[30rem]">
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#8192a7] text-lg">
               search
             </span>
@@ -68,9 +83,40 @@ function OrdersDirectoryTable() {
                 setPage(0);
               }}
               placeholder="Buscar por número do pedido (ex.: 719)"
+              aria-label="Buscar por número do pedido"
               className="w-full pl-9 pr-3 py-2 text-sm border border-[#e6e8ea] rounded-lg text-[#44474c] focus:outline-none focus:ring-2 focus:ring-[#006397]/30 focus:border-[#006397]"
             />
           </div>
+          <select
+            value={statusFilter}
+            onChange={(event) => {
+              setStatusFilter(event.target.value);
+              setPage(0);
+            }}
+            aria-label="Filtrar por status do pedido"
+            className="w-full sm:w-auto border border-[#e6e8ea] rounded-lg text-sm text-[#44474c] py-2 px-3 focus:ring-[#006397] focus:border-[#006397]"
+          >
+            <option value="">Todos os status</option>
+            {ORDER_STATUS_OPTIONS.map((status) => (
+              <option key={status} value={status}>{status}</option>
+            ))}
+          </select>
+          <select
+            value={periodFilter}
+            onChange={(event) => {
+              const period = PERIOD_OPTIONS.find((option) => option.value === event.target.value)?.value;
+              if (period) {
+                setPeriodFilter(period);
+                setPage(0);
+              }
+            }}
+            aria-label="Filtrar pedidos por período"
+            className="w-full sm:w-auto border border-[#e6e8ea] rounded-lg text-sm text-[#44474c] py-2 px-3 focus:ring-[#006397] focus:border-[#006397]"
+          >
+            {PERIOD_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+          </select>
           <div className="hidden sm:flex items-center gap-2 text-sm text-[#8192a7]">
             <span>Mostrar</span>
             <select
@@ -136,7 +182,7 @@ function OrdersDirectoryTable() {
                     >
                       <td className="px-6 py-4 text-sm text-[#8192a7] whitespace-nowrap">{row.numeroPedido}</td>
                       <td className="px-6 py-4 text-sm text-[#44474c]">
-                        {customerNames.get(String(row.codigoCliente ?? "")) ?? row.codigoCliente ?? "—"}
+                        {row.nomeFantasia?.trim() || row.codigoCliente || "—"}
                       </td>
                       {/*<td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">{row.numeroPedido ?? "—"}</td> */}
                       <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">{formatDate(row.dataPedido)}</td>

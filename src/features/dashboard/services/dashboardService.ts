@@ -1,6 +1,13 @@
 import type { CustomerOrderBy, DashboardTopTrends, DashboardYears } from "../types/dashboardTopTrends";
 import { API_BASE_URL, apiFetch } from "./apiConfig";
 
+export class DashboardAccessDeniedError extends Error {
+  constructor() {
+    super("Não tem permissão para aceder ao painel.");
+    this.name = "DashboardAccessDeniedError";
+  }
+}
+
 function isDashboardTopTrends(value: unknown): value is DashboardTopTrends {
   if (typeof value !== "object" || value === null) return false;
 
@@ -70,6 +77,10 @@ export async function fetchDashboardTopTrends(
   const response = await apiFetch(`${API_BASE_URL}/dashboard/top-trends?${params.toString()}`, { headers });
 
   if (!response.ok) {
+    if (response.status === 403) {
+      throw new DashboardAccessDeniedError();
+    }
+
     throw new Error(`Falha ao carregar os dados do painel (HTTP ${response.status}).`);
   }
 

@@ -4,6 +4,7 @@ import { useAuth } from "react-oidc-context";
 import LandingPage from "./pages/LandingPage";
 import DashboardLayout from "./features/dashboard/DashboardLayout";
 import VisaoGeralPage from "./features/dashboard/pages/VisaoGeralPage";
+import DashboardAccessDeniedPage from "./features/dashboard/pages/DashboardAccessDeniedPage";
 import VendasTotaisPage from "./features/dashboard/pages/VendasTotaisPage";
 import PedidosPage from "./features/dashboard/pages/PedidosPage";
 import PedidoDetailPage from "./features/dashboard/pages/PedidoDetailPage";
@@ -82,6 +83,7 @@ function App() {
         }
       >
         <Route index element={<VisaoGeralPage />} />
+        <Route path="access-denied" element={<DashboardAccessDeniedPage />} />
         <Route path="vendas" element={<VendasTotaisPage />} />
         <Route path="pedidos" element={<PedidosPage />} />
         <Route path="pedidos/:id" element={<PedidoDetailPage />} />

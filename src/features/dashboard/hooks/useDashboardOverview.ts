@@ -1,6 +1,7 @@
 import { createContext, createElement, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { fetchDashboardTopTrends } from "../services/dashboardService";
+import { useNavigate } from "react-router-dom";
+import { DashboardAccessDeniedError, fetchDashboardTopTrends } from "../services/dashboardService";
 import type {
   CustomerOrderBy,
   DashboardYears,
@@ -35,6 +36,7 @@ const DashboardOverviewContext = createContext<UseDashboardOverviewResult | null
  * dashboard from the ERP's aggregated dashboard endpoint.
  */
 function useDashboardOverviewData(): UseDashboardOverviewResult {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [customerOrderBy, setCustomerOrderBy] = useState<CustomerOrderBy>("TOTALFATURADO");
@@ -83,7 +85,11 @@ function useDashboardOverviewData(): UseDashboardOverviewResult {
         }
       } catch (err: unknown) {
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : "Não foi possível carregar os dados do painel.");
+          if (err instanceof DashboardAccessDeniedError) {
+            navigate("/dashboard/access-denied", { replace: true });
+          } else {
+            setError(err instanceof Error ? err.message : "Não foi possível carregar os dados do painel.");
+          }
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -95,7 +101,7 @@ function useDashboardOverviewData(): UseDashboardOverviewResult {
     return () => {
       cancelled = true;
     };
-  }, [customerOrderBy, years]);
+  }, [customerOrderBy, navigate, years]);
 
   return { loading, error, ...result, customerOrderBy, setCustomerOrderBy, years, setYears };
 }

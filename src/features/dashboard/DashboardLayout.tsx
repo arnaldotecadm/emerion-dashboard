@@ -5,6 +5,7 @@ import TopBar from "./components/TopBar";
 
 export interface DashboardOutletContext {
   userName: string;
+  onSignOut: () => void;
   userEmail?: string;
   /** Cognito user pool group memberships (from the `cognito:groups` ID token claim), if any. */
   userGroups?: string[];
@@ -63,6 +64,7 @@ function DashboardLayout({
         <Outlet
           context={{
             userName,
+            onSignOut,
             userEmail,
             userGroups,
             userId,
