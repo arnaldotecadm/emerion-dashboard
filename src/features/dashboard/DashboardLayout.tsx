@@ -42,7 +42,7 @@ function DashboardLayout({
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
-    <div className="bg-[#f7f9fb] text-[#191c1e] min-h-screen">
+    <div className="bg-canvas text-fg min-h-screen">
       <SideNav
         onSignOut={onSignOut}
         collapsed={sidebarCollapsed}

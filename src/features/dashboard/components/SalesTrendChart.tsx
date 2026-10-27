@@ -92,16 +92,16 @@ function SalesTrendChart() {
   const labelInterval = Math.max(1, Math.ceil(points.length / 6));
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-card flex flex-col h-[400px]">
+    <div className="bg-card p-6 rounded-xl shadow-card flex flex-col h-[400px]">
       <div className="flex flex-wrap justify-between items-center gap-3 mb-2">
-        <h3 className="text-xl font-semibold text-[#041627]">Tendência de Vendas e Orçamentos</h3>
-        <div className="flex bg-[#eceef0] rounded-lg p-1" aria-label="Agrupar tendência por período">
+        <h3 className="text-xl font-semibold text-fg-strong">Tendência de Vendas e Orçamentos</h3>
+        <div className="flex bg-surface-2 rounded-lg p-1" aria-label="Agrupar tendência por período">
           <button
             type="button"
             aria-pressed={period === "month"}
             onClick={() => setPeriod("month")}
             className={`px-3 py-1 rounded text-xs font-semibold ${
-              period === "month" ? "bg-white shadow-sm text-[#041627]" : "text-[#44474c]"
+              period === "month" ? "bg-card shadow-sm text-fg-strong" : "text-fg-muted"
             }`}
           >
             Mês
@@ -111,25 +111,25 @@ function SalesTrendChart() {
             aria-pressed={period === "quarter"}
             onClick={() => setPeriod("quarter")}
             className={`px-3 py-1 rounded text-xs font-semibold ${
-              period === "quarter" ? "bg-white shadow-sm text-[#041627]" : "text-[#44474c]"
+              period === "quarter" ? "bg-card shadow-sm text-fg-strong" : "text-fg-muted"
             }`}
           >
             Trimestre
           </button>
         </div>
       </div>
-      <p className="text-xs text-[#8192a7] mb-3">Quantidade de pedidos e orçamentos por período</p>
+      <p className="text-xs text-fg-subtle mb-3">Quantidade de pedidos e orçamentos por período</p>
 
-      {error && <p className="flex-1 flex items-center justify-center text-sm text-[#ba1a1a]">{error}</p>}
+      {error && <p className="flex-1 flex items-center justify-center text-sm text-danger-fg">{error}</p>}
 
       {!error && loading && (
         <div className="flex-1 flex items-center animate-pulse">
-          <div className="w-full h-48 bg-[#eceef0] rounded-lg" />
+          <div className="w-full h-48 bg-surface-2 rounded-lg" />
         </div>
       )}
 
       {!error && !loading && points.length === 0 && (
-        <p className="flex-1 flex items-center justify-center text-sm text-[#8192a7]">
+        <p className="flex-1 flex items-center justify-center text-sm text-fg-subtle">
           Nenhum dado de vendas ou orçamentos no período.
         </p>
       )}
@@ -172,13 +172,13 @@ function SalesTrendChart() {
                   const orderCount = Number(payload.find((entry) => entry.dataKey === "orders")?.value ?? 0);
                   const quotationCount = Number(payload.find((entry) => entry.dataKey === "quotations")?.value ?? 0);
                   return (
-                    <div className="rounded-lg bg-[#041627] px-3 py-2 text-white shadow-lg">
+                    <div className="rounded-lg bg-ink-solid px-3 py-2 text-white shadow-lg">
                       <p className="text-xs font-bold mb-1">{label}</p>
                       <p className="text-[11px]">
                         <span className="text-[#92ccff]">Pedidos:</span> {orderCount.toLocaleString("pt-BR")}
                       </p>
                       <p className="text-[11px]">
-                        <span className="text-[#c4c6cd]">Orçamentos:</span>{" "}
+                        <span className="text-fg-faint">Orçamentos:</span>{" "}
                         {quotationCount.toLocaleString("pt-BR")}
                       </p>
                     </div>
@@ -221,11 +221,11 @@ function SalesTrendChart() {
 
       <div className="flex w-fit self-start gap-3 mt-1">
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-[#006397] rounded-full" />
+          <div className="w-2 h-2 bg-accent-solid rounded-full" />
           <span className="text-[10px]">Pedidos</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-[#8192a7] rounded-full border border-dashed border-white" />
+          <div className="w-2 h-2 bg-fg-subtle rounded-full border border-dashed border-white" />
           <span className="text-[10px]">Orçamentos</span>
         </div>
       </div>

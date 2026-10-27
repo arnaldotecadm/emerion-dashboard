@@ -23,7 +23,7 @@ const navLinkClasses = (isActive: boolean, collapsed: boolean) =>
     collapsed ? "justify-center px-0" : "gap-3 px-4"
   } ${
     isActive
-      ? "bg-[#006397] text-white"
+      ? "bg-accent-solid text-white"
       : "text-white/70 hover:bg-white/10 hover:text-white"
   }`;
 
@@ -31,7 +31,7 @@ const navLinkClasses = (isActive: boolean, collapsed: boolean) =>
 function SideNav({ onSignOut, collapsed, onToggleCollapsed }: SideNavProps) {
   return (
     <aside
-      className={`fixed left-0 top-0 z-50 flex h-full flex-col bg-[#041627] py-6 text-white shadow-md transition-[width] duration-300 ${
+      className={`fixed left-0 top-0 z-50 flex h-full flex-col bg-sidebar py-6 text-white shadow-md transition-[width] duration-300 ${
         collapsed ? "w-16" : "w-64"
       }`}
     >
@@ -47,7 +47,7 @@ function SideNav({ onSignOut, collapsed, onToggleCollapsed }: SideNavProps) {
           className="block shrink-0 transition-opacity hover:opacity-90"
         >
           {collapsed ? (
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#006397] text-lg font-bold text-white">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent-solid text-lg font-bold text-white">
               E
             </span>
           ) : (
@@ -109,7 +109,7 @@ function SideNav({ onSignOut, collapsed, onToggleCollapsed }: SideNavProps) {
             collapsed ? "justify-center px-0" : "gap-3 px-4"
           }`}
         >
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#006397]/30 transition-colors group-hover:bg-[#006397]/50">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-solid/30 transition-colors group-hover:bg-accent-solid/50">
             <span className="material-symbols-outlined text-lg" aria-hidden="true">
               support_agent
             </span>

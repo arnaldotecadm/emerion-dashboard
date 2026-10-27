@@ -64,7 +64,7 @@ function HelpTip() {
       <Tooltip label="Ajuda">
         <button
           onClick={() => setOpen((prev) => !prev)}
-          className="p-2 text-[#44474c] hover:bg-[#eceef0] rounded-full transition-colors"
+          className="p-2 text-fg-muted hover:bg-surface-2 rounded-full transition-colors"
           aria-haspopup="dialog"
           aria-expanded={open}
           aria-label="Ajuda"
@@ -76,13 +76,13 @@ function HelpTip() {
       {open && (
         <div
           role="dialog"
-          className="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-popover border border-[#e6e8ea] overflow-hidden z-50 p-4"
+          className="absolute right-0 mt-2 w-72 bg-card rounded-xl shadow-popover border border-line overflow-hidden z-50 p-4"
         >
-          <div className="flex items-center gap-2 mb-2 text-[#006397]">
+          <div className="flex items-center gap-2 mb-2 text-accent">
             <span className="material-symbols-outlined text-lg">lightbulb</span>
             <h3 className="text-sm font-semibold">Dica desta página</h3>
           </div>
-          <p className="text-xs text-[#44474c] leading-relaxed">{tip}</p>
+          <p className="text-xs text-fg-muted leading-relaxed">{tip}</p>
         </div>
       )}
     </div>

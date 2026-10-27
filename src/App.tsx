@@ -95,7 +95,7 @@ function App() {
         <Route
           path="cockpit"
           element={
-            <Suspense fallback={<div className="text-sm text-[#8192a7]">Carregando Cockpit Executivo...</div>}>
+            <Suspense fallback={<div className="text-sm text-fg-subtle">Carregando Cockpit Executivo...</div>}>
               <CockpitExecutivoPage />
             </Suspense>
           }

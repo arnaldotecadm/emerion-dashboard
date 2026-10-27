@@ -31,12 +31,12 @@ function ClientsDirectoryTable() {
   const isLastPage = totalPages === 0 || currentPage >= totalPages - 1;
 
   return (
-    <section id="todos-clientes" className="bg-white rounded-xl shadow-card border border-[#e6e8ea] overflow-hidden">
-      <div className="p-6 border-b border-[#e6e8ea] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h3 className="font-bold text-[#041627] text-lg">Todos os Clientes</h3>
+    <section id="todos-clientes" className="bg-card rounded-xl shadow-card border border-line overflow-hidden">
+      <div className="p-6 border-b border-line flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h3 className="font-bold text-fg-strong text-lg">Todos os Clientes</h3>
         <div className="flex items-center gap-3 w-full sm:w-auto">
           <div className="relative flex-1 sm:w-64">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#8192a7] text-lg">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-fg-subtle text-lg">
               search
             </span>
             <input
@@ -44,15 +44,15 @@ function ClientsDirectoryTable() {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Buscar nesta página por nome, CNPJ ou Codigo"
-              className="w-full pl-9 pr-3 py-2 text-sm border border-[#e6e8ea] rounded-lg text-[#44474c] focus:outline-none focus:ring-2 focus:ring-[#006397]/30 focus:border-[#006397]"
+              className="w-full pl-9 pr-3 py-2 text-sm border border-line rounded-lg text-fg-muted focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
             />
           </div>
-          <div className="hidden sm:flex items-center gap-2 text-sm text-[#8192a7]">
+          <div className="hidden sm:flex items-center gap-2 text-sm text-fg-subtle">
             <span>Mostrar</span>
             <select
               value={size}
               onChange={(event) => setSize(Number(event.target.value))}
-              className="border border-[#e6e8ea] rounded-lg text-sm text-[#44474c] py-1 px-2 focus:ring-[#006397] focus:border-[#006397]"
+              className="border border-line rounded-lg text-sm text-fg-muted py-1 px-2 focus:ring-accent focus:border-accent"
             >
               {PAGE_SIZE_OPTIONS.map((option) => (
                 <option key={option} value={option}>
@@ -66,11 +66,11 @@ function ClientsDirectoryTable() {
 
       {error ? (
         <div className="p-10 flex flex-col items-center text-center gap-3">
-          <span className="material-symbols-outlined text-4xl text-[#ba1a1a]">error</span>
-          <p className="text-sm text-[#44474c]">{error}</p>
+          <span className="material-symbols-outlined text-4xl text-danger-fg">error</span>
+          <p className="text-sm text-fg-muted">{error}</p>
           <button
             onClick={refetch}
-            className="px-4 py-2 text-sm font-semibold text-[#006397] border border-[#006397] rounded-lg hover:bg-[#006397]/5 transition-colors"
+            className="px-4 py-2 text-sm font-semibold text-accent border border-accent rounded-lg hover:bg-accent-solid/5 transition-colors"
           >
             Tentar novamente
           </button>
@@ -80,32 +80,32 @@ function ClientsDirectoryTable() {
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
-                <tr className="bg-[#f7f9fb] border-b border-[#e6e8ea]">
-                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
+                <tr className="bg-canvas border-b border-line">
+                  <th className="px-6 py-3 text-[11px] font-bold text-fg-subtle uppercase tracking-wider">
                     Codigo
                   </th>
-                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
+                  <th className="px-6 py-3 text-[11px] font-bold text-fg-subtle uppercase tracking-wider">
                     Razão Social
                   </th>
-                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
+                  <th className="px-6 py-3 text-[11px] font-bold text-fg-subtle uppercase tracking-wider">
                     CPF/CNPJ
                   </th>
-                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
+                  <th className="px-6 py-3 text-[11px] font-bold text-fg-subtle uppercase tracking-wider">
                     Inscrição Estadual
                   </th>
-                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
+                  <th className="px-6 py-3 text-[11px] font-bold text-fg-subtle uppercase tracking-wider">
                     Regime Tributário
                   </th>
-                  <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-[11px] font-bold text-fg-subtle uppercase tracking-wider">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#f7f9fb]">
+              <tbody className="divide-y divide-line-soft">
                 {loading &&
                   Array.from({ length: size }).map((_, index) => (
                     <tr key={`skeleton-${index}`} className="animate-pulse">
                       {Array.from({ length: 7 }).map((__, cell) => (
                         <td key={cell} className="px-6 py-4">
-                          <div className="h-3.5 bg-[#eceef0] rounded-full w-full max-w-[10rem]" />
+                          <div className="h-3.5 bg-surface-2 rounded-full w-full max-w-[10rem]" />
                         </td>
                       ))}
                     </tr>
@@ -116,21 +116,21 @@ function ClientsDirectoryTable() {
                     <tr
                       key={row.id}
                       onClick={() => navigate(`/dashboard/clientes/${row.id}`)}
-                      className="hover:bg-[#f7f9fb] transition-colors cursor-pointer group"
+                      className="hover:bg-canvas transition-colors cursor-pointer group"
                     >
-                      <td className="px-6 py-4 text-sm text-[#8192a7] whitespace-nowrap">{row.externalId}</td>
-                      <td className="px-6 py-4 text-sm text-[#44474c]">{row.razaoSocial}</td>
-                      <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">
+                      <td className="px-6 py-4 text-sm text-fg-subtle whitespace-nowrap">{row.externalId}</td>
+                      <td className="px-6 py-4 text-sm text-fg-muted">{row.razaoSocial}</td>
+                      <td className="px-6 py-4 text-sm text-fg-muted whitespace-nowrap">
                         {formatCpfCnpj(row.cpfCnpj)}
                       </td>
-                      <td className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap">
+                      <td className="px-6 py-4 text-sm text-fg-muted whitespace-nowrap">
                         {row.inscricaoEstadual}
                       </td>
-                      <td className="px-6 py-4 text-sm text-[#44474c]">{row.regimeTributario}</td>
+                      <td className="px-6 py-4 text-sm text-fg-muted">{row.regimeTributario}</td>
                       <td className="px-6 py-4">
                         <span
                           className={`px-2.5 py-1 text-xs font-bold rounded-full ${
-                            row.bloqueado ? "bg-[#ffdad6] text-[#93000a]" : "bg-emerald-100 text-emerald-700"
+                            row.bloqueado ? "bg-danger-soft text-danger-ink" : "bg-emerald-100 text-emerald-700"
                           }`}
                         >
                           {row.bloqueado ? "Bloqueado" : "Ativo"}
@@ -141,7 +141,7 @@ function ClientsDirectoryTable() {
 
                 {!loading && visibleRows.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-6 py-10 text-center text-sm text-[#8192a7]">
+                    <td colSpan={7} className="px-6 py-10 text-center text-sm text-fg-subtle">
                       {search
                         ? `Nenhum cliente encontrado para "${search}" nesta página.`
                         : "Nenhum cliente encontrado."}
@@ -152,21 +152,21 @@ function ClientsDirectoryTable() {
             </table>
           </div>
 
-          <div className="px-6 py-4 bg-[#f7f9fb] border-t border-[#e6e8ea] flex flex-col sm:flex-row justify-between items-center gap-3">
-            <span className="text-sm text-[#8192a7]">
+          <div className="px-6 py-4 bg-canvas border-t border-line flex flex-col sm:flex-row justify-between items-center gap-3">
+            <span className="text-sm text-fg-subtle">
               {totalElements > 0
                 ? `Exibindo ${data?.data.length ?? 0} de ${totalElements.toLocaleString("pt-BR")} clientes`
                 : "—"}
             </span>
             <div className="flex items-center gap-3">
-              <span className="text-sm text-[#44474c]">
+              <span className="text-sm text-fg-muted">
                 Página {totalPages === 0 ? 0 : currentPage + 1} de {totalPages}
               </span>
               <div className="flex gap-2">
                 <button
                   onClick={() => setPage(Math.max(0, currentPage - 1))}
                   disabled={isFirstPage || loading}
-                  className="p-2 border border-[#e6e8ea] rounded-lg bg-white text-[#8192a7] hover:text-[#006397] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-[#8192a7] transition-all"
+                  className="p-2 border border-line rounded-lg bg-card text-fg-subtle hover:text-accent disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-fg-subtle transition-all"
                   aria-label="Página anterior"
                 >
                   <span className="material-symbols-outlined text-sm">chevron_left</span>
@@ -174,7 +174,7 @@ function ClientsDirectoryTable() {
                 <button
                   onClick={() => setPage(Math.min(totalPages - 1, currentPage + 1))}
                   disabled={isLastPage || loading}
-                  className="p-2 border border-[#e6e8ea] rounded-lg bg-white text-[#8192a7] hover:text-[#006397] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-[#8192a7] transition-all"
+                  className="p-2 border border-line rounded-lg bg-card text-fg-subtle hover:text-accent disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-fg-subtle transition-all"
                   aria-label="Próxima página"
                 >
                   <span className="material-symbols-outlined text-sm">chevron_right</span>

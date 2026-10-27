@@ -3,9 +3,9 @@ import { RISK_ITEMS, riskLevelFor } from "../data/clientesData";
 
 const LEVEL_STYLES: Record<string, { badge: string; icon: string; iconWrap: string }> = {
   Alto: {
-    badge: "bg-[#ffdad6] text-[#93000a]",
+    badge: "bg-danger-soft text-danger-ink",
     icon: "warning",
-    iconWrap: "bg-[#ffdad6] text-[#ba1a1a] border-[#ffb4ab]",
+    iconWrap: "bg-danger-soft text-danger-fg border-danger-line",
   },
   Médio: {
     badge: "bg-orange-100 text-orange-700",
@@ -19,11 +19,11 @@ function DelinquencyRiskPanel() {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-white rounded-xl shadow-card border border-[#e6e8ea] flex flex-col h-full">
-      <div className="p-6 border-b border-[#e6e8ea]">
-        <h3 className="font-bold text-[#041627] text-lg flex items-center gap-2">
+    <div className="bg-card rounded-xl shadow-card border border-line flex flex-col h-full">
+      <div className="p-6 border-b border-line">
+        <h3 className="font-bold text-fg-strong text-lg flex items-center gap-2">
           Risco de Inadimplência
-          <span className="w-2 h-2 bg-[#ba1a1a] rounded-full animate-pulse" />
+          <span className="w-2 h-2 bg-danger-solid rounded-full animate-pulse" />
         </h3>
       </div>
       <div className="p-6 space-y-5 flex-1">
@@ -43,10 +43,10 @@ function DelinquencyRiskPanel() {
                   <span className="material-symbols-outlined text-lg">{style.icon}</span>
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-[#041627] group-hover:text-[#006397] transition-colors">
+                  <p className="text-sm font-bold text-fg-strong group-hover:text-accent transition-colors">
                     {item.name}
                   </p>
-                  <p className="text-xs text-[#8192a7]">Vencido há {item.daysOverdue} dias</p>
+                  <p className="text-xs text-fg-subtle">Vencido há {item.daysOverdue} dias</p>
                 </div>
               </div>
               <span className={`px-2 py-1 text-[10px] font-bold rounded uppercase ${style.badge}`}>{level}</span>
@@ -56,7 +56,7 @@ function DelinquencyRiskPanel() {
       </div>
       <a
         href="#todos-clientes"
-        className="p-4 text-center border-t border-[#e6e8ea] text-[#006397] text-sm font-bold hover:bg-[#f7f9fb] transition-all rounded-b-xl"
+        className="p-4 text-center border-t border-line text-accent text-sm font-bold hover:bg-canvas transition-all rounded-b-xl"
       >
         Ver todos os riscos
       </a>

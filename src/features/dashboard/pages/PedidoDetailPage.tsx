@@ -10,7 +10,7 @@ import PlaceholderPage from "../components/PlaceholderPage";
 const BackLink = () => (
   <Link
     to="/dashboard/pedidos"
-    className="text-[#44474c] hover:text-[#006397] flex items-center gap-2 text-sm font-medium transition-colors mb-6 w-fit"
+    className="text-fg-muted hover:text-accent flex items-center gap-2 text-sm font-medium transition-colors mb-6 w-fit"
   >
     <span className="material-symbols-outlined text-base">arrow_back</span>
     Voltar para Pedidos
@@ -20,8 +20,8 @@ const BackLink = () => (
 /** Small label/value pair used within the item's expanded fiscal detail panel. */
 const DetailField = ({ label, value }: { label: string; value: string }) => (
   <div>
-    <p className="text-[10px] font-semibold text-[#8192a7] mb-0.5 uppercase tracking-wider">{label}</p>
-    <p className="text-xs font-semibold text-[#041627]">{value}</p>
+    <p className="text-[10px] font-semibold text-fg-subtle mb-0.5 uppercase tracking-wider">{label}</p>
+    <p className="text-xs font-semibold text-fg-strong">{value}</p>
   </div>
 );
 
@@ -69,10 +69,10 @@ function PedidoDetailPage() {
     return (
       <div>
         <BackLink />
-        <div className="bg-white rounded-xl shadow-card border border-[#e6e8ea] p-10 flex flex-col items-center text-center gap-3">
-          <span className="material-symbols-outlined text-4xl text-[#ba1a1a]">error</span>
-          <h3 className="text-lg font-bold text-[#041627]">Não foi possível carregar o pedido</h3>
-          <p className="text-sm text-[#8192a7]">{error}</p>
+        <div className="bg-card rounded-xl shadow-card border border-line p-10 flex flex-col items-center text-center gap-3">
+          <span className="material-symbols-outlined text-4xl text-danger-fg">error</span>
+          <h3 className="text-lg font-bold text-fg-strong">Não foi possível carregar o pedido</h3>
+          <p className="text-sm text-fg-subtle">{error}</p>
         </div>
       </div>
     );
@@ -82,20 +82,20 @@ function PedidoDetailPage() {
     return (
       <div>
         <BackLink />
-        <div className="bg-white rounded-xl p-8 shadow-card border border-[#e6e8ea] mb-8 animate-pulse">
+        <div className="bg-card rounded-xl p-8 shadow-card border border-line mb-8 animate-pulse">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-xl bg-[#eceef0] shrink-0" />
+            <div className="w-16 h-16 rounded-xl bg-surface-2 shrink-0" />
             <div className="space-y-2">
-              <div className="h-5 w-48 bg-[#eceef0] rounded-full" />
-              <div className="h-3 w-32 bg-[#eceef0] rounded-full" />
+              <div className="h-5 w-48 bg-surface-2 rounded-full" />
+              <div className="h-3 w-32 bg-surface-2 rounded-full" />
             </div>
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {Array.from({ length: 4 }).map((_, index) => (
-            <div key={index} className="bg-white p-6 rounded-xl shadow-card border border-[#e6e8ea] animate-pulse">
-              <div className="h-3 w-20 bg-[#eceef0] rounded-full mb-3" />
-              <div className="h-5 w-28 bg-[#eceef0] rounded-full" />
+            <div key={index} className="bg-card p-6 rounded-xl shadow-card border border-line animate-pulse">
+              <div className="h-3 w-20 bg-surface-2 rounded-full mb-3" />
+              <div className="h-5 w-28 bg-surface-2 rounded-full" />
             </div>
           ))}
         </div>
@@ -108,29 +108,29 @@ function PedidoDetailPage() {
       <BackLink />
 
       {/* Header card: identity + status */}
-      <section className="bg-white rounded-xl p-8 shadow-card border border-[#e6e8ea] mb-8">
+      <section className="bg-card rounded-xl p-8 shadow-card border border-line mb-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-xl bg-[#041627] text-white flex items-center justify-center font-bold text-xl shrink-0">
+            <div className="w-16 h-16 rounded-xl bg-ink-solid text-white flex items-center justify-center font-bold text-xl shrink-0">
               <span className="material-symbols-outlined text-3xl">receipt_long</span>
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-2xl font-bold text-[#041627] tracking-tight">
+                <h2 className="text-2xl font-bold text-fg-strong tracking-tight">
                   Pedido #{pedido.numeroPedido ?? pedido.externalId}
                 </h2>
                 {pedido.statusPedido && (
-                  <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-[#006397]/10 text-[#006397]">
+                  <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-accent-solid/10 text-accent">
                     {pedido.statusPedido}
                   </span>
                 )}
               </div>
-              <p className="text-[#8192a7] text-sm mt-1">
+              <p className="text-fg-subtle text-sm mt-1">
                 Cliente{" "}
                 {clienteLoading ? (
                   "carregando..."
                 ) : cliente ? (
-                  <Link to={`/dashboard/clientes/${cliente.id}`} className="text-[#006397] hover:underline">
+                  <Link to={`/dashboard/clientes/${cliente.id}`} className="text-accent hover:underline">
                     {cliente.nomeFantasia.trim()}
                   </Link>
                 ) : (
@@ -144,20 +144,20 @@ function PedidoDetailPage() {
       </section>
 
       {/* Order data */}
-      <section className="bg-white rounded-xl shadow-card border border-[#e6e8ea] p-6 mb-6">
-        <h3 className="font-bold text-[#041627] text-lg mb-6">Dados do Pedido</h3>
+      <section className="bg-card rounded-xl shadow-card border border-line p-6 mb-6">
+        <h3 className="font-bold text-fg-strong text-lg mb-6">Dados do Pedido</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Número do Pedido</p>
-            <p className="text-sm font-bold text-[#041627]">{pedido.externalId}</p>
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Número do Pedido</p>
+            <p className="text-sm font-bold text-fg-strong">{pedido.externalId}</p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Cliente (código)</p>
-            <p className="text-sm font-bold text-[#041627]">
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Cliente (código)</p>
+            <p className="text-sm font-bold text-fg-strong">
               {clienteLoading ? (
                 "Carregando..."
               ) : cliente ? (
-                <Link to={`/dashboard/clientes/${cliente.id}`} className="text-[#006397] hover:underline">
+                <Link to={`/dashboard/clientes/${cliente.id}`} className="text-accent hover:underline">
                   {cliente.nomeFantasia.trim()} ({pedido.codigoCliente})
                 </Link>
               ) : (
@@ -166,76 +166,76 @@ function PedidoDetailPage() {
             </p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">CNPJ da Empresa</p>
-            <p className="text-sm font-bold text-[#041627]">
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">CNPJ da Empresa</p>
+            <p className="text-sm font-bold text-fg-strong">
               {pedido.codigoEmpresa ?? "—"}
             </p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">CPF/CNPJ do Cliente</p>
-            <p className="text-sm font-bold text-[#041627]">{pedido.cpfCnpj ? formatCpfCnpj(pedido.cpfCnpj) : "—"}</p>
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">CPF/CNPJ do Cliente</p>
+            <p className="text-sm font-bold text-fg-strong">{pedido.cpfCnpj ? formatCpfCnpj(pedido.cpfCnpj) : "—"}</p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">NF-e</p>
-            <p className="text-sm font-bold text-[#041627]">{pedido.numeroPedido || "—"}</p>
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">NF-e</p>
+            <p className="text-sm font-bold text-fg-strong">{pedido.numeroPedido || "—"}</p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Data</p>
-            <p className="text-sm font-bold text-[#041627]">{formatDate(pedido.dataPedido)}</p>
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Data</p>
+            <p className="text-sm font-bold text-fg-strong">{formatDate(pedido.dataPedido)}</p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Status</p>
-            <p className="text-sm font-bold text-[#041627]">{pedido.statusPedido || "—"}</p>
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Status</p>
+            <p className="text-sm font-bold text-fg-strong">{pedido.statusPedido || "—"}</p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Total Geral</p>
-            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totalPedidoComImpostos)}</p>
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Total Geral</p>
+            <p className="text-sm font-bold text-fg-strong">{formatCurrency(pedido.totalPedidoComImpostos)}</p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Total do Pedido</p>
-            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totalPedidoSemImpostos)}</p>
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Total do Pedido</p>
+            <p className="text-sm font-bold text-fg-strong">{formatCurrency(pedido.totalPedidoSemImpostos)}</p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Total IPI</p>
-            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totalIpi)}</p>
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Total IPI</p>
+            <p className="text-sm font-bold text-fg-strong">{formatCurrency(pedido.totalIpi)}</p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Total Substituição</p>
-            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totalSubstituicaoTributaria)}</p>
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Total Substituição</p>
+            <p className="text-sm font-bold text-fg-strong">{formatCurrency(pedido.totalSubstituicaoTributaria)}</p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Total Desc./Acréscimo</p>
-            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totalDescontoIncondicional)}</p>
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Total Desc./Acréscimo</p>
+            <p className="text-sm font-bold text-fg-strong">{formatCurrency(pedido.totalDescontoIncondicional)}</p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Total de Frete</p>
-            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totalFrete)}</p>
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Total de Frete</p>
+            <p className="text-sm font-bold text-fg-strong">{formatCurrency(pedido.totalFrete)}</p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Total de Seguro</p>
-            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totalSeguro)}</p>
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Total de Seguro</p>
+            <p className="text-sm font-bold text-fg-strong">{formatCurrency(pedido.totalSeguro)}</p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">
               Outras Despesas
             </p>
-            <p className="text-sm font-bold text-[#041627]">{formatCurrency(pedido.totalOutrasDespesas)}</p>
+            <p className="text-sm font-bold text-fg-strong">{formatCurrency(pedido.totalOutrasDespesas)}</p>
           </div>
         </div>
       </section>
 
-      <section className="bg-white rounded-xl shadow-card border border-[#e6e8ea] p-6 mb-8">
-        <h3 className="font-bold text-[#041627] text-lg mb-6">Comercial e Logística</h3>
+      <section className="bg-card rounded-xl shadow-card border border-line p-6 mb-8">
+        <h3 className="font-bold text-fg-strong text-lg mb-6">Comercial e Logística</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Vendedor</p>
-            <p className="text-sm font-bold text-[#041627]">
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Vendedor</p>
+            <p className="text-sm font-bold text-fg-strong">
               {!pedido.vendedorExternalId ? (
                 "—"
               ) : vendedorLoading ? (
                 "Carregando..."
               ) : vendedor ? (
-                <Link to={`/dashboard/vendedores/${vendedor.id}`} className="text-[#006397] hover:underline">
+                <Link to={`/dashboard/vendedores/${vendedor.id}`} className="text-accent hover:underline">
                   {vendedor.nome.trim()} ({pedido.vendedorExternalId})
                 </Link>
               ) : (
@@ -244,89 +244,89 @@ function PedidoDetailPage() {
             </p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Atendente</p>
-            <p className="text-sm font-bold text-[#041627]">—</p>
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Atendente</p>
+            <p className="text-sm font-bold text-fg-strong">—</p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">
               Data Entrega Prevista
             </p>
-            <p className="text-sm font-bold text-[#041627]">{formatDate(pedido.dataEntregaPrevista)}</p>
+            <p className="text-sm font-bold text-fg-strong">{formatDate(pedido.dataEntregaPrevista)}</p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">
               Código Transportadora
             </p>
-            <p className="text-sm font-bold text-[#041627]">{pedido.codigoTransportadora || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong">{pedido.codigoTransportadora || "—"}</p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Linha Reserva</p>
-            <p className="text-sm font-bold text-[#041627]">—</p>
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Linha Reserva</p>
+            <p className="text-sm font-bold text-fg-strong">—</p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Pedido Anterior</p>
-            <p className="text-sm font-bold text-[#041627]">{pedido.pedidoAnterior || "—"}</p>
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Pedido Anterior</p>
+            <p className="text-sm font-bold text-fg-strong">{pedido.pedidoAnterior || "—"}</p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">
               Desconto Comercial
             </p>
-            <p className="text-sm font-bold text-[#041627]">—</p>
+            <p className="text-sm font-bold text-fg-strong">—</p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">
               Desconto Regional
             </p>
-            <p className="text-sm font-bold text-[#041627]">—</p>
+            <p className="text-sm font-bold text-fg-strong">—</p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">Regime Tributário</p>
-            <p className="text-sm font-bold text-[#041627]">{pedido.regimeTributario || "—"}</p>
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Regime Tributário</p>
+            <p className="text-sm font-bold text-fg-strong">{pedido.regimeTributario || "—"}</p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#8192a7] mb-1 uppercase tracking-wider">
+            <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">
               Nome do Regime Tributário
             </p>
-            <p className="text-sm font-bold text-[#041627]">{pedido.nomeRegimeTributario || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong">{pedido.nomeRegimeTributario || "—"}</p>
           </div>
         </div>
       </section>
 
       {/* Order items */}
-      <section className="bg-white rounded-xl shadow-card border border-[#e6e8ea] overflow-hidden">
-        <div className="p-6 border-b border-[#e6e8ea]">
-          <h3 className="font-bold text-[#041627] text-lg">Itens do Pedido</h3>
+      <section className="bg-card rounded-xl shadow-card border border-line overflow-hidden">
+        <div className="p-6 border-b border-line">
+          <h3 className="font-bold text-fg-strong text-lg">Itens do Pedido</h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-[#f7f9fb] border-b border-[#e6e8ea]">
-                <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider w-10"></th>
-                <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">Produto</th>
-                <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
+              <tr className="bg-canvas border-b border-line">
+                <th className="px-6 py-3 text-[11px] font-bold text-fg-subtle uppercase tracking-wider w-10"></th>
+                <th className="px-6 py-3 text-[11px] font-bold text-fg-subtle uppercase tracking-wider">Produto</th>
+                <th className="px-6 py-3 text-[11px] font-bold text-fg-subtle uppercase tracking-wider">
                   Descrição
                 </th>
-                <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
+                <th className="px-6 py-3 text-[11px] font-bold text-fg-subtle uppercase tracking-wider">
                   Quantidade
                 </th>
-                <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
+                <th className="px-6 py-3 text-[11px] font-bold text-fg-subtle uppercase tracking-wider">
                   Valor Unitário
                 </th>
-                <th className="px-6 py-3 text-[11px] font-bold text-[#8192a7] uppercase tracking-wider">
+                <th className="px-6 py-3 text-[11px] font-bold text-fg-subtle uppercase tracking-wider">
                   Valor Total
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#f7f9fb]">
+            <tbody className="divide-y divide-line-soft">
               {pedido.itens.map((item, index) => {
                 const productId = productIds.get(item.produto);
                 const isExpanded = expandedItems.has(index);
                 return (
                   <Fragment key={`${item.produto}-${index}`}>
-                    <tr className="hover:bg-[#f7f9fb] transition-colors">
+                    <tr className="hover:bg-canvas transition-colors">
                       <td
                         onClick={() => toggleItem(index)}
-                        className="px-6 py-4 text-[#8192a7] cursor-pointer"
+                        className="px-6 py-4 text-fg-subtle cursor-pointer"
                         aria-label={isExpanded ? "Recolher detalhes do item" : "Expandir detalhes do item"}
                       >
                         <span
@@ -337,9 +337,9 @@ function PedidoDetailPage() {
                           chevron_right
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm font-semibold text-[#041627]">
+                      <td className="px-6 py-4 text-sm font-semibold text-fg-strong">
                         {productId ? (
-                          <Link to={`/dashboard/produtos/${productId}`} className="text-[#006397] hover:underline">
+                          <Link to={`/dashboard/produtos/${productId}`} className="text-accent hover:underline">
                             {item.produto}
                           </Link>
                         ) : (
@@ -348,33 +348,33 @@ function PedidoDetailPage() {
                       </td>
                       <td
                         onClick={() => toggleItem(index)}
-                        className="px-6 py-4 text-sm text-[#44474c] cursor-pointer"
+                        className="px-6 py-4 text-sm text-fg-muted cursor-pointer"
                       >
                         {item.descricao || "—"}
                       </td>
-                      <td onClick={() => toggleItem(index)} className="px-6 py-4 text-sm text-[#44474c] cursor-pointer">
+                      <td onClick={() => toggleItem(index)} className="px-6 py-4 text-sm text-fg-muted cursor-pointer">
                         {item.quantidade}
                       </td>
                       <td
                         onClick={() => toggleItem(index)}
-                        className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap cursor-pointer"
+                        className="px-6 py-4 text-sm text-fg-muted whitespace-nowrap cursor-pointer"
                       >
                         {formatCurrency(item.valorUnitario)}
                       </td>
                       <td
                         onClick={() => toggleItem(index)}
-                        className="px-6 py-4 text-sm text-[#44474c] whitespace-nowrap cursor-pointer"
+                        className="px-6 py-4 text-sm text-fg-muted whitespace-nowrap cursor-pointer"
                       >
                         {formatCurrency(item.valorTotal)}
                       </td>
                     </tr>
 
                     {isExpanded && (
-                      <tr className="bg-[#f7f9fb]">
+                      <tr className="bg-canvas">
                         <td colSpan={6} className="px-6 py-6">
                           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                            <div className="bg-white rounded-lg border border-[#e6e8ea] p-4">
-                              <h4 className="text-xs font-bold text-[#041627] uppercase tracking-wider mb-3">
+                            <div className="bg-card rounded-lg border border-line p-4">
+                              <h4 className="text-xs font-bold text-fg-strong uppercase tracking-wider mb-3">
                                 ICMS
                               </h4>
                               <div className="grid grid-cols-2 gap-3">
@@ -385,8 +385,8 @@ function PedidoDetailPage() {
                               </div>
                             </div>
 
-                            <div className="bg-white rounded-lg border border-[#e6e8ea] p-4">
-                              <h4 className="text-xs font-bold text-[#041627] uppercase tracking-wider mb-3">
+                            <div className="bg-card rounded-lg border border-line p-4">
+                              <h4 className="text-xs font-bold text-fg-strong uppercase tracking-wider mb-3">
                                 ICMS Substituição Tributária
                               </h4>
                               <div className="grid grid-cols-2 gap-3">
@@ -404,8 +404,8 @@ function PedidoDetailPage() {
                               </div>
                             </div>
 
-                            <div className="bg-white rounded-lg border border-[#e6e8ea] p-4">
-                              <h4 className="text-xs font-bold text-[#041627] uppercase tracking-wider mb-3">IPI</h4>
+                            <div className="bg-card rounded-lg border border-line p-4">
+                              <h4 className="text-xs font-bold text-fg-strong uppercase tracking-wider mb-3">IPI</h4>
                               <div className="grid grid-cols-2 gap-3">
                                 <DetailField label="Base" value={formatCurrency(item.ipiBase)} />
                                 <DetailField label="Alíquota" value={formatPercent(item.ipiAliquota)} />
@@ -415,8 +415,8 @@ function PedidoDetailPage() {
                               </div>
                             </div>
 
-                            <div className="bg-white rounded-lg border border-[#e6e8ea] p-4">
-                              <h4 className="text-xs font-bold text-[#041627] uppercase tracking-wider mb-3">PIS</h4>
+                            <div className="bg-card rounded-lg border border-line p-4">
+                              <h4 className="text-xs font-bold text-fg-strong uppercase tracking-wider mb-3">PIS</h4>
                               <div className="grid grid-cols-2 gap-3">
                                 <DetailField label="Base" value={formatCurrency(item.pisBase)} />
                                 <DetailField label="Alíquota" value={formatPercent(item.pisAliquota)} />
@@ -425,8 +425,8 @@ function PedidoDetailPage() {
                               </div>
                             </div>
 
-                            <div className="bg-white rounded-lg border border-[#e6e8ea] p-4">
-                              <h4 className="text-xs font-bold text-[#041627] uppercase tracking-wider mb-3">
+                            <div className="bg-card rounded-lg border border-line p-4">
+                              <h4 className="text-xs font-bold text-fg-strong uppercase tracking-wider mb-3">
                                 COFINS
                               </h4>
                               <div className="grid grid-cols-2 gap-3">
@@ -437,8 +437,8 @@ function PedidoDetailPage() {
                               </div>
                             </div>
 
-                            <div className="bg-white rounded-lg border border-[#e6e8ea] p-4">
-                              <h4 className="text-xs font-bold text-[#041627] uppercase tracking-wider mb-3">
+                            <div className="bg-card rounded-lg border border-line p-4">
+                              <h4 className="text-xs font-bold text-fg-strong uppercase tracking-wider mb-3">
                                 Valores Adicionais
                               </h4>
                               <div className="grid grid-cols-2 gap-3">
@@ -452,8 +452,8 @@ function PedidoDetailPage() {
                               </div>
                             </div>
 
-                            <div className="bg-white rounded-lg border border-[#e6e8ea] p-4">
-                              <h4 className="text-xs font-bold text-[#041627] uppercase tracking-wider mb-3">
+                            <div className="bg-card rounded-lg border border-line p-4">
+                              <h4 className="text-xs font-bold text-fg-strong uppercase tracking-wider mb-3">
                                 Referências
                               </h4>
                               <div className="grid grid-cols-2 gap-3">
@@ -477,8 +477,8 @@ function PedidoDetailPage() {
                               </div>
                             </div>
 
-                            <div className="bg-white rounded-lg border border-[#e6e8ea] p-4">
-                              <h4 className="text-xs font-bold text-[#041627] uppercase tracking-wider mb-3">
+                            <div className="bg-card rounded-lg border border-line p-4">
+                              <h4 className="text-xs font-bold text-fg-strong uppercase tracking-wider mb-3">
                                 Quantidades e Pesos
                               </h4>
                               <div className="grid grid-cols-2 gap-3">
@@ -490,16 +490,16 @@ function PedidoDetailPage() {
                             </div>
 
                             {item.descricaoNFe && (
-                              <div className="bg-white rounded-lg border border-[#e6e8ea] p-4 md:col-span-2 xl:col-span-3">
-                                <h4 className="text-xs font-bold text-[#041627] uppercase tracking-wider mb-2">
+                              <div className="bg-card rounded-lg border border-line p-4 md:col-span-2 xl:col-span-3">
+                                <h4 className="text-xs font-bold text-fg-strong uppercase tracking-wider mb-2">
                                   Descrição para NF-e
                                 </h4>
-                                <p className="text-xs text-[#44474c]">{item.descricaoNFe}</p>
+                                <p className="text-xs text-fg-muted">{item.descricaoNFe}</p>
                               </div>
                             )}
 
-                            <div className="bg-white rounded-lg border border-[#e6e8ea] p-4">
-                              <h4 className="text-xs font-bold text-[#041627] uppercase tracking-wider mb-3">
+                            <div className="bg-card rounded-lg border border-line p-4">
+                              <h4 className="text-xs font-bold text-fg-strong uppercase tracking-wider mb-3">
                                 Situação
                               </h4>
                               <div className="grid grid-cols-2 gap-3">
@@ -513,11 +513,11 @@ function PedidoDetailPage() {
                             </div>
 
                             {item.observacao && (
-                              <div className="bg-white rounded-lg border border-[#e6e8ea] p-4 md:col-span-2 xl:col-span-3">
-                                <h4 className="text-xs font-bold text-[#041627] uppercase tracking-wider mb-2">
+                              <div className="bg-card rounded-lg border border-line p-4 md:col-span-2 xl:col-span-3">
+                                <h4 className="text-xs font-bold text-fg-strong uppercase tracking-wider mb-2">
                                   Observação
                                 </h4>
-                                <p className="text-xs text-[#44474c]">{item.observacao}</p>
+                                <p className="text-xs text-fg-muted">{item.observacao}</p>
                               </div>
                             )}
                           </div>
@@ -530,7 +530,7 @@ function PedidoDetailPage() {
 
               {pedido.itens.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-6 py-10 text-center text-sm text-[#8192a7]">
+                  <td colSpan={6} className="px-6 py-10 text-center text-sm text-fg-subtle">
                     Nenhum item registrado para este pedido.
                   </td>
                 </tr>

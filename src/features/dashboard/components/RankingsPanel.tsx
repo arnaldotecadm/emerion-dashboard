@@ -16,14 +16,14 @@ function RankingsPanel() {
   const { loading, error, topVendedores, topClientes, customerOrderBy, setCustomerOrderBy } = useDashboardOverview();
 
   return (
-    <div className="bg-white rounded-xl shadow-card overflow-hidden">
-      <div className="flex border-b border-[#e6e8ea]">
+    <div className="bg-card rounded-xl shadow-card overflow-hidden">
+      <div className="flex border-b border-line">
         <button
           onClick={() => setTab("sellers")}
           className={
             tab === "sellers"
-              ? "flex-1 py-4 text-xs font-bold border-b-2 border-[#006397] text-[#006397]"
-              : "flex-1 py-4 text-xs font-bold text-[#44474c] hover:bg-[#f7f9fb]"
+              ? "flex-1 py-4 text-xs font-bold border-b-2 border-accent text-accent"
+              : "flex-1 py-4 text-xs font-bold text-fg-muted hover:bg-canvas"
           }
         >
           TOP VENDEDORES
@@ -32,15 +32,15 @@ function RankingsPanel() {
           onClick={() => setTab("customers")}
           className={
             tab === "customers"
-              ? "flex-1 py-4 text-xs font-bold border-b-2 border-[#006397] text-[#006397]"
-              : "flex-1 py-4 text-xs font-bold text-[#44474c] hover:bg-[#f7f9fb]"
+              ? "flex-1 py-4 text-xs font-bold border-b-2 border-accent text-accent"
+              : "flex-1 py-4 text-xs font-bold text-fg-muted hover:bg-canvas"
           }
         >
           TOP CLIENTES
         </button>
       </div>
       <div className="p-6">
-        {error && <p className="text-sm text-[#8192a7]">{error}</p>}
+        {error && <p className="text-sm text-fg-subtle">{error}</p>}
 
         <div className="flex justify-end gap-2 mb-4">
           {RANKING_ORDER_OPTIONS.map(({ value: orderBy, label }) => (
@@ -51,8 +51,8 @@ function RankingsPanel() {
                 onClick={() => setCustomerOrderBy(orderBy)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
                   customerOrderBy === orderBy
-                    ? "bg-[#006397] text-white"
-                    : "bg-[#eceef0] text-[#44474c] hover:bg-[#dfe3e6]"
+                    ? "bg-accent-solid text-white"
+                    : "bg-surface-2 text-fg-muted hover:bg-surface-3"
                 }`}
               >
                 {label}
@@ -63,14 +63,14 @@ function RankingsPanel() {
         {!error && loading && (
           <div className="space-y-3 animate-pulse">
             {Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="h-8 bg-[#eceef0] rounded-lg w-full" />
+              <div key={index} className="h-8 bg-surface-2 rounded-lg w-full" />
             ))}
           </div>
         )}
 
         {!error && !loading && tab === "sellers" && (
           <table className="w-full text-left">
-            <thead className="bg-[#eceef0]">
+            <thead className="bg-surface-2">
               <tr>
                 <th className="p-3 text-xs rounded-l-lg">Vendedor</th>
                 <th
@@ -94,7 +94,7 @@ function RankingsPanel() {
                 <tr
                   key={vendedor.identifier}
                   onClick={() => navigate(`/dashboard/vendedores/${vendedor.identifier}`)}
-                  className="border-b border-[#eceef0] last:border-b-0 cursor-pointer hover:bg-[#f7f9fb]"
+                  className="border-b border-line-soft last:border-b-0 cursor-pointer hover:bg-canvas"
                 >
                   <td className="p-3 font-bold">{vendedor.name.trim()}</td>
                   <td className="p-3">{vendedor.amountSales.toLocaleString("pt-BR")}</td>
@@ -104,7 +104,7 @@ function RankingsPanel() {
 
               {topVendedores.length === 0 && (
                 <tr>
-                  <td colSpan={3} className="p-3 text-center text-[#8192a7]">
+                  <td colSpan={3} className="p-3 text-center text-fg-subtle">
                     Nenhum vendedor cadastrado.
                   </td>
                 </tr>
@@ -115,7 +115,7 @@ function RankingsPanel() {
 
         {!error && !loading && tab === "customers" && (
           <table className="w-full text-left">
-            <thead className="bg-[#eceef0]">
+            <thead className="bg-surface-2">
               <tr>
                 <th className="p-3 text-xs rounded-l-lg">Cliente</th>
                 <th
@@ -139,7 +139,7 @@ function RankingsPanel() {
                 <tr
                   key={cliente.identifier}
                   onClick={() => navigate(`/dashboard/clientes/${cliente.identifier}`)}
-                  className="border-b border-[#eceef0] last:border-b-0 cursor-pointer hover:bg-[#f7f9fb]"
+                  className="border-b border-line-soft last:border-b-0 cursor-pointer hover:bg-canvas"
                 >
                   <td className="p-3 font-bold">{cliente.name}</td>
                   <td className="p-3">{cliente.amountSales.toLocaleString("pt-BR")}</td>
@@ -149,7 +149,7 @@ function RankingsPanel() {
 
               {topClientes.length === 0 && (
                 <tr>
-                  <td colSpan={3} className="p-3 text-center text-[#8192a7]">
+                  <td colSpan={3} className="p-3 text-center text-fg-subtle">
                     Nenhum pedido registrado.
                   </td>
                 </tr>

@@ -1,15 +1,17 @@
+import { useTheme } from "../../../theme/ThemeContext";
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { GROWTH_POINTS, GROWTH_SUMMARY } from "../data/clientesData";
 
 /** Bar chart comparing new client acquisition against churn over the last 6 months. */
 function ClientGrowthPanel() {
+  const inkColor = useTheme().theme === "dark" ? "#f1f5f9" : "#041627";
   return (
-    <div className="bg-white p-6 rounded-xl shadow-card border border-[#e6e8ea] h-full flex flex-col">
+    <div className="bg-card p-6 rounded-xl shadow-card border border-line h-full flex flex-col">
       <div className="flex justify-between items-start mb-2">
-        <h3 className="font-bold text-[#041627] text-lg">Novos Clientes vs Churn</h3>
+        <h3 className="font-bold text-fg-strong text-lg">Novos Clientes vs Churn</h3>
         <div className="text-right shrink-0">
-          <p className="text-2xl font-black text-[#006397]">+{GROWTH_SUMMARY.net}</p>
-          <p className="text-[9px] text-[#8192a7] font-bold uppercase">Crescimento Líquido (6m)</p>
+          <p className="text-2xl font-black text-accent">+{GROWTH_SUMMARY.net}</p>
+          <p className="text-[9px] text-fg-subtle font-bold uppercase">Crescimento Líquido (6m)</p>
         </div>
       </div>
       <div className="min-h-32 mt-6 flex-1">
@@ -29,7 +31,7 @@ function ClientGrowthPanel() {
                 const point = payload?.[0]?.payload as (typeof GROWTH_POINTS)[number] | undefined;
                 if (!active || !point) return null;
                 return (
-                  <div className="rounded-lg bg-[#041627] px-3 py-2 text-white shadow-lg">
+                  <div className="rounded-lg bg-ink-solid px-3 py-2 text-white shadow-lg">
                     <p className="text-xs font-bold">{point.label}</p>
                     <p className="text-[11px]">{point.newClients} novos clientes</p>
                   </div>
@@ -41,13 +43,13 @@ function ClientGrowthPanel() {
               name="Novos clientes"
               maxBarSize={48}
               radius={[4, 4, 0, 0]}
-              activeBar={{ stroke: "#041627", strokeWidth: 2 }}
+              activeBar={{ stroke: inkColor, strokeWidth: 2 }}
               isAnimationActive
             >
               {GROWTH_POINTS.map((point, index) => (
                 <Cell
                   key={point.label}
-                  fill={index === GROWTH_POINTS.length - 1 ? "#041627" : "#006397"}
+                  fill={index === GROWTH_POINTS.length - 1 ? inkColor : "#006397"}
                   fillOpacity={index === GROWTH_POINTS.length - 1 ? 1 : 0.35 + (index / GROWTH_POINTS.length) * 0.6}
                 />
               ))}
@@ -55,14 +57,14 @@ function ClientGrowthPanel() {
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <div className="mt-4 pt-4 border-t border-[#f7f9fb] flex items-center justify-between">
+      <div className="mt-4 pt-4 border-t border-line-soft flex items-center justify-between">
         <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-[#006397]" />
-          <span className="text-xs text-[#8192a7]">Novos: {GROWTH_SUMMARY.newTotal}</span>
+          <span className="w-2 h-2 rounded-full bg-accent-solid" />
+          <span className="text-xs text-fg-subtle">Novos: {GROWTH_SUMMARY.newTotal}</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-[#c4c6cd]" />
-          <span className="text-xs text-[#8192a7]">Churn: {GROWTH_SUMMARY.churnTotal}</span>
+          <span className="w-2 h-2 rounded-full bg-line-strong" />
+          <span className="text-xs text-fg-subtle">Churn: {GROWTH_SUMMARY.churnTotal}</span>
         </div>
       </div>
     </div>

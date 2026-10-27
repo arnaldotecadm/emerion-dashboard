@@ -8,7 +8,7 @@ const ORDER_OPTIONS: { value: CustomerOrderBy; label: string }[] = [
   { value: "TOTALFATURADO", label: "Faturamento" },
 ];
 
-const MEDAL_CLASS = ["text-yellow-500", "text-[#8192a7]", "text-orange-400"];
+const MEDAL_CLASS = ["text-yellow-500", "text-fg-subtle", "text-orange-400"];
 
 function getSellerInitials(name: string): string {
   return name
@@ -26,10 +26,10 @@ function TopSellersLeaderboard({ years }: { years: DashboardYears }) {
   const { data: sellers, loading, error } = useSellerTopTrends(orderBy, years);
 
   return (
-    <div className="bg-white rounded-xl shadow-card border border-[#e6e8ea] p-6 h-full">
+    <div className="bg-card rounded-xl shadow-card border border-line p-6 h-full">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-        <h3 className="font-bold text-[#041627]">Top Vendedores</h3>
-        <div className="flex rounded-lg bg-[#eceef0] p-1" aria-label="Ordenar vendedores por">
+        <h3 className="font-bold text-fg-strong">Top Vendedores</h3>
+        <div className="flex rounded-lg bg-surface-2 p-1" aria-label="Ordenar vendedores por">
           {ORDER_OPTIONS.map((option) => (
             <button
               key={option.value}
@@ -38,8 +38,8 @@ function TopSellersLeaderboard({ years }: { years: DashboardYears }) {
               onClick={() => setOrderBy(option.value)}
               className={`rounded-md px-2.5 py-1.5 text-xs font-semibold transition-all ${
                 orderBy === option.value
-                  ? "bg-white text-[#006397] shadow-sm"
-                  : "text-[#44474c] hover:text-[#041627]"
+                  ? "bg-card text-accent shadow-sm"
+                  : "text-fg-muted hover:text-fg-strong"
               }`}
             >
               {option.label}
@@ -48,22 +48,22 @@ function TopSellersLeaderboard({ years }: { years: DashboardYears }) {
         </div>
       </div>
 
-      {error && <p role="alert" className="py-6 text-center text-sm text-[#ba1a1a]">{error}</p>}
+      {error && <p role="alert" className="py-6 text-center text-sm text-danger-fg">{error}</p>}
       {!error && loading && (
         <div className="space-y-4 animate-pulse">
           {Array.from({ length: 4 }).map((_, index) => (
-            <div key={index} className="h-12 rounded-lg bg-[#eceef0]" />
+            <div key={index} className="h-12 rounded-lg bg-surface-2" />
           ))}
         </div>
       )}
       {!error && !loading && sellers.length === 0 && (
-        <p className="py-6 text-center text-sm text-[#8192a7]">Nenhum vendedor encontrado.</p>
+        <p className="py-6 text-center text-sm text-fg-subtle">Nenhum vendedor encontrado.</p>
       )}
       {!error && !loading && sellers.length > 0 && (
         <div className="max-h-[260px] space-y-4 overflow-y-auto pr-2">
           {sellers.map((seller, index) => (
             <div key={seller.identifier} className="flex items-center gap-4">
-              <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#cce5ff] text-sm font-bold text-[#006397]">
+              <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-sm font-bold text-accent">
                 {getSellerInitials(seller.name)}
                 {index < MEDAL_CLASS.length && (
                   <span
@@ -76,12 +76,12 @@ function TopSellersLeaderboard({ years }: { years: DashboardYears }) {
                 )}
               </div>
               <div className="flex min-w-0 flex-1 flex-col gap-1">
-                <span className="truncate text-sm font-bold text-[#041627]">{seller.name.trim()}</span>
+                <span className="truncate text-sm font-bold text-fg-strong">{seller.name.trim()}</span>
                 <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-0.5 text-xs">
-                  <span className="text-[#8192a7]">
+                  <span className="text-fg-subtle">
                     {seller.amountSales.toLocaleString("pt-BR")} pedidos
                   </span>
-                  <span className={`font-bold ${orderBy === "TOTALFATURADO" ? "text-[#006397]" : "text-[#44474c]"}`}>
+                  <span className={`font-bold ${orderBy === "TOTALFATURADO" ? "text-accent" : "text-fg-muted"}`}>
                     {formatCurrency(seller.totalSales)}
                   </span>
                 </div>

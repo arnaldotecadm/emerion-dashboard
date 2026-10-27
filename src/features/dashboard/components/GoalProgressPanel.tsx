@@ -14,8 +14,8 @@ function GoalProgressPanel({ progressPct, remainingLabel, targetLabel }: GoalPro
   const data = [{ value: progressPct }];
 
   return (
-    <div className="bg-white rounded-xl shadow-card border border-[#e6e8ea] p-6 h-full flex flex-col items-center text-center">
-      <h3 className="font-bold text-[#041627] mb-6 w-full text-left">Metas vs Realizado</h3>
+    <div className="bg-card rounded-xl shadow-card border border-line p-6 h-full flex flex-col items-center text-center">
+      <h3 className="font-bold text-fg-strong mb-6 w-full text-left">Metas vs Realizado</h3>
       <div className="relative w-32 h-32 flex items-center justify-center mb-4 shrink-0">
         <ResponsiveContainer width="100%" height="100%">
           <RadialBarChart
@@ -39,7 +39,7 @@ function GoalProgressPanel({ progressPct, remainingLabel, targetLabel }: GoalPro
               content={({ active, payload }) => {
                 if (!active || !payload?.length) return null;
                 return (
-                  <div className="rounded-lg bg-[#041627] px-3 py-2 text-white shadow-lg">
+                  <div className="rounded-lg bg-ink-solid px-3 py-2 text-white shadow-lg">
                     <p className="text-[11px]">Meta atingida: {progressPct}%</p>
                   </div>
                 );
@@ -47,13 +47,13 @@ function GoalProgressPanel({ progressPct, remainingLabel, targetLabel }: GoalPro
             />
           </RadialBarChart>
         </ResponsiveContainer>
-        <span className="absolute text-2xl font-black text-[#041627] pointer-events-none">{progressPct}%</span>
+        <span className="absolute text-2xl font-black text-fg-strong pointer-events-none">{progressPct}%</span>
       </div>
-      <p className="text-xs font-bold text-[#8192a7] uppercase tracking-widest mb-1">Status da Meta</p>
-      <p className="text-xs text-[#8192a7] leading-relaxed px-2">
+      <p className="text-xs font-bold text-fg-subtle uppercase tracking-widest mb-1">Status da Meta</p>
+      <p className="text-xs text-fg-subtle leading-relaxed px-2">
         Faltam {remainingLabel} para atingir o objetivo do período de {targetLabel}.
       </p>
-      <button className="mt-6 w-full py-2.5 border border-[#e6e8ea] rounded-lg text-xs font-bold text-[#006397] hover:bg-[#f7f9fb] transition-colors uppercase tracking-widest">
+      <button className="mt-6 w-full py-2.5 border border-line rounded-lg text-xs font-bold text-accent hover:bg-canvas transition-colors uppercase tracking-widest">
         Ver Plano de Ação
       </button>
     </div>
