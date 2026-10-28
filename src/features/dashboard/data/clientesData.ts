@@ -1,9 +1,8 @@
 /**
  * Mock data for the "Clientes" (Customer Management) area — a strictly read-only view for managers.
- * `CLIENTES_DIRECTORY` is the single source of truth; the various dashboard panels (top clients,
- * delinquency risk, credit utilization) are all derived from it so figures never contradict
- * each other. The company has no customer "segment" taxonomy (retail/wholesale/industry), so no
- * such field exists on the model.
+ * The directory currently powers the static risk and credit panels. Aggregated customer metrics,
+ * revenue rankings, regional distribution and monthly acquisitions come from the dashboard API.
+ * The company has no customer "segment" taxonomy (retail/wholesale/industry).
  */
 
 export const formatCurrency = (value: number) =>
@@ -23,16 +22,14 @@ export const CLIENTES_KPIS: ClienteKpi[] = [
   {
     icon: "person_check",
     label: "Clientes Ativos",
-    value: "1.284",
-    hint: "vs. mês anterior (1.209)",
-    trend: { label: "+6.2%", positive: true },
+    value: "—",
+    hint: "Total de clientes ativos",
   },
   {
     icon: "payments",
     label: "Ticket Médio Mensal",
-    value: "R$ 3.240,00",
-    hint: "+2.4% no último trimestre",
-    trend: { label: "+2.4%", positive: true },
+    value: "—",
+    hint: "Ticket médio mensal",
   },
   {
     icon: "error",
@@ -293,53 +290,12 @@ export const CLIENTES_DIRECTORY: ClienteRow[] = [
   },
 ];
 
-export const CLIENTES_DIRECTORY_TOTAL = 1284;
-
 export const getClienteById = (id: string) => CLIENTES_DIRECTORY.find((cliente) => cliente.id === id);
-
-/** Top 5 clients by monthly revenue, for the "Top Clientes por Receita" ranking. */
-export const TOP_CLIENTES = [...CLIENTES_DIRECTORY]
-  .sort((a, b) => b.monthlyRevenue - a.monthlyRevenue)
-  .slice(0, 5)
-  .map((cliente, index) => ({ ...cliente, rank: index + 1 }));
 
 /** Top 4 accounts with the most overdue days, for the "Risco de Inadimplência" panel. */
 export const RISK_ITEMS = CLIENTES_DIRECTORY.filter((cliente) => cliente.daysOverdue !== undefined)
   .sort((a, b) => (b.daysOverdue ?? 0) - (a.daysOverdue ?? 0))
   .slice(0, 4);
 
-/** Top 5 clients by credit-limit utilization, for the "Limite de Crédito por Cliente" panel. */
+/** Top 5 mocked accounts by credit-limit utilization; the API does not expose this metric yet. */
 export const CREDIT_USAGE = [...CLIENTES_DIRECTORY].sort((a, b) => b.utilizedPct - a.utilizedPct).slice(0, 5);
-
-export interface RegionSlice {
-  label: string;
-  pct: number;
-  color: string;
-  offset: number;
-}
-
-/** Approximate distribution of the full customer base across Brazilian macro-regions. */
-export const CLIENT_REGIONS: RegionSlice[] = [
-  { label: "Sudeste", pct: 48, color: "#006397", offset: 0 },
-  { label: "Sul", pct: 22, color: "#041627", offset: 48 },
-  { label: "Nordeste", pct: 18, color: "#7fc2e8", offset: 70 },
-  { label: "Centro-Oeste", pct: 8, color: "#c4c6cd", offset: 88 },
-  { label: "Norte", pct: 4, color: "#8192a7", offset: 96 },
-];
-
-export interface GrowthPoint {
-  label: string;
-  newClients: number;
-  heightPct: number;
-}
-
-export const GROWTH_POINTS: GrowthPoint[] = [
-  { label: "Jan", newClients: 22, heightPct: 60 },
-  { label: "Fev", newClients: 28, heightPct: 75 },
-  { label: "Mar", newClients: 25, heightPct: 65 },
-  { label: "Abr", newClients: 32, heightPct: 90 },
-  { label: "Mai", newClients: 30, heightPct: 80 },
-  { label: "Jun", newClients: 42, heightPct: 100 },
-];
-
-export const GROWTH_SUMMARY = { net: 128, newTotal: 154, churnTotal: 26 };

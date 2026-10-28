@@ -1,14 +1,51 @@
 import { Link } from "react-router-dom";
-import { CLIENTES_KPIS } from "../data/clientesData";
+import { CLIENTES_KPIS, formatCurrency } from "../data/clientesData";
+import { useCustomerTopTrends } from "../hooks/useCustomerTopTrends";
 import TopClientsTable from "../components/TopClientsTable";
 import DelinquencyRiskPanel from "../components/DelinquencyRiskPanel";
 import ClientRegionPanel from "../components/ClientRegionPanel";
 import CreditUtilizationPanel from "../components/CreditUtilizationPanel";
 import ClientGrowthPanel from "../components/ClientGrowthPanel";
 import ClientsDirectoryTable from "../components/ClientsDirectoryTable";
+import type { DashboardYears } from "../types/dashboardTopTrends";
+
+const YEARS_OPTIONS: { value: DashboardYears; label: string }[] = [
+  { value: 1, label: "Ano atual" },
+  { value: 2, label: "Últimos 2 anos" },
+  { value: null, label: "Todos" },
+];
 
 /** "Clientes" — customer directory, credit health and account risk overview for managers. */
 function ClientesPage() {
+  const { data, loading, error, years, setYears } = useCustomerTopTrends();
+  const kpis = CLIENTES_KPIS.map((kpi) => {
+    if (kpi.label === "Clientes Ativos") {
+      return {
+        ...kpi,
+        value: loading ? "Carregando..." : error ? "—" : (data?.activeCustomers.toLocaleString("pt-BR") ?? "—"),
+        hint: error ? "Não foi possível carregar este indicador." : "Total de clientes ativos",
+        trend: undefined,
+      };
+    }
+
+    if (kpi.label === "Ticket Médio Mensal") {
+      return {
+        ...kpi,
+        value: loading
+          ? "Carregando..."
+          : error
+            ? "—"
+            : data
+              ? formatCurrency(data.monthlyAverageTicket)
+              : "—",
+        hint: error ? "Não foi possível carregar este indicador." : "Ticket médio mensal",
+        trend: undefined,
+      };
+    }
+
+    return kpi;
+  });
+
   return (
     <div>
       <Link
@@ -33,9 +70,33 @@ function ClientesPage() {
         </div>
       </div>
 
+      <section className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div>
+          <h3 className="text-sm font-semibold text-fg-strong">Período dos dados</h3>
+          <p className="text-xs text-fg-subtle">Filtro aplicado aos indicadores de clientes</p>
+        </div>
+        <div className="flex bg-card rounded-lg border border-line p-1" aria-label="Filtrar dados por ano">
+          {YEARS_OPTIONS.map((option) => (
+            <button
+              key={option.label}
+              type="button"
+              aria-pressed={years === option.value}
+              onClick={() => setYears(option.value)}
+              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                years === option.value
+                  ? "bg-accent-solid text-white shadow-sm"
+                  : "text-fg-muted hover:text-fg-strong"
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </section>
+
       {/* KPI row */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {CLIENTES_KPIS.map((kpi) => (
+        {kpis.map((kpi) => (
           <div
             key={kpi.label}
             className="bg-card p-6 rounded-xl shadow-card border border-line flex flex-col"
@@ -81,7 +142,7 @@ function ClientesPage() {
       {/* Top clients + delinquency risk */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
         <div className="lg:col-span-8">
-          <TopClientsTable />
+          <TopClientsTable data={data?.mostProfitableCustomers ?? []} loading={loading} error={error} />
         </div>
         <div className="lg:col-span-4">
           <DelinquencyRiskPanel />
@@ -90,9 +151,9 @@ function ClientesPage() {
 
       {/* Region distribution, credit usage, growth */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <ClientRegionPanel />
+        <ClientRegionPanel data={data?.customerDistributionByRegion ?? []} loading={loading} error={error} />
         <CreditUtilizationPanel />
-        <ClientGrowthPanel />
+        <ClientGrowthPanel data={data?.newCustomersByMonth ?? []} loading={loading} error={error} />
       </section>
 
       {/* Full client directory */}

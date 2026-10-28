@@ -1,8 +1,7 @@
 /**
  * Types mirroring the ERP backend's customer endpoints (GET /api/v1/customers).
- * These reflect exactly the fields returned by the API today; the mock data in
- * `clientesData.ts` still powers the other Clientes panels (KPIs, top clients,
- * risk, region, credit, growth) until equivalent endpoints exist for those.
+ * These reflect exactly the fields returned by the API. Aggregated customer
+ * metrics and trends are defined separately in `customerTopTrends.ts`.
  */
 
 /** A single customer row as returned by `GET /api/v1/customers`. */
