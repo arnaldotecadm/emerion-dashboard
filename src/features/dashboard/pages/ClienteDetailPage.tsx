@@ -27,8 +27,8 @@ const BackLink = () => (
 
 /** Read-only detail view for a single customer, backed by `GET /api/v1/customers/:id`. */
 function ClienteDetailPage() {
-  const { id } = useParams<{ id: string }>();
-  const { data: cliente, loading, error, notFound } = useCustomer(id);
+  const { id, customerCode } = useParams<{ id: string; customerCode: string }>();
+  const { data: cliente, loading, error, notFound } = useCustomer(id, customerCode);
 
   if (notFound) {
     return (

@@ -80,6 +80,7 @@ function App() {
         <Route path="pedidos" element={<PedidosPage />} />
         <Route path="pedidos/:id" element={<PedidoDetailPage />} />
         <Route path="clientes" element={<ClientesPage />} />
+        <Route path="clientes/codigo/:customerCode" element={<ClienteDetailPage />} />
         <Route path="clientes/:id" element={<ClienteDetailPage />} />
         <Route path="vendedores" element={<VendedoresPage />} />
         <Route path="vendedores/:id" element={<VendedorDetailPage />} />

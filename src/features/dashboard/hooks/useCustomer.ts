@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchCustomerById } from "../services/customerService";
+import { fetchCustomerByExternalId, fetchCustomerById } from "../services/customerService";
 import type { Customer } from "../types/customer";
 
 export interface UseCustomerResult {
@@ -10,45 +10,48 @@ export interface UseCustomerResult {
 }
 
 /** Loads a single customer by id from the ERP backend. */
-export function useCustomer(id: string | undefined): UseCustomerResult {
-  const [data, setData] = useState<Customer | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [notFound, setNotFound] = useState(false);
+export function useCustomer(id: string | undefined, externalId?: string): UseCustomerResult {
+  const [result, setResult] = useState<{
+    key: string;
+    data: Customer | null;
+    error: string | null;
+    notFound: boolean;
+  } | null>(null);
+  const key = externalId ? `external:${externalId}` : id ? `id:${id}` : null;
 
   useEffect(() => {
-    if (!id) {
-      setLoading(false);
-      setNotFound(true);
-      return;
-    }
+    if (!key) return;
 
     let cancelled = false;
-    setLoading(true);
-    setError(null);
-    setNotFound(false);
+    const request = externalId
+      ? fetchCustomerByExternalId(externalId)
+      : id
+        ? fetchCustomerById(id)
+        : null;
 
-    fetchCustomerById(id)
-      .then((result) => {
-        if (!cancelled) setData(result);
+    if (!request) return;
+
+    request
+      .then((data) => {
+        if (!cancelled) setResult({ key, data, error: null, notFound: false });
       })
       .catch((err: unknown) => {
         if (cancelled) return;
         const message = err instanceof Error ? err.message : "Não foi possível carregar o cliente.";
-        if (message === "Cliente não encontrado.") {
-          setNotFound(true);
-        } else {
-          setError(message);
-        }
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
+        setResult({
+          key,
+          data: null,
+          error: message === "Cliente não encontrado." ? null : message,
+          notFound: message === "Cliente não encontrado.",
+        });
       });
 
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [externalId, id, key]);
 
-  return { data, loading, error, notFound };
+  if (!key) return { data: null, loading: false, error: null, notFound: true };
+  if (result?.key !== key) return { data: null, loading: true, error: null, notFound: false };
+  return { data: result.data, loading: false, error: result.error, notFound: result.notFound };
 }

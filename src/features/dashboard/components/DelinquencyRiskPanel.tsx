@@ -1,23 +1,15 @@
-import { useNavigate } from "react-router-dom";
-import { RISK_ITEMS, riskLevelFor } from "../data/clientesData";
+import { Link } from "react-router-dom";
+import { formatCurrency } from "../data/clientesData";
+import type { OverdueInvoice } from "../types/customerTopTrends";
 
-const LEVEL_STYLES: Record<string, { badge: string; icon: string; iconWrap: string }> = {
-  Alto: {
-    badge: "bg-danger-soft text-danger-ink",
-    icon: "warning",
-    iconWrap: "bg-danger-soft text-danger-fg border-danger-line",
-  },
-  Médio: {
-    badge: "bg-orange-100 text-orange-700",
-    icon: "schedule",
-    iconWrap: "bg-orange-50 text-orange-600 border-orange-100",
-  },
-};
+interface DelinquencyRiskPanelProps {
+  data: OverdueInvoice[];
+  loading: boolean;
+  error: string | null;
+}
 
-/** Panel listing customers at delinquency risk, ranked by days overdue; each row opens the client's detail page. */
-function DelinquencyRiskPanel() {
-  const navigate = useNavigate();
-
+/** Panel listing overdue invoices returned by the customer dashboard API. */
+function DelinquencyRiskPanel({ data, loading, error }: DelinquencyRiskPanelProps) {
   return (
     <div className="bg-card rounded-xl shadow-card border border-line flex flex-col h-full">
       <div className="p-6 border-b border-line">
@@ -26,33 +18,42 @@ function DelinquencyRiskPanel() {
           <span className="w-2 h-2 bg-danger-solid rounded-full animate-pulse" />
         </h3>
       </div>
-      <div className="p-6 space-y-5 flex-1">
-        {RISK_ITEMS.map((item) => {
-          const level = riskLevelFor(item.daysOverdue ?? 0);
-          const style = LEVEL_STYLES[level];
-          return (
-            <div
-              key={item.id}
-              onClick={() => navigate(`/dashboard/clientes/${item.id}`)}
-              className="flex items-center justify-between group cursor-pointer"
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className={`w-10 h-10 rounded-full border-2 flex items-center justify-center shrink-0 ${style.iconWrap}`}
-                >
-                  <span className="material-symbols-outlined text-lg">{style.icon}</span>
+      <div className="p-6 flex-1">
+        {loading ? (
+          <p className="py-6 text-center text-sm text-fg-subtle">Carregando faturas vencidas...</p>
+        ) : error ? (
+          <p role="alert" className="py-6 text-center text-sm text-danger-fg">{error}</p>
+        ) : data.length === 0 ? (
+          <p className="py-6 text-center text-sm text-fg-subtle">Nenhuma fatura vencida encontrada.</p>
+        ) : (
+          <div className="max-h-[320px] space-y-5 overflow-y-auto pr-2">
+            {data.map((invoice, index) => (
+              <div
+                key={`${invoice.customerName}-${invoice.dueDate}-${index}`}
+                className="flex items-center justify-between gap-3"
+              >
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="w-10 h-10 rounded-full border-2 flex items-center justify-center shrink-0 bg-danger-soft text-danger-fg border-danger-line">
+                    <span className="material-symbols-outlined text-lg">warning</span>
+                  </div>
+                  <div className="min-w-0">
+                    <Link
+                      to={`/dashboard/clientes/codigo/${encodeURIComponent(String(invoice.customerCode))}`}
+                      className="block truncate text-sm font-bold text-fg-strong hover:text-accent hover:underline"
+                      title={invoice.customerName}
+                    >
+                      {invoice.customerName || "Cliente sem nome"}
+                    </Link>
+                    <p className="text-xs text-fg-subtle" title={invoice.description}>
+                      {invoice.description}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-bold text-fg-strong group-hover:text-accent transition-colors">
-                    {item.name}
-                  </p>
-                  <p className="text-xs text-fg-subtle">Vencido há {item.daysOverdue} dias</p>
-                </div>
+                <span className="shrink-0 text-xs font-bold text-danger-fg">{formatCurrency(invoice.amount)}</span>
               </div>
-              <span className={`px-2 py-1 text-[10px] font-bold rounded uppercase ${style.badge}`}>{level}</span>
-            </div>
-          );
-        })}
+            ))}
+          </div>
+        )}
       </div>
       <a
         href="#todos-clientes"

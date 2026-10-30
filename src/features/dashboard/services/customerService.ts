@@ -33,7 +33,7 @@ export async function fetchCustomerById(id: string | number): Promise<Customer> 
 
 /** Fetches a single customer by its ERP `externalId` (aka `codCli`) from the ERP backend. */
 export async function fetchCustomerByExternalId(externalId: string): Promise<Customer> {
-  const response = await apiFetch(`${API_BASE_URL}/customers/by-external-id/${externalId}`);
+  const response = await apiFetch(`${API_BASE_URL}/customers/by-external-id/${encodeURIComponent(externalId)}`);
 
   if (!response.ok) {
     throw new Error(
@@ -45,4 +45,3 @@ export async function fetchCustomerByExternalId(externalId: string): Promise<Cus
 
   return (await response.json()) as Customer;
 }
-

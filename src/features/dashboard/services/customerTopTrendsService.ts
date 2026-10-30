@@ -42,6 +42,21 @@ function isCustomerTopTrends(value: unknown): value is CustomerTopTrends {
         Number.isFinite(item.customerCount) &&
         item.customerCount >= 0
     );
+  const isOverdueInvoiceList = (items: unknown): boolean =>
+    Array.isArray(items) &&
+    items.every(
+      (item) =>
+        typeof item === "object" &&
+        item !== null &&
+        ((typeof item.customerCode === "string" && item.customerCode.length > 0) ||
+          (typeof item.customerCode === "number" && Number.isFinite(item.customerCode))) &&
+        typeof item.customerName === "string" &&
+        typeof item.amount === "number" &&
+        Number.isFinite(item.amount) &&
+        typeof item.dueDate === "string" &&
+        /^\d{4}-\d{2}-\d{2}$/.test(item.dueDate) &&
+        typeof item.description === "string"
+    );
 
   return (
     isRegionList(data.customerDistributionByRegion) &&
@@ -50,6 +65,9 @@ function isCustomerTopTrends(value: unknown): value is CustomerTopTrends {
     data.activeCustomers >= 0 &&
     typeof data.monthlyAverageTicket === "number" &&
     Number.isFinite(data.monthlyAverageTicket) &&
+    typeof data.unpaidInvoicesAmount === "number" &&
+    Number.isFinite(data.unpaidInvoicesAmount) &&
+    isOverdueInvoiceList(data.overdueInvoices) &&
     isTrendList(data.mostProfitableCustomers) &&
     isMonthlyCountList(data.newCustomersByMonth)
   );

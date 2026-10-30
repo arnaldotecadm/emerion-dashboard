@@ -7,6 +7,7 @@ import ClientRegionPanel from "../components/ClientRegionPanel";
 import CreditUtilizationPanel from "../components/CreditUtilizationPanel";
 import ClientGrowthPanel from "../components/ClientGrowthPanel";
 import ClientsDirectoryTable from "../components/ClientsDirectoryTable";
+import UnavailableDataNotice from "../components/UnavailableDataNotice";
 import type { DashboardYears } from "../types/dashboardTopTrends";
 
 const YEARS_OPTIONS: { value: DashboardYears; label: string }[] = [
@@ -40,6 +41,20 @@ function ClientesPage() {
               : "—",
         hint: error ? "Não foi possível carregar este indicador." : "Ticket médio mensal",
         trend: undefined,
+      };
+    }
+
+    if (kpi.label === "Inadimplência") {
+      return {
+        ...kpi,
+        value: loading
+          ? "Carregando..."
+          : error
+            ? "—"
+            : data
+              ? formatCurrency(data.unpaidInvoicesAmount)
+              : "—",
+        hint: error ? "Não foi possível carregar este indicador." : "Valor total de faturas não pagas",
       };
     }
 
@@ -126,14 +141,26 @@ function ClientesPage() {
               )}
             </div>
             <h3 className="text-fg-subtle font-medium text-sm">{kpi.label}</h3>
-            <p className={`text-2xl font-bold mt-1 ${kpi.danger ? "text-danger-fg" : "text-fg-strong"}`}>
-              {kpi.value}
-            </p>
-            <p className="text-xs text-fg-subtle mt-2">{kpi.hint}</p>
-            {kpi.progress !== undefined && (
-              <div className="w-full bg-surface-2 h-2 rounded-full mt-3">
-                <div className="bg-orange-500 h-full rounded-full" style={{ width: `${kpi.progress}%` }} />
+            {kpi.label === "Limite de Crédito Total" ? (
+              <div className="mt-3">
+                <UnavailableDataNotice
+                  compact
+                  icon="credit_card"
+                  description="Este indicador poderá ser preenchido se houver interesse em acompanhar os limites."
+                />
               </div>
+            ) : (
+              <>
+                <p className={`text-2xl font-bold mt-1 ${kpi.danger ? "text-danger-fg" : "text-fg-strong"}`}>
+                  {kpi.value}
+                </p>
+                <p className="text-xs text-fg-subtle mt-2">{kpi.hint}</p>
+                {kpi.progress !== undefined && (
+                  <div className="w-full bg-surface-2 h-2 rounded-full mt-3">
+                    <div className="bg-orange-500 h-full rounded-full" style={{ width: `${kpi.progress}%` }} />
+                  </div>
+                )}
+              </>
             )}
           </div>
         ))}
@@ -145,7 +172,7 @@ function ClientesPage() {
           <TopClientsTable data={data?.mostProfitableCustomers ?? []} loading={loading} error={error} />
         </div>
         <div className="lg:col-span-4">
-          <DelinquencyRiskPanel />
+          <DelinquencyRiskPanel data={data?.overdueInvoices ?? []} loading={loading} error={error} />
         </div>
       </section>
 

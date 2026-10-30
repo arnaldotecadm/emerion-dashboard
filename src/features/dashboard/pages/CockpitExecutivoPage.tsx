@@ -1,20 +1,34 @@
 import { useEffect, useState } from "react";
-import { cockpitOrders, type CockpitOrder } from "../data/cockpitOrders";
+import type { ReactNode } from "react";
+import { useSalesCockpit } from "../hooks/useSalesCockpit";
+import type { SalesCockpitOrder } from "../types/salesCockpit";
 
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
   currency: "BRL",
 });
 
-const funnelStages = [
-  { label: "Cotações Emitidas", count: "184 cotações", value: "R$ 3.840.000", width: "100%", color: "bg-emerald-500" },
-  { label: "Pedidos Aprovados", count: "122 pedidos", value: "R$ 1.920.000", width: "82%", color: "bg-amber-500" },
-  { label: "Notas Fiscais Emitidas", count: "88 NF-e", value: "R$ 1.250.400", width: "64%", color: "bg-blue-500" },
-];
+const numberFormatter = new Intl.NumberFormat("pt-BR");
+
+function formatCurrency(value: number | undefined, loading: boolean, error: string | null): string {
+  if (loading) return "Carregando...";
+  if (error || value === undefined) return "—";
+  return currencyFormatter.format(value);
+}
 
 function CockpitExecutivoPage() {
-  const [selectedOrder, setSelectedOrder] = useState<CockpitOrder | null>(null);
+  const { data, loading, error } = useSalesCockpit();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const stages = [
+    { label: "Cotações Emitidas", count: data?.customerQuotations ?? 0, color: "bg-emerald-500" },
+    { label: "Pedidos", count: data?.customerOrders ?? 0, color: "bg-amber-500" },
+    { label: "Notas Fiscais Emitidas", count: data?.invoices ?? 0, color: "bg-blue-500" },
+  ];
+  const maxStageCount = Math.max(...stages.map((stage) => stage.count), 1);
+  const conversionRate =
+    data && data.customerQuotations > 0
+      ? (data.invoices / data.customerQuotations) * 100
+      : null;
 
   useEffect(() => {
     if (!toastMessage) return;
@@ -33,10 +47,22 @@ function CockpitExecutivoPage() {
       {toastMessage && (
         <div
           role="status"
-          className="fixed bottom-5 right-5 z-50 flex items-center gap-3 rounded-xl border border-emerald-500 bg-ink-solid px-4 py-3 text-white shadow-xl"
+          aria-live="polite"
+          className="fixed right-6 top-6 z-50 flex w-[min(26rem,calc(100vw-3rem))] items-start gap-4 rounded-2xl border-2 border-amber-500 bg-card p-5 text-fg-strong shadow-2xl"
         >
-          <span className="material-symbols-outlined text-emerald-400">check_circle</span>
-          <span className="text-xs font-medium">{toastMessage}</span>
+          <span className="material-symbols-outlined rounded-full bg-amber-100 p-2 text-3xl text-amber-700">
+            info
+          </span>
+          <div className="pt-1">
+            <p className="text-base font-bold">Funcionalidade em desenvolvimento</p>
+            <p className="mt-1 text-sm text-fg-muted">{toastMessage}</p>
+          </div>
+        </div>
+      )}
+
+      {error && (
+        <div role="alert" className="mb-6 rounded-xl border border-danger-line bg-danger-soft p-4 text-sm text-danger-ink">
+          {error}
         </div>
       )}
 
@@ -44,35 +70,49 @@ function CockpitExecutivoPage() {
         <MetricCard
           icon="payments"
           iconClass="bg-blue-50 text-blue-600"
-          badge="+12.4%"
-          badgeClass="bg-emerald-50 text-emerald-600"
+          badge="Total no mês"
+          badgeClass="bg-surface-2 text-fg-muted"
           title="Faturamento Mensal"
-          value="R$ 1.250.400"
+          value={formatCurrency(data?.monthlySalesTotal, loading, error)}
         />
         <MetricCard
           icon="percent"
           iconClass="bg-purple-50 text-purple-600"
-          badge="Meta: 120%"
-          badgeClass="bg-emerald-50 text-emerald-600"
+          badge="Média real"
+          badgeClass="bg-surface-2 text-fg-muted"
           title="Markup Médio Real"
-          value="148,2%"
-          valueClass="text-emerald-600"
+          value={loading ? "Carregando..." : error || !data ? "—" : `${data.averageMarkup.toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%`}
         />
         <MetricCard
           icon="bolt"
           iconClass="bg-amber-50 text-amber-600"
-          badge="64 Pedidos"
+          badge={`${numberFormatter.format(data?.invoices ?? 0)} NF-e`}
           badgeClass="bg-surface-2 text-fg-muted"
-          title="Pipeline Faturamento"
-          value="R$ 450.000"
+          title="Pedidos no Período"
+          value={loading ? "Carregando..." : error || !data ? "—" : numberFormatter.format(data.customerOrders)}
         />
         <MetricCard
           icon="warning"
           iconClass="bg-red-50 text-red-600"
-          badge="Crítico"
+          badge={
+            loading
+              ? "Carregando..."
+              : error || !data
+                ? "—"
+                : `${numberFormatter.format(data.unpaidInvoicesCount)} faturas`
+          }
           badgeClass="bg-red-50 text-red-600"
           title="Inadimplência Total"
-          value="4,2%"
+          value={formatCurrency(data?.unpaidInvoicesAmount, loading, error)}
+          detail={
+          data && !loading && !error ? (
+            <>
+              <p>Recebido no mês: {currencyFormatter.format(data.amountReceivedThisMonth)}</p>
+              <p>Previsto a receber: {currencyFormatter.format(data.amountToReceiveThisMonth)}</p>
+              <p>Em aberto no mês: {currencyFormatter.format(data.amountDueThisMonth)}</p>
+            </>
+          ) : undefined
+          }
           valueClass="text-red-600"
         />
       </section>
@@ -83,58 +123,54 @@ function CockpitExecutivoPage() {
             <span className="material-symbols-outlined text-lg text-emerald-600">trending_up</span>
             Funil de Conversão de Vendas
           </h3>
-          <div className="space-y-4 px-1 sm:px-8">
-            {funnelStages.map((stage, index) => (
-              <div
-                key={stage.label}
-                className={`relative mx-auto flex h-16 items-center justify-between overflow-hidden px-4 text-white shadow-sm sm:px-6 ${
-                  index === 0
-                    ? "w-full rounded-t-xl bg-ink-solid"
-                    : index === 1
-                      ? "w-[82%] rounded-md bg-ink-2"
-                      : "w-[64%] rounded-b-xl bg-ink-3"
-                }`}
-              >
-                <span className={`absolute inset-0 opacity-20 ${stage.color}`} />
-                <span className="relative z-10 text-xs font-medium sm:text-sm">
-                  {stage.label} ({stage.count})
-                </span>
-                <span className="relative z-10 text-xs font-bold sm:text-base">{stage.value}</span>
+          {loading ? (
+            <p className="py-12 text-center text-sm text-fg-subtle">Carregando etapas do funil...</p>
+          ) : error ? (
+            <p className="py-12 text-center text-sm text-fg-subtle">Não foi possível carregar o funil.</p>
+          ) : (
+            <div className="space-y-4 px-1 sm:px-8">
+              {stages.map((stage) => {
+                return (
+                  <div
+                    key={stage.label}
+                    className="relative mx-auto flex h-16 w-full items-center justify-between overflow-hidden rounded-xl border border-line bg-canvas px-4 shadow-sm sm:px-6"
+                  >
+                    <span
+                      className={`absolute inset-y-0 left-0 opacity-15 ${stage.color}`}
+                      style={{ width: `${(stage.count / maxStageCount) * 100}%` }}
+                    />
+                    <span className="relative z-10 text-xs font-medium text-fg-strong sm:text-sm">{stage.label}</span>
+                    <span className="relative z-10 text-xs font-bold text-fg-strong sm:text-base">
+                      {numberFormatter.format(stage.count)}
+                    </span>
+                  </div>
+                );
+              })}
+              <div className="mt-2 border-t border-line-soft pt-4 text-center">
+                <div className="text-xs font-bold uppercase tracking-widest text-fg-subtle">
+                  Cotações convertidas em NF-e
+                </div>
+                <div className="mt-0.5 text-3xl font-black text-fg-strong">
+                  {conversionRate === null ? "—" : `${conversionRate.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`}
+                </div>
               </div>
-            ))}
-            <div className="mt-2 border-t border-line-soft pt-4 text-center">
-              <div className="text-xs font-bold uppercase tracking-widest text-fg-subtle">
-                Eficiência de Conversão Total
-              </div>
-              <div className="mt-0.5 text-3xl font-black text-fg-strong">32.6%</div>
             </div>
-          </div>
+          )}
         </article>
 
         <article className="flex flex-col rounded-2xl border border-line bg-card p-6 shadow-card">
           <h3 className="mb-4 flex items-center gap-2 text-base font-bold text-fg-strong">
-            <span className="material-symbols-outlined text-lg text-amber-500">gpp_maybe</span>
+            <span className="material-symbols-outlined text-lg text-fg-subtle">notifications</span>
             Alertas de Atenção
           </h3>
-          <div className="flex flex-1 flex-col gap-3.5">
-            <AlertCard
-              kind="amber"
-              title="Bloqueio Financeiro"
-              primary="Pedido #9842 - R$ 42.500"
-              detail="Vendedor: JULIA_VENDAS • Limite Excedido"
-            />
-            <AlertCard
-              kind="red"
-              title="Ruptura de Estoque"
-              primary="Cabo XLR 10m - 0 unidades"
-              detail="8 pedidos aguardando reposição"
-            />
-            <AlertCard
-              kind="blue"
-              title="Inadimplência Alta"
-              primary="CABLE CONNECT LTDA"
-              detail="R$ 15.200 atrasados há 45 dias"
-            />
+          <div className="flex flex-1 items-center justify-center rounded-xl border border-line bg-canvas p-5 text-center">
+            <div>
+              <span className="material-symbols-outlined text-3xl text-fg-subtle">info</span>
+              <p className="mt-2 text-sm font-semibold text-fg-strong">Alertas operacionais indisponíveis</p>
+              <p className="mt-1 text-xs text-fg-subtle">
+                A API ainda não fornece dados de bloqueio financeiro ou ruptura de estoque.
+              </p>
+            </div>
           </div>
         </article>
       </section>
@@ -146,96 +182,74 @@ function CockpitExecutivoPage() {
               <span className="material-symbols-outlined text-lg text-emerald-600">bolt</span>
               Pedidos em Andamento & Status Delphi
             </h3>
-            <p className="mt-0.5 text-xs text-fg-subtle">
-              Pedidos sincronizados em tempo real com controle de margem e cobrança
-            </p>
+            <p className="mt-0.5 text-xs text-fg-subtle">Pedidos recentes sincronizados com o sistema</p>
           </div>
-          <div className="text-xs font-medium text-fg-subtle">Mostrando {cockpitOrders.length} pedidos</div>
+          <div className="text-xs font-medium text-fg-subtle">
+            {loading ? "Carregando pedidos..." : `Mostrando ${numberFormatter.format(data?.recentOrders.length ?? 0)} pedidos`}
+          </div>
         </div>
 
-        <div className="overflow-x-auto rounded-xl border border-line">
-          <table className="w-full min-w-[900px] text-left text-xs">
-            <thead className="border-b border-line bg-canvas text-fg-muted">
-              <tr>
-                <th className="px-4 py-3 font-semibold">Nº Pedido</th>
-                <th className="px-4 py-3 font-semibold">Cliente</th>
-                <th className="px-4 py-3 font-semibold">Vendedor</th>
-                <th className="px-4 py-3 text-right font-semibold">Valor Total</th>
-                <th className="px-4 py-3 text-right font-semibold">Markup</th>
-                <th className="px-4 py-3 font-semibold">Status Operacional</th>
-                <th className="px-4 py-3 text-right font-semibold">Ação</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-line-soft">
-              {cockpitOrders.map((order) => (
-                <tr
-                  key={order.id}
-                  tabIndex={0}
-                  onClick={() => setSelectedOrder(order)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault();
-                      setSelectedOrder(order);
-                    }
-                  }}
-                  className="cursor-pointer transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
-                >
-                  <td className="px-4 py-3 font-mono font-bold text-accent">{order.id}</td>
-                  <td className="max-w-xs truncate px-4 py-3 font-medium text-fg">
-                    {order.client}
-                    <div className="text-[10px] text-fg-subtle">
-                      {order.city} - {order.uf}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 font-medium text-fg-muted">{order.seller}</td>
-                  <td className="px-4 py-3 text-right font-mono font-bold text-fg">
-                    {currencyFormatter.format(order.totalValue)}
-                  </td>
-                  <td className="px-4 py-3 text-right font-semibold">
-                    <span className={order.markup >= 145 ? "text-emerald-600" : "text-amber-600"}>
-                      {order.markup.toFixed(2)}%
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className={`inline-block rounded-full border px-2.5 py-1 text-[11px] font-medium ${statusClass(order.status)}`}>
-                      {order.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-right" onClick={(event) => event.stopPropagation()}>
-                    <div className="flex items-center justify-end gap-2">
-                      {order.status === "Aguardando Financeiro" && (
+        {error ? (
+          <p className="py-10 text-center text-sm text-danger-fg">{error}</p>
+        ) : loading ? (
+          <p className="py-10 text-center text-sm text-fg-subtle">Carregando pedidos recentes...</p>
+        ) : !data?.recentOrders.length ? (
+          <p className="py-10 text-center text-sm text-fg-subtle">Nenhum pedido recente encontrado.</p>
+        ) : (
+          <div className="overflow-x-auto rounded-xl border border-line">
+            <table className="w-full min-w-[900px] text-left text-xs">
+              <thead className="border-b border-line bg-canvas text-fg-muted">
+                <tr>
+                  <th className="px-4 py-3 font-semibold">Nº Pedido</th>
+                  <th className="px-4 py-3 font-semibold">Data</th>
+                  <th className="px-4 py-3 font-semibold">Cliente</th>
+                  <th className="px-4 py-3 font-semibold">Vendedor</th>
+                  <th className="px-4 py-3 text-right font-semibold">Valor Total</th>
+                  <th className="px-4 py-3 text-right font-semibold">Markup</th>
+                  <th className="px-4 py-3 font-semibold">Status Operacional</th>
+                  <th className="px-4 py-3 text-right font-semibold">Ação</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-line-soft">
+                {data.recentOrders.map((order, index) => (
+                  <tr key={`${order.orderNumber}-${index}`} className="transition hover:bg-canvas">
+                    <td className="px-4 py-3 font-mono font-bold text-accent">{order.orderNumber}</td>
+                    <td className="px-4 py-3 text-fg-muted">
+                      {new Date(`${order.orderDate}T00:00:00`).toLocaleDateString("pt-BR")}
+                    </td>
+                    <td className="max-w-xs truncate px-4 py-3 font-medium text-fg">
+                      {order.customerName.trim() || `Cliente ${order.customerCode}`}
+                    </td>
+                    <td className="px-4 py-3 font-medium text-fg-muted">{order.salesmanName?.trim() || "—"}</td>
+                    <td className="px-4 py-3 text-right font-mono font-bold text-fg">
+                      {currencyFormatter.format(order.totalAmount)}
+                    </td>
+                    <td className="px-4 py-3 text-right font-semibold text-fg">
+                      {order.averageMarkup.toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`inline-block rounded-full border px-2.5 py-1 text-[11px] font-medium ${statusClass(order.status)}`}>
+                        {order.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      {order.status.startsWith("Aguardando") && (
                         <button
                           type="button"
-                          onClick={() =>
-                            setToastMessage(
-                              `Notificação disparada para o vendedor ${order.seller} sobre o pedido ${order.id}!`
-                            )
-                          }
-                          className="rounded-lg bg-amber-500 px-2.5 py-1 text-[11px] font-medium text-white transition hover:bg-amber-600"
+                          onClick={() => setToastMessage("Esta funcionalidade ainda não foi adicionada.")}
+                          className="whitespace-nowrap rounded-lg border border-amber-500 bg-amber-500 px-3 py-1.5 text-[11px] font-semibold text-white transition hover:border-amber-600 hover:bg-amber-600"
                         >
-                          Cobrar
+                          Solicitar ação
                         </button>
                       )}
-                      <button
-                        type="button"
-                        onClick={() => setSelectedOrder(order)}
-                        className="rounded-lg p-1.5 text-fg-subtle transition hover:bg-surface-2 hover:text-accent"
-                        aria-label={`Ver detalhes do pedido ${order.id}`}
-                      >
-                        <span className="material-symbols-outlined text-lg">chevron_right</span>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </section>
-
-      {selectedOrder && (
-        <OrderDetailsDrawer order={selectedOrder} onClose={() => setSelectedOrder(null)} />
-      )}
     </div>
   );
 }
@@ -248,6 +262,7 @@ function MetricCard({
   title,
   value,
   valueClass = "text-fg-strong",
+  detail,
 }: {
   icon: string;
   iconClass: string;
@@ -256,6 +271,7 @@ function MetricCard({
   title: string;
   value: string;
   valueClass?: string;
+  detail?: ReactNode;
 }) {
   return (
     <article className="rounded-2xl border border-line bg-card p-6 shadow-card">
@@ -265,190 +281,18 @@ function MetricCard({
       </div>
       <div className="text-sm font-medium text-fg-subtle">{title}</div>
       <div className={`mt-1 text-2xl font-bold ${valueClass}`}>{value}</div>
+      {detail && <div className="mt-3 space-y-1 text-[11px] text-fg-subtle">{detail}</div>}
     </article>
   );
 }
 
-function AlertCard({
-  kind,
-  title,
-  primary,
-  detail,
-}: {
-  kind: "amber" | "red" | "blue";
-  title: string;
-  primary: string;
-  detail: string;
-}) {
-  const colorClasses = {
-    amber: "border-amber-500 bg-amber-50 text-amber-700",
-    red: "border-red-500 bg-red-50 text-red-700",
-    blue: "border-blue-500 bg-blue-50 text-blue-700",
-  }[kind];
-
-  return (
-    <div className={`rounded-r-lg border-l-4 p-4 ${colorClasses}`}>
-      <div className="mb-1 text-xs font-bold uppercase">{title}</div>
-      <div className="text-sm font-semibold text-fg">{primary}</div>
-      <div className="mt-1 text-xs text-fg-subtle">{detail}</div>
-    </div>
-  );
-}
-
-function statusClass(status: CockpitOrder["status"]): string {
-  switch (status) {
-    case "Faturado":
-      return "border-emerald-300 bg-emerald-100 text-emerald-800";
-    case "Pronto para Faturar":
-      return "border-blue-300 bg-blue-100 text-blue-800";
-    case "Aguardando Financeiro":
-      return "border-amber-300 bg-amber-100 text-amber-800";
-    case "Aguardando Estoque":
-      return "border-purple-300 bg-purple-100 text-purple-800";
-  }
-}
-
-function OrderDetailsDrawer({ order, onClose }: { order: CockpitOrder; onClose: () => void }) {
-  const items =
-    order.items.length > 0
-      ? order.items
-      : [{ name: "Itens diversos do pedido", qty: order.itemsCount, unitPrice: order.totalValue / order.itemsCount }];
-
-  return (
-    <div className="fixed inset-0 z-[60] flex justify-end" role="presentation">
-      <button
-        type="button"
-        className="absolute inset-0 bg-ink-solid/50"
-        onClick={onClose}
-        aria-label="Fechar detalhes do pedido"
-      />
-      <aside
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="cockpit-order-title"
-        className="relative z-10 flex h-full w-full max-w-2xl flex-col border-l border-line bg-card shadow-2xl"
-      >
-        <header className="flex items-center justify-between border-b border-line bg-canvas p-5">
-          <div>
-            <div className="mb-1 flex items-center gap-2">
-              <span className="rounded border border-accent-soft bg-accent-tint px-2 py-0.5 font-mono text-xs font-bold text-accent">
-                {order.id}
-              </span>
-              <span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${statusClass(order.status)}`}>
-                {order.status}
-              </span>
-            </div>
-            <h2 id="cockpit-order-title" className="text-base font-bold text-fg-strong">
-              {order.client}
-            </h2>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-lg p-2 text-fg-subtle transition hover:bg-surface-2 hover:text-fg-strong"
-            aria-label="Fechar"
-          >
-            <span className="material-symbols-outlined">close</span>
-          </button>
-        </header>
-
-        <div className="flex-1 space-y-6 overflow-y-auto p-6">
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <DetailMetric title="Valor Total" value={currencyFormatter.format(order.totalValue)} />
-            <DetailMetric title="Markup Praticado" value={`${order.markup.toFixed(2)}%`} />
-            <DetailMetric title="Condição Pgto" value={order.paymentTerms} />
-            <DetailMetric title="Vendedor" value={order.seller} />
-          </div>
-
-          <section className="space-y-3 rounded-xl border border-line p-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-fg-subtle">
-              Dados do Cliente & Logística
-            </h3>
-            <div className="grid grid-cols-1 gap-3 text-xs sm:grid-cols-2">
-              <DetailField label="CNPJ" value={order.clientDoc} />
-              <DetailField label="Destino" value={`${order.city} - ${order.uf}`} />
-              <DetailField label="Transportadora" value={order.carrier || "A DEFINIR"} />
-              <DetailField label="Emissão Pedido" value={order.date} />
-            </div>
-          </section>
-
-          <section className="space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-fg-subtle">
-              Itens do Pedido ({order.itemsCount} itens)
-            </h3>
-            <div className="overflow-x-auto rounded-xl border border-line">
-              <table className="w-full min-w-[440px] text-left text-xs">
-                <thead className="bg-canvas text-fg-muted">
-                  <tr>
-                    <th className="px-3 py-2.5 font-semibold">Produto</th>
-                    <th className="px-3 py-2.5 text-right font-semibold">Qtd</th>
-                    <th className="px-3 py-2.5 text-right font-semibold">Preço Unit.</th>
-                    <th className="px-3 py-2.5 text-right font-semibold">Total</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-line-soft">
-                  {items.map((item) => (
-                    <tr key={item.name}>
-                      <td className="px-3 py-2.5 font-medium">{item.name}</td>
-                      <td className="px-3 py-2.5 text-right">{item.qty} un</td>
-                      <td className="px-3 py-2.5 text-right">{currencyFormatter.format(item.unitPrice)}</td>
-                      <td className="px-3 py-2.5 text-right font-bold">
-                        {currencyFormatter.format(item.qty * item.unitPrice)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-
-          <div className="space-y-2 rounded-xl border border-line bg-canvas p-4 text-xs">
-            <div className="flex justify-between text-fg-muted">
-              <span>Subtotal dos Produtos:</span>
-              <span className="font-semibold">{currencyFormatter.format(order.totalValue * 0.92)}</span>
-            </div>
-            <div className="flex justify-between text-fg-muted">
-              <span>ICMS ST / Tributos Retidos (NF-e):</span>
-              <span className="font-semibold">{currencyFormatter.format(order.totalValue * 0.08)}</span>
-            </div>
-            <div className="flex justify-between border-t border-line pt-2 text-sm font-bold text-fg-strong">
-              <span>Total com Impostos:</span>
-              <span className="text-accent">{currencyFormatter.format(order.totalValue)}</span>
-            </div>
-          </div>
-        </div>
-
-        <footer className="flex justify-end border-t border-line p-4">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex items-center gap-1.5 rounded-xl bg-accent-solid px-4 py-2 text-xs font-semibold text-white transition hover:bg-accent-solid-hover"
-          >
-            <span className="material-symbols-outlined text-sm">check_circle</span>
-            Liberar p/ Próxima Fase
-          </button>
-        </footer>
-      </aside>
-    </div>
-  );
-}
-
-function DetailMetric({ title, value }: { title: string; value: string }) {
-  return (
-    <div className="min-w-0 rounded-xl border border-line bg-canvas p-3">
-      <div className="text-[11px] font-medium text-fg-subtle">{title}</div>
-      <div className="truncate text-sm font-bold text-fg-strong">{value}</div>
-    </div>
-  );
-}
-
-function DetailField({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <span className="text-fg-subtle">{label}: </span>
-      <span className="font-medium text-fg-muted">{value}</span>
-    </div>
-  );
+function statusClass(status: SalesCockpitOrder["status"]): string {
+  const normalized = status.toLocaleLowerCase("pt-BR");
+  if (normalized.includes("faturado")) return "border-emerald-300 bg-emerald-100 text-emerald-800";
+  if (normalized.includes("financeiro")) return "border-amber-300 bg-amber-100 text-amber-800";
+  if (normalized.includes("estoque")) return "border-purple-300 bg-purple-100 text-purple-800";
+  if (normalized.includes("pronto")) return "border-blue-300 bg-blue-100 text-blue-800";
+  return "border-line bg-surface-2 text-fg-muted";
 }
 
 export default CockpitExecutivoPage;
