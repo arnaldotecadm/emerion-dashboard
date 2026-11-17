@@ -1,5 +1,4 @@
 export type CustomerOrderBy = "QUANTIDADEPEDIDO" | "TOTALFATURADO";
-export type DashboardYears = 1 | 2 | null;
 
 export interface DashboardTopTrend {
   identifier: number;

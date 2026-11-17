@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchSellerTopTrends } from "../services/salesService";
-import type { CustomerOrderBy, DashboardTopTrend, DashboardYears } from "../types/dashboardTopTrends";
+import type { CustomerOrderBy, DashboardTopTrend } from "../types/dashboardTopTrends";
 
 export interface UseSellerTopTrendsResult {
   data: DashboardTopTrend[];
@@ -11,21 +11,22 @@ export interface UseSellerTopTrendsResult {
 /** Loads the seller ranking using the selected metric and year range. */
 export function useSellerTopTrends(
   orderBy: CustomerOrderBy,
-  years: DashboardYears
+  startDate: string,
+  endDate: string
 ): UseSellerTopTrendsResult {
   const [result, setResult] = useState<{
     key: string;
     data: DashboardTopTrend[];
     error: string | null;
   } | null>(null);
-  const requestKey = `${orderBy}:${years ?? "all"}`;
+  const requestKey = `${orderBy}:${startDate}:${endDate}`;
 
   useEffect(() => {
     let cancelled = false;
 
     async function load() {
       try {
-        const data = await fetchSellerTopTrends(orderBy, years);
+        const data = await fetchSellerTopTrends(orderBy, startDate, endDate);
         if (!cancelled) setResult({ key: requestKey, data, error: null });
       } catch (err: unknown) {
         if (!cancelled) {
@@ -43,7 +44,7 @@ export function useSellerTopTrends(
     return () => {
       cancelled = true;
     };
-  }, [orderBy, years, requestKey]);
+  }, [endDate, orderBy, requestKey, startDate]);
 
   if (result?.key !== requestKey) {
     return { data: [], loading: true, error: null };

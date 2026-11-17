@@ -6,9 +6,10 @@ import { useCustomerOrdersOverTime } from "../hooks/useCustomerOrdersOverTime";
 import SalesChannelPanel from "../components/SalesChannelPanel";
 import TopSellersLeaderboard from "../components/TopSellersLeaderboard";
 import GoalProgressPanel from "../components/GoalProgressPanel";
+import { useDashboardDateRange } from "../hooks/useDashboardDateRange";
+import { formatDateRangeLabel } from "../utils/dateRange";
 
 type SalesGranularity = "mes" | "trimestre";
-type PeriodYearFilter = "current-year" | "last-two-years" | "all";
 
 interface SalesPeriodPoint {
   key: string;
@@ -22,12 +23,6 @@ interface SalesPeriodPoint {
 const GRANULARITY_OPTIONS: { value: SalesGranularity; label: string }[] = [
   { value: "mes", label: "Mês" },
   { value: "trimestre", label: "Trimestre" },
-];
-
-const YEAR_FILTER_OPTIONS: { value: PeriodYearFilter; label: string }[] = [
-  { value: "current-year", label: "Ano atual" },
-  { value: "last-two-years", label: "Últimos 2 anos" },
-  { value: "all", label: "Todos (3 anos)" },
 ];
 
 function getPreviousPeriodKey(year: number, period: number, granularity: SalesGranularity): string {
@@ -48,24 +43,6 @@ function formatYearMonth(yearMonth: string): string {
   const [year, month] = yearMonth.split("-").map(Number);
   const monthName = getMonthName(month);
   return `${year} - ${monthName[0].toLocaleUpperCase("pt-BR")}${monthName.slice(1)}`;
-}
-
-function getSelectedIntervalLabel(
-  yearFilter: PeriodYearFilter,
-  currentYear: number,
-  sales: { yearMonth: string }[]
-): string {
-  if (yearFilter === "current-year") {
-    return `01/01/${currentYear} a 31/12/${currentYear}`;
-  }
-  if (yearFilter === "last-two-years") {
-    return `01/01/${currentYear - 1} a 31/12/${currentYear}`;
-  }
-
-  const availableMonths = sales.map(({ yearMonth }) => yearMonth).sort();
-  if (availableMonths.length === 0) return "sem dados disponíveis";
-
-  return `${formatYearMonth(availableMonths[0])} a ${formatYearMonth(availableMonths[availableMonths.length - 1])}`;
 }
 
 function buildSalesPeriods(
@@ -110,25 +87,17 @@ function buildSalesPeriods(
 /** Detail/drill-down page for the "Vendas Totais" KPI, with month and quarter trends. */
 function VendasTotaisPage() {
   const [granularity, setGranularity] = useState<SalesGranularity>("mes");
-  const [summaryYearFilter, setSummaryYearFilter] = useState<PeriodYearFilter>("current-year");
-  const [tableYearFilter, setTableYearFilter] = useState<PeriodYearFilter>("current-year");
+  const { startDate, endDate } = useDashboardDateRange();
   const dataset = VENDAS_DATASETS.mes;
-  const { data: salesByPeriod, loading, error } = useCustomerOrdersOverTime();
-  const currentYear = new Date().getFullYear();
-  const applyYearFilter = (yearFilter: PeriodYearFilter) =>
-    salesByPeriod.filter((period) => {
-      if (yearFilter === "all") return true;
-      const year = Number(period.yearMonth.slice(0, 4));
-      return yearFilter === "current-year" ? year === currentYear : year >= currentYear - 1 && year <= currentYear;
-    });
-  const summaryIntervalLabel = getSelectedIntervalLabel(
-    summaryYearFilter,
-    currentYear,
-    applyYearFilter(summaryYearFilter)
-  );
-  const tableIntervalLabel = getSelectedIntervalLabel(tableYearFilter, currentYear, applyYearFilter(tableYearFilter));
-  const summaryPeriods = buildSalesPeriods(applyYearFilter(summaryYearFilter), granularity);
-  const tableGroupedPeriods = buildSalesPeriods(applyYearFilter(tableYearFilter), granularity);
+  const { data: salesByPeriod, loading, error } = useCustomerOrdersOverTime(startDate, endDate);
+  const tableSalesByPeriod = salesByPeriod;
+  const tableLoading = loading;
+  const tableError = error;
+  const dateRange = { startDate, endDate };
+  const summaryIntervalLabel = formatDateRangeLabel(dateRange);
+  const tableIntervalLabel = formatDateRangeLabel(dateRange);
+  const summaryPeriods = buildSalesPeriods(salesByPeriod, granularity);
+  const tableGroupedPeriods = buildSalesPeriods(tableSalesByPeriod, granularity);
   const tablePeriods = [...tableGroupedPeriods].reverse();
   const totalSales = summaryPeriods.reduce((total, period) => total + period.amountSold, 0);
   const bestPeriod = summaryPeriods.reduce<SalesPeriodPoint | null>(
@@ -176,26 +145,6 @@ function VendasTotaisPage() {
           </div>
 
           <div className="flex flex-wrap items-center justify-end gap-3">
-            <div className="flex rounded-lg bg-surface-2 p-1" aria-label="Filtrar período dos dados de vendas">
-              {YEAR_FILTER_OPTIONS.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  aria-pressed={summaryYearFilter === option.value}
-                  onClick={() => {
-                    setSummaryYearFilter(option.value);
-                    setHoveredIndex(null);
-                  }}
-                  className={`rounded-md px-3 py-2 text-xs font-semibold transition-all ${
-                    summaryYearFilter === option.value
-                      ? "bg-card text-accent shadow-sm"
-                      : "text-fg-muted hover:text-fg-strong"
-                  }`}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
             <div className="bg-surface-2 p-1 rounded-lg flex items-center">
               {GRANULARITY_OPTIONS.map((option) => (
                 <button
@@ -344,7 +293,8 @@ function VendasTotaisPage() {
         </div>
         <div className="lg:col-span-5">
           <TopSellersLeaderboard
-            years={summaryYearFilter === "current-year" ? 1 : summaryYearFilter === "last-two-years" ? 2 : null}
+            startDate={startDate}
+            endDate={endDate}
           />
         </div>
         <div className="lg:col-span-3">
@@ -361,23 +311,6 @@ function VendasTotaisPage() {
         <div className="px-8 py-6 border-b border-line flex flex-wrap justify-between items-center gap-4">
           <h3 className="font-bold text-fg-strong">Detalhamento por Período</h3>
           <div className="flex flex-wrap items-center justify-end gap-2">
-            <div className="flex rounded-lg bg-surface-2 p-1" aria-label="Filtrar tabela por ano">
-              {YEAR_FILTER_OPTIONS.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  aria-pressed={tableYearFilter === option.value}
-                  onClick={() => setTableYearFilter(option.value)}
-                  className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${
-                    tableYearFilter === option.value
-                      ? "bg-card text-accent shadow-sm"
-                      : "text-fg-muted hover:text-fg-strong"
-                  }`}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
             <button
               type="button"
               aria-label="Baixar detalhamento"
@@ -456,21 +389,21 @@ function VendasTotaisPage() {
                   </tr>
                 );
               })}
-              {!loading && !error && tablePeriods.length === 0 && (
+              {!tableLoading && !tableError && tablePeriods.length === 0 && (
                 <tr>
                   <td colSpan={4} className="px-8 py-8 text-center text-sm text-fg-subtle">
                     Nenhuma venda encontrada entre {tableIntervalLabel}.
                   </td>
                 </tr>
               )}
-              {loading && (
+              {tableLoading && (
                 <tr>
                   <td colSpan={4} className="px-8 py-8 text-center text-sm text-fg-subtle">
                     Carregando detalhamento...
                   </td>
                 </tr>
               )}
-              {error && (
+              {tableError && (
                 <tr>
                   <td colSpan={4} className="px-8 py-8 text-center text-sm text-danger-fg">
                     Não foi possível carregar o detalhamento por período.
@@ -482,7 +415,7 @@ function VendasTotaisPage() {
         </div>
         <div className="px-8 py-4 bg-canvas border-t border-line">
           <p className="text-xs text-fg-subtle">
-            {loading
+            {tableLoading
               ? "Carregando dados..."
               : `Intervalo: ${tableIntervalLabel}. Exibindo ${tablePeriods.length} períodos agrupados por ${
                   granularity === "mes" ? "mês" : "trimestre"

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import { fetchCustomerOrders } from "../services/customerOrderService";
-import type { CustomerOrdersPeriod } from "../services/customerOrderService";
 import type { CustomerOrderPage } from "../types/customerOrder";
 
 export interface UseCustomerOrdersResult {
@@ -22,7 +21,8 @@ export function useCustomerOrders(
   statusPedido?: string,
   codigoEmpresa?: number,
   numeroPedido?: string,
-  period?: CustomerOrdersPeriod
+  startDate?: string,
+  endDate?: string
 ): UseCustomerOrdersResult {
   const [page, setPage] = useState(initialPage);
   const [size, setSize] = useState(initialSize);
@@ -34,7 +34,8 @@ export function useCustomerOrders(
     statusPedido,
     codigoEmpresa,
     numeroPedido,
-    period,
+    startDate,
+    endDate,
     reloadToken,
   ]);
   const [result, setResult] = useState<{
@@ -46,7 +47,7 @@ export function useCustomerOrders(
   useEffect(() => {
     let cancelled = false;
 
-    fetchCustomerOrders(page, size, codigoCliente, statusPedido, codigoEmpresa, numeroPedido, period)
+    fetchCustomerOrders(page, size, codigoCliente, statusPedido, codigoEmpresa, numeroPedido, startDate, endDate)
       .then((result) => {
         if (!cancelled) setResult({ key: requestKey, data: result, error: null });
       })
@@ -63,7 +64,7 @@ export function useCustomerOrders(
     return () => {
       cancelled = true;
     };
-  }, [page, size, codigoCliente, statusPedido, codigoEmpresa, numeroPedido, period, reloadToken, requestKey]);
+  }, [page, size, codigoCliente, statusPedido, codigoEmpresa, numeroPedido, startDate, endDate, reloadToken, requestKey]);
 
   const refetch = useCallback(() => setReloadToken((token) => token + 1), []);
 

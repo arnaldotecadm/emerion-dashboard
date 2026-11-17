@@ -1,6 +1,5 @@
 import { API_BASE_URL, apiFetch } from "./apiConfig";
 import type { CustomerTopTrends } from "../types/customerTopTrends";
-import type { DashboardYears } from "../types/dashboardTopTrends";
 
 function isCustomerTopTrends(value: unknown): value is CustomerTopTrends {
   if (typeof value !== "object" || value === null) return false;
@@ -73,14 +72,15 @@ function isCustomerTopTrends(value: unknown): value is CustomerTopTrends {
   );
 }
 
-/** Fetches the aggregated customer metrics and trends from the ERP backend. */
-export async function fetchCustomerTopTrends(years: DashboardYears = null): Promise<CustomerTopTrends> {
+/** Fetches aggregated customer metrics and trends from the ERP backend. */
+export async function fetchCustomerTopTrends(
+  startDate: string,
+  endDate: string
+): Promise<CustomerTopTrends> {
   const params = new URLSearchParams();
-  const headers = years === null ? undefined : { years: String(years) };
-  if (years !== null) params.set("years", String(years));
-
-  const query = params.size > 0 ? `?${params.toString()}` : "";
-  const response = await apiFetch(`${API_BASE_URL}/dashboard/customer-top-trends${query}`, { headers });
+  if (startDate) params.set("startDate", startDate);
+  if (endDate) params.set("endDate", endDate);
+  const response = await apiFetch(`${API_BASE_URL}/dashboard/customer-top-trends?${params.toString()}`);
 
   if (!response.ok) {
     throw new Error(`Falha ao carregar os indicadores de clientes (HTTP ${response.status}).`);

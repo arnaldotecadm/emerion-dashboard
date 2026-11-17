@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import SideNav from "./components/SideNav";
 import TopBar from "./components/TopBar";
+import { DashboardDateRangeProvider } from "./hooks/useDashboardDateRange";
 
 export interface DashboardOutletContext {
   userName: string;
@@ -43,37 +44,39 @@ function DashboardLayout({
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
-    <div className="bg-canvas text-fg min-h-screen">
-      <SideNav
-        onSignOut={onSignOut}
-        collapsed={sidebarCollapsed}
-        onToggleCollapsed={() => setSidebarCollapsed((collapsed) => !collapsed)}
-      />
-      <TopBar
-        userName={userName}
-        userEmail={userEmail}
-        userGroups={userGroups}
-        onSignOut={onSignOut}
-        sidebarCollapsed={sidebarCollapsed}
-      />
-      <main
-        className={`pr-6 pt-24 pb-12 transition-[padding] duration-300 ${
-          sidebarCollapsed ? "pl-20" : "pl-72"
-        }`}
-      >
-        <Outlet
-          context={{
-            userName,
-            onSignOut,
-            userEmail,
-            userGroups,
-            userId,
-            userPhone,
-            userEmailVerified,
-          } satisfies DashboardOutletContext}
+    <DashboardDateRangeProvider>
+      <div className="bg-canvas text-fg min-h-screen">
+        <SideNav
+          onSignOut={onSignOut}
+          collapsed={sidebarCollapsed}
+          onToggleCollapsed={() => setSidebarCollapsed((collapsed) => !collapsed)}
         />
-      </main>
-    </div>
+        <TopBar
+          userName={userName}
+          userEmail={userEmail}
+          userGroups={userGroups}
+          onSignOut={onSignOut}
+          sidebarCollapsed={sidebarCollapsed}
+        />
+        <main
+          className={`pr-6 pt-24 pb-12 transition-[padding] duration-300 ${
+            sidebarCollapsed ? "pl-20" : "pl-72"
+          }`}
+        >
+          <Outlet
+            context={{
+              userName,
+              onSignOut,
+              userEmail,
+              userGroups,
+              userId,
+              userPhone,
+              userEmailVerified,
+            } satisfies DashboardOutletContext}
+          />
+        </main>
+      </div>
+    </DashboardDateRangeProvider>
   );
 }
 

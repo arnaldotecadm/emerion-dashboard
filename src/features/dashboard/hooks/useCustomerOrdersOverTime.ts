@@ -9,27 +9,29 @@ export interface UseCustomerOrdersOverTimeResult {
 }
 
 /** Loads monthly sales totals and order counts for the "Vendas Totais" page. */
-export function useCustomerOrdersOverTime(): UseCustomerOrdersOverTimeResult {
-  const [data, setData] = useState<CustomerOrdersOverTime[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export function useCustomerOrdersOverTime(startDate: string, endDate: string): UseCustomerOrdersOverTimeResult {
+  const [result, setResult] = useState<{
+    key: string;
+    data: CustomerOrdersOverTime[];
+    error: string | null;
+  } | null>(null);
+  const requestKey = `${startDate}:${endDate}`;
 
   useEffect(() => {
     let cancelled = false;
 
     async function load() {
-      setLoading(true);
-      setError(null);
-
       try {
-        const result = await fetchCustomerOrdersOverTime();
-        if (!cancelled) setData(result);
+        const data = await fetchCustomerOrdersOverTime(startDate, endDate);
+        if (!cancelled) setResult({ key: requestKey, data, error: null });
       } catch (err: unknown) {
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : "Não foi possível carregar as vendas por período.");
+          setResult({
+            key: requestKey,
+            data: [],
+            error: err instanceof Error ? err.message : "Não foi possível carregar as vendas por período.",
+          });
         }
-      } finally {
-        if (!cancelled) setLoading(false);
       }
     }
 
@@ -38,7 +40,11 @@ export function useCustomerOrdersOverTime(): UseCustomerOrdersOverTimeResult {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [endDate, requestKey, startDate]);
 
-  return { data, loading, error };
+  if (result?.key !== requestKey) {
+    return { data: [], loading: true, error: null };
+  }
+
+  return { data: result.data, loading: false, error: result.error };
 }

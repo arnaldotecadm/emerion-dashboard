@@ -1,36 +1,35 @@
 import { useEffect, useState } from "react";
 import { fetchCustomerTopTrends } from "../services/customerTopTrendsService";
-import type { DashboardYears } from "../types/dashboardTopTrends";
 import type { CustomerTopTrends } from "../types/customerTopTrends";
+import { useDashboardDateRange } from "./useDashboardDateRange";
 
 export interface UseCustomerTopTrendsResult {
   data: CustomerTopTrends | null;
   loading: boolean;
   error: string | null;
-  years: DashboardYears;
-  setYears: (years: DashboardYears) => void;
 }
 
 /** Loads aggregated customer metrics for the customer dashboard. */
 export function useCustomerTopTrends(): UseCustomerTopTrendsResult {
+  const { startDate, endDate } = useDashboardDateRange();
   const [result, setResult] = useState<{
-    years: DashboardYears;
+    key: string;
     data: CustomerTopTrends | null;
     error: string | null;
   } | null>(null);
-  const [years, setYears] = useState<DashboardYears>(1);
+  const requestKey = `${startDate}:${endDate}`;
 
   useEffect(() => {
     let cancelled = false;
 
-    fetchCustomerTopTrends(years)
+    fetchCustomerTopTrends(startDate, endDate)
       .then((data) => {
-        if (!cancelled) setResult({ years, data, error: null });
+        if (!cancelled) setResult({ key: requestKey, data, error: null });
       })
       .catch((err: unknown) => {
         if (!cancelled) {
           setResult({
-            years,
+            key: requestKey,
             data: null,
             error: err instanceof Error ? err.message : "Não foi possível carregar os indicadores de clientes.",
           });
@@ -40,11 +39,11 @@ export function useCustomerTopTrends(): UseCustomerTopTrendsResult {
     return () => {
       cancelled = true;
     };
-  }, [years]);
+  }, [endDate, requestKey, startDate]);
 
-  if (result?.years !== years) {
-    return { data: null, loading: true, error: null, years, setYears };
+  if (result?.key !== requestKey) {
+    return { data: null, loading: true, error: null };
   }
 
-  return { ...result, loading: false, years, setYears };
+  return { data: result.data, loading: false, error: result.error };
 }

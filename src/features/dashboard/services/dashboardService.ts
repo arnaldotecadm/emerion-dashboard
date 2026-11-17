@@ -1,4 +1,4 @@
-import type { CustomerOrderBy, DashboardTopTrends, DashboardYears } from "../types/dashboardTopTrends";
+import type { CustomerOrderBy, DashboardTopTrends } from "../types/dashboardTopTrends";
 import { API_BASE_URL, apiFetch } from "./apiConfig";
 
 export class DashboardAccessDeniedError extends Error {
@@ -64,17 +64,17 @@ function isDashboardTopTrends(value: unknown): value is DashboardTopTrends {
 }
 
 /**
- * Fetches aggregated dashboard metrics and rankings. The optional `years`
- * request header limits the backend result; omitting it returns all available data.
+ * Fetches aggregated dashboard metrics and rankings for the requested interval.
  */
 export async function fetchDashboardTopTrends(
   orderBy: CustomerOrderBy,
-  years: DashboardYears = null
+  startDate: string,
+  endDate: string
 ): Promise<DashboardTopTrends> {
   const params = new URLSearchParams({ orderby: orderBy });
-  const headers = years === null ? undefined : { years: String(years) };
-  if (years !== null) params.set("years", String(years));
-  const response = await apiFetch(`${API_BASE_URL}/dashboard/top-trends?${params.toString()}`, { headers });
+  if (startDate) params.set("startDate", startDate);
+  if (endDate) params.set("endDate", endDate);
+  const response = await apiFetch(`${API_BASE_URL}/dashboard/top-trends?${params.toString()}`);
 
   if (!response.ok) {
     if (response.status === 403) {

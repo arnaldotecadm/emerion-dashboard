@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSellerTopTrends } from "../hooks/useSellerTopTrends";
-import type { CustomerOrderBy, DashboardYears } from "../types/dashboardTopTrends";
+import type { CustomerOrderBy } from "../types/dashboardTopTrends";
 import { formatCurrency } from "../utils/format";
 
 const ORDER_OPTIONS: { value: CustomerOrderBy; label: string }[] = [
@@ -21,9 +21,9 @@ function getSellerInitials(name: string): string {
 }
 
 /** Compact leaderboard of top sellers ranked by orders or billed sales. */
-function TopSellersLeaderboard({ years }: { years: DashboardYears }) {
+function TopSellersLeaderboard({ startDate, endDate }: { startDate: string; endDate: string }) {
   const [orderBy, setOrderBy] = useState<CustomerOrderBy>("TOTALFATURADO");
-  const { data: sellers, loading, error } = useSellerTopTrends(orderBy, years);
+  const { data: sellers, loading, error } = useSellerTopTrends(orderBy, startDate, endDate);
 
   return (
     <div className="bg-card rounded-xl shadow-card border border-line p-6 h-full">

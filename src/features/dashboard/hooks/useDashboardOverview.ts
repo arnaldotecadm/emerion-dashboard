@@ -2,9 +2,9 @@ import { createContext, createElement, useContext, useEffect, useState } from "r
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardAccessDeniedError, fetchDashboardTopTrends } from "../services/dashboardService";
+import { useDashboardDateRange } from "./useDashboardDateRange";
 import type {
   CustomerOrderBy,
-  DashboardYears,
   DashboardOrdersByRegion,
   DashboardTopTrend,
   DashboardTrendByMonth,
@@ -25,8 +25,6 @@ export interface UseDashboardOverviewResult {
   ordersByRegion: DashboardOrdersByRegion[];
   customerOrderBy: CustomerOrderBy;
   setCustomerOrderBy: (orderBy: CustomerOrderBy) => void;
-  years: DashboardYears;
-  setYears: (years: DashboardYears) => void;
 }
 
 const DashboardOverviewContext = createContext<UseDashboardOverviewResult | null>(null);
@@ -37,14 +35,17 @@ const DashboardOverviewContext = createContext<UseDashboardOverviewResult | null
  */
 function useDashboardOverviewData(): UseDashboardOverviewResult {
   const navigate = useNavigate();
+  const { startDate, endDate } = useDashboardDateRange();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [customerOrderBy, setCustomerOrderBy] = useState<CustomerOrderBy>("TOTALFATURADO");
-  const [years, setYears] = useState<DashboardYears>(1);
   const [result, setResult] = useState<
     Omit<
       UseDashboardOverviewResult,
-      "loading" | "error" | "customerOrderBy" | "setCustomerOrderBy" | "years" | "setYears"
+      | "loading"
+      | "error"
+      | "customerOrderBy"
+      | "setCustomerOrderBy"
     >
   >({
     totalClientes: 0,
@@ -67,7 +68,7 @@ function useDashboardOverviewData(): UseDashboardOverviewResult {
       setError(null);
 
       try {
-        const dashboardData = await fetchDashboardTopTrends(customerOrderBy, years);
+        const dashboardData = await fetchDashboardTopTrends(customerOrderBy, startDate, endDate);
 
         if (!cancelled) {
           setResult({
@@ -101,9 +102,15 @@ function useDashboardOverviewData(): UseDashboardOverviewResult {
     return () => {
       cancelled = true;
     };
-  }, [customerOrderBy, navigate, years]);
+  }, [customerOrderBy, endDate, navigate, startDate]);
 
-  return { loading, error, ...result, customerOrderBy, setCustomerOrderBy, years, setYears };
+  return {
+    loading,
+    error,
+    ...result,
+    customerOrderBy,
+    setCustomerOrderBy,
+  };
 }
 
 export function DashboardOverviewProvider({ children }: { children: ReactNode }) {

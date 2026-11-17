@@ -5,6 +5,7 @@ import HelpTip from "./HelpTip";
 import ThemeToggle from "../../../theme/ThemeToggle";
 import { useCustomer } from "../hooks/useCustomer";
 import { useNotification } from "../hooks/useNotification";
+import { useDashboardDateRange } from "../hooks/useDashboardDateRange";
 
 export interface TopBarProps {
   userName: string;
@@ -37,6 +38,7 @@ function TopBar({
   sidebarCollapsed,
 }: TopBarProps) {
   const location = useLocation();
+  const { startDate, setStartDate, endDate, setEndDate } = useDashboardDateRange();
   const clienteMatch = location.pathname.match(/^\/dashboard\/clientes\/(.+)$/);
   const clienteId = clienteMatch?.[1];
   const { data: cliente } = useCustomer(clienteId);
@@ -60,6 +62,30 @@ function TopBar({
       <h1 className="text-2xl font-semibold text-fg-strong">{title}</h1>
       <div className="flex items-center gap-4">
         <ThemeToggle />
+        <div className="flex items-center gap-3">
+          <label className="flex items-center gap-1.5 whitespace-nowrap text-xs font-semibold text-fg-subtle">
+            Início
+            <input
+              type="date"
+              aria-label="Data inicial global"
+              value={startDate}
+              max={endDate || undefined}
+              onChange={(event) => setStartDate(event.target.value)}
+              className="h-10 w-36 rounded-md border border-line bg-card px-2 text-sm text-fg-strong"
+            />
+          </label>
+          <label className="flex items-center gap-1.5 whitespace-nowrap text-xs font-semibold text-fg-subtle">
+            Fim
+            <input
+              type="date"
+              aria-label="Data final global"
+              value={endDate}
+              min={startDate || undefined}
+              onChange={(event) => setEndDate(event.target.value)}
+              className="h-10 w-36 rounded-md border border-line bg-card px-2 text-sm text-fg-strong"
+            />
+          </label>
+        </div>
         <NotificationsMenu />
         <HelpTip />
         <UserMenu userName={userName} userEmail={userEmail} userGroups={userGroups} onSignOut={onSignOut} />

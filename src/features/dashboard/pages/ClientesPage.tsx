@@ -8,17 +8,10 @@ import CreditUtilizationPanel from "../components/CreditUtilizationPanel";
 import ClientGrowthPanel from "../components/ClientGrowthPanel";
 import ClientsDirectoryTable from "../components/ClientsDirectoryTable";
 import UnavailableDataNotice from "../components/UnavailableDataNotice";
-import type { DashboardYears } from "../types/dashboardTopTrends";
-
-const YEARS_OPTIONS: { value: DashboardYears; label: string }[] = [
-  { value: 1, label: "Ano atual" },
-  { value: 2, label: "Últimos 2 anos" },
-  { value: null, label: "Todos" },
-];
 
 /** "Clientes" — customer directory, credit health and account risk overview for managers. */
 function ClientesPage() {
-  const { data, loading, error, years, setYears } = useCustomerTopTrends();
+  const { data, loading, error } = useCustomerTopTrends();
   const kpis = CLIENTES_KPIS.map((kpi) => {
     if (kpi.label === "Clientes Ativos") {
       return {
@@ -84,30 +77,6 @@ function ClientesPage() {
           </button>
         </div>
       </div>
-
-      <section className="flex flex-wrap items-center justify-between gap-3 mb-6">
-        <div>
-          <h3 className="text-sm font-semibold text-fg-strong">Período dos dados</h3>
-          <p className="text-xs text-fg-subtle">Filtro aplicado aos indicadores de clientes</p>
-        </div>
-        <div className="flex bg-card rounded-lg border border-line p-1" aria-label="Filtrar dados por ano">
-          {YEARS_OPTIONS.map((option) => (
-            <button
-              key={option.label}
-              type="button"
-              aria-pressed={years === option.value}
-              onClick={() => setYears(option.value)}
-              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
-                years === option.value
-                  ? "bg-accent-solid text-white shadow-sm"
-                  : "text-fg-muted hover:text-fg-strong"
-              }`}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
-      </section>
 
       {/* KPI row */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

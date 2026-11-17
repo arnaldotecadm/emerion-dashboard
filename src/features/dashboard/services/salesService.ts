@@ -1,6 +1,6 @@
 import { API_BASE_URL, apiFetch } from "./apiConfig";
 import type { CustomerOrdersOverTime } from "../types/customerOrdersOverTime";
-import type { CustomerOrderBy, DashboardTopTrend, DashboardYears } from "../types/dashboardTopTrends";
+import type { CustomerOrderBy, DashboardTopTrend } from "../types/dashboardTopTrends";
 
 function isCustomerOrdersOverTime(value: unknown): value is CustomerOrdersOverTime[] {
   return (
@@ -21,8 +21,11 @@ function isCustomerOrdersOverTime(value: unknown): value is CustomerOrdersOverTi
 }
 
 /** Fetches monthly order counts and sales totals from the ERP backend. */
-export async function fetchCustomerOrdersOverTime(): Promise<CustomerOrdersOverTime[]> {
-  const response = await apiFetch(`${API_BASE_URL}/sales/customer-orders-over-time`);
+export async function fetchCustomerOrdersOverTime(startDate: string, endDate: string): Promise<CustomerOrdersOverTime[]> {
+  const params = new URLSearchParams();
+  if (startDate) params.set("startDate", startDate);
+  if (endDate) params.set("endDate", endDate);
+  const response = await apiFetch(`${API_BASE_URL}/sales/customer-orders-over-time?${params.toString()}`);
 
   if (!response.ok) {
     throw new Error(`Falha ao carregar as vendas por período (HTTP ${response.status}).`);
@@ -54,13 +57,14 @@ function isSellerTrendList(value: unknown): value is DashboardTopTrend[] {
 /** Fetches the sales ranking of sellers from the ERP backend. */
 export async function fetchSellerTopTrends(
   orderBy: CustomerOrderBy,
-  years: DashboardYears
+  startDate: string,
+  endDate: string
 ): Promise<DashboardTopTrend[]> {
   const params = new URLSearchParams({ orderby: orderBy });
-  const headers = years === null ? undefined : { years: String(years) };
-  if (years !== null) params.set("years", String(years));
+  if (startDate) params.set("startDate", startDate);
+  if (endDate) params.set("endDate", endDate);
 
-  const response = await apiFetch(`${API_BASE_URL}/sales/seller-top-trends?${params.toString()}`, { headers });
+  const response = await apiFetch(`${API_BASE_URL}/sales/seller-top-trends?${params.toString()}`);
 
   if (!response.ok) {
     throw new Error(`Falha ao carregar o ranking de vendedores (HTTP ${response.status}).`);

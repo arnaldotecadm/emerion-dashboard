@@ -5,50 +5,12 @@ import RankingsPanel from "../components/RankingsPanel";
 import ProductMixPanel from "../components/ProductMixPanel";
 import FiscalPanel from "../components/FiscalPanel";
 import CriticalAlerts from "../components/CriticalAlerts";
-import { DashboardOverviewProvider, useDashboardOverview } from "../hooks/useDashboardOverview";
-import type { DashboardYears } from "../types/dashboardTopTrends";
-
-const YEARS_OPTIONS: { value: DashboardYears; label: string }[] = [
-  { value: 1, label: "Ano atual" },
-  { value: 2, label: "Últimos 2 anos" },
-  { value: null, label: "Todos" },
-];
-
-function DashboardYearsFilter() {
-  const { years, setYears } = useDashboardOverview();
-
-  return (
-    <section className="flex flex-wrap items-center justify-between gap-3 mb-6">
-      <div>
-        <h2 className="text-sm font-semibold text-fg-strong">Período dos dados</h2>
-        <p className="text-xs text-fg-subtle">Filtro aplicado a toda a visão geral</p>
-      </div>
-      <div className="flex bg-card rounded-lg border border-line p-1" aria-label="Filtrar dados por ano">
-        {YEARS_OPTIONS.map((option) => (
-          <button
-            key={option.label}
-            type="button"
-            aria-pressed={years === option.value}
-            onClick={() => setYears(option.value)}
-            className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
-              years === option.value
-                ? "bg-accent-solid text-white shadow-sm"
-                : "text-fg-muted hover:text-fg-strong"
-            }`}
-          >
-            {option.label}
-          </button>
-        ))}
-      </div>
-    </section>
-  );
-}
+import { DashboardOverviewProvider } from "../hooks/useDashboardOverview";
 
 /** "Visão Geral" — the executive dashboard overview (KPIs, pipeline health, charts, rankings, alerts). */
 function VisaoGeralPage() {
   return (
     <DashboardOverviewProvider>
-      <DashboardYearsFilter />
       <KpiRow />
       <section className="grid grid-cols-1 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] gap-6 mb-8">
         <SalesTrendChart />

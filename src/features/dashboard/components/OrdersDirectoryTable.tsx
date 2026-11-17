@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCustomerOrders } from "../hooks/useCustomerOrders";
-import type { CustomerOrdersPeriod } from "../services/customerOrderService";
+import { useDashboardDateRange } from "../hooks/useDashboardDateRange";
 import { formatCurrency, formatDate } from "../utils/format";
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
@@ -14,12 +14,6 @@ const ORDER_STATUS_OPTIONS = [
   "Nao Concluido",
   "Parcialmente Faturado",
   "Pronto para Faturar",
-];
-const PERIOD_OPTIONS: { value: CustomerOrdersPeriod; label: string }[] = [
-  { value: "WEEK", label: "Esta semana" },
-  { value: "MONTH", label: "Este mês" },
-  { value: "YEAR", label: "Este ano" },
-  { value: "ALL", label: "Todos" },
 ];
 
 function getOrderStatusClasses(status: string | null): string {
@@ -43,7 +37,7 @@ function OrdersDirectoryTable() {
   const [search, setSearch] = useState("");
   const [orderNumberQuery, setOrderNumberQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [periodFilter, setPeriodFilter] = useState<CustomerOrdersPeriod>("ALL");
+  const { startDate, endDate } = useDashboardDateRange();
   const { data, loading, error, page, size, setPage, setSize, refetch } = useCustomerOrders(
     0,
     10,
@@ -51,7 +45,8 @@ function OrdersDirectoryTable() {
     statusFilter || undefined,
     undefined,
     orderNumberQuery,
-    periodFilter
+    startDate,
+    endDate
   );
   useEffect(() => {
     const timeoutId = window.setTimeout(() => setOrderNumberQuery(search.trim()), 300);
@@ -99,22 +94,6 @@ function OrdersDirectoryTable() {
             <option value="">Todos os status</option>
             {ORDER_STATUS_OPTIONS.map((status) => (
               <option key={status} value={status}>{status}</option>
-            ))}
-          </select>
-          <select
-            value={periodFilter}
-            onChange={(event) => {
-              const period = PERIOD_OPTIONS.find((option) => option.value === event.target.value)?.value;
-              if (period) {
-                setPeriodFilter(period);
-                setPage(0);
-              }
-            }}
-            aria-label="Filtrar pedidos por período"
-            className="w-full sm:w-auto border border-[#e6e8ea] rounded-lg text-sm text-[#44474c] py-2 px-3 focus:ring-[#006397] focus:border-[#006397]"
-          >
-            {PERIOD_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>{option.label}</option>
             ))}
           </select>
           <div className="hidden sm:flex items-center gap-2 text-sm text-[#8192a7]">
