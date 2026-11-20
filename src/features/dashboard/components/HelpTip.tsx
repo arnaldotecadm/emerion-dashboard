@@ -5,6 +5,7 @@ import Tooltip from "../../../components/Tooltip";
 /** Maps each dashboard route to a short, page-specific tip for the help popover. */
 const PAGE_TIPS: Record<string, string> = {
   "/dashboard": "Clique nos cartões de KPI para abrir o detalhamento da métrica correspondente.",
+  "/dashboard/consulta-diaria": "Consulte as curvas ABC, o faturamento por estado, a cobertura das carteiras e o resumo diário por vendedor. Os valores atuais são estáticos e demonstrativos.",
   "/dashboard/vendas": "Alterne entre as visualizações por dia, semana e mês para acompanhar a evolução das vendas no período selecionado.",
   "/dashboard/pedidos": "Aqui você poderá acompanhar o status dos pedidos, faturamento e histórico completo assim que esta área estiver disponível.",
   "/dashboard/clientes": "Acompanhe o risco de inadimplência, limites de crédito e o ranking dos clientes que mais geram receita.",

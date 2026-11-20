@@ -8,6 +8,7 @@ export interface SideNavProps {
 
 const NAV_ITEMS = [
   { to: "/dashboard", icon: "dashboard", label: "Visão Geral", end: true },
+  { to: "/dashboard/consulta-diaria", icon: "today", label: "Consulta Diária" },
   { to: "/dashboard/cockpit", icon: "monitoring", label: "Cockpit Executivo & Funil de Vendas" },
   { to: "/dashboard/vendas", icon: "trending_up", label: "Vendas Totais" },
   { to: "/dashboard/pedidos", icon: "receipt_long", label: "Pedidos" },

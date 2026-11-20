@@ -18,6 +18,7 @@ export interface TopBarProps {
 /** Maps each dashboard route to the page title shown in the top bar. */
 const PAGE_TITLES: Record<string, string> = {
   "/dashboard": "Visão Geral",
+  "/dashboard/consulta-diaria": "Consulta Diária Gerencial",
   "/dashboard/vendas": "Vendas Totais",
   "/dashboard/pedidos": "Pedidos",
   "/dashboard/clientes": "Clientes",

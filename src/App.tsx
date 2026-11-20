@@ -12,6 +12,7 @@ import PedidoDetailPage from "./features/dashboard/pages/PedidoDetailPage";
 import ClientesPage from "./features/dashboard/pages/ClientesPage";
 import ClienteDetailPage from "./features/dashboard/pages/ClienteDetailPage";
 import VendedoresPage from "./features/dashboard/pages/VendedoresPage";
+import ConsultaDiariaPage from "./features/dashboard/pages/ConsultaDiariaPage";
 import VendedorDetailPage from "./features/dashboard/pages/VendedorDetailPage";
 import ProdutosPage from "./features/dashboard/pages/ProdutosPage";
 import ProdutoDetailPage from "./features/dashboard/pages/ProdutoDetailPage";
@@ -75,6 +76,7 @@ function App() {
         }
       >
         <Route index element={<VisaoGeralPage />} />
+        <Route path="consulta-diaria" element={<ConsultaDiariaPage />} />
         <Route path="access-denied" element={<DashboardAccessDeniedPage />} />
         <Route path="vendas" element={<VendasTotaisPage />} />
         <Route path="pedidos" element={<PedidosPage />} />
