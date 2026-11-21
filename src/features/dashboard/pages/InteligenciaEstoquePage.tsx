@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { useSmartStock } from "../hooks/useSmartStock";
-
-const currencyFormatter = new Intl.NumberFormat("pt-BR", {
-  style: "currency",
-  currency: "BRL",
-});
+import { formatCurrency, formatNumber, formatPercent } from "../utils/format";
+import { getPresentationModeEnabled } from "../utils/presentationMasking";
+import PresentationText from "../components/PresentationText";
 
 function InteligenciaEstoquePage() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const { data, error, loading, page, size, hasNextPage, setPage, setSize } = useSmartStock();
+  const presentationModeEnabled = getPresentationModeEnabled();
 
   useEffect(() => {
     if (!toastMessage) return;
@@ -39,14 +38,14 @@ function InteligenciaEstoquePage() {
       <div className="mb-6 grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           title="Patrimônio em Estoque"
-          value="R$ 492.350,00"
+          value={formatCurrency(492_350)}
           detail="Custo Ponderado Total"
           icon="inventory_2"
           iconClass="bg-purple-50 text-purple-600"
         />
         <MetricCard
           title="Risco de Ruptura (Mínimo)"
-          value="3 Itens Críticos"
+          value={`${formatNumber(3)} Itens Críticos`}
           detail="Estoque < Estoque Mínimo"
           icon="warning"
           iconClass="bg-rose-50 text-rose-600"
@@ -54,7 +53,7 @@ function InteligenciaEstoquePage() {
         />
         <MetricCard
           title="Estoque Comprometido"
-          value="34.2% Reservado"
+          value={`${formatPercent(34.2)} Reservado`}
           detail="Vinculado a pedidos em aberto"
           icon="inventory"
           iconClass="bg-blue-50 text-blue-600"
@@ -62,7 +61,7 @@ function InteligenciaEstoquePage() {
         />
         <MetricCard
           title="Lead Time Médio Fornecedor"
-          value="17.4 Dias"
+          value={`${formatNumber(17.4)} Dias`}
           detail="Importação & Nacional"
           icon="schedule"
           iconClass="bg-emerald-50 text-emerald-600"
@@ -144,27 +143,27 @@ function InteligenciaEstoquePage() {
                 return (
                   <tr key={item.codigo} className="hover:bg-canvas">
                     <td className="px-3 py-3 font-medium text-fg">
-                      <div className="font-mono font-bold text-accent">{item.codigo}</div>
-                      <div className="font-semibold">{item.descricao}</div>
+                      <div className="font-mono font-bold text-accent"><PresentationText alwaysVisible>{item.codigo}</PresentationText></div>
+                      <div className="font-semibold"><PresentationText>{item.descricao}</PresentationText></div>
                     </td>
-                    <td className="max-w-64 px-3 py-3 text-fg-muted" title={item.origem}>
-                      {item.origem}
+                    <td className="max-w-64 px-3 py-3 text-fg-muted" title={presentationModeEnabled ? undefined : item.origem}>
+                      <PresentationText>{item.origem}</PresentationText>
                     </td>
                     <td className="min-w-44 px-3 py-3">
                       <div className="mb-1 flex justify-between text-[10px] font-medium">
-                        <span className="text-fg-subtle">Mín: {item.estoqueMinimo}</span>
+                        <span className="text-fg-subtle">Mín: {formatNumber(item.estoqueMinimo)}</span>
                         <span
                           className={`font-bold ${
                             item.estoqueAtual < item.estoqueMinimo ? "text-rose-600" : "text-emerald-600"
                           }`}
                         >
-                          Atual: {item.estoqueAtual}
+                          Atual: {formatNumber(item.estoqueAtual)}
                         </span>
                       </div>
                       {stockHealthRatio !== null && (
                         <div
                           className="h-2 w-full overflow-hidden rounded-full bg-surface-2"
-                          aria-label={`Estoque atual em ${Math.round(stockHealthRatio)}% do mínimo`}
+                          aria-label={`Estoque atual em ${formatPercent(stockHealthRatio)} do mínimo`}
                         >
                           <div
                             className={`h-full rounded-full ${
@@ -180,10 +179,10 @@ function InteligenciaEstoquePage() {
                       )}
                     </td>
                     <td className="px-3 py-3 text-right font-mono font-medium">
-                      {currencyFormatter.format(item.custoPonderado)}
+                      {formatCurrency(item.custoPonderado)}
                     </td>
                     <td className="px-3 py-3 text-right">
-                      <div className="font-mono font-medium">{currencyFormatter.format(item.custoUltimaCompra)}</div>
+                      <div className="font-mono font-medium">{formatCurrency(item.custoUltimaCompra)}</div>
                       <span
                         className={`mt-1 flex items-center justify-end gap-0.5 text-[10px] font-semibold ${
                           costIncreased ? "text-rose-600" : "text-emerald-600"
@@ -196,10 +195,10 @@ function InteligenciaEstoquePage() {
                       </span>
                     </td>
                     <td className="px-3 py-3 text-right font-semibold text-fg-muted">
-                      {item.markup.toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%
+                      {formatPercent(item.markup)}
                     </td>
                     <td className="px-3 py-3 text-center font-medium text-fg-muted">
-                      {item.leadTime.toLocaleString("pt-BR")} dias
+                      {formatNumber(item.leadTime)} dias
                     </td>
                   </tr>
                 );
@@ -214,7 +213,7 @@ function InteligenciaEstoquePage() {
               {error && (
                 <tr>
                   <td colSpan={7} className="px-3 py-10 text-center text-sm text-danger-fg">
-                    {error}
+                    <PresentationText>{error}</PresentationText>
                   </td>
                 </tr>
               )}
@@ -230,7 +229,7 @@ function InteligenciaEstoquePage() {
         </div>
         <div className="mt-4 flex items-center justify-between gap-3">
           <span className="text-xs text-fg-subtle">
-            Página {page + 1} · {data?.data.length ?? 0} itens (máximo de {size} por página)
+            Página {formatNumber(page + 1)} · {formatNumber(data?.data.length)} itens (máximo de {formatNumber(size)} por página)
           </span>
           <div className="flex gap-2">
             <button

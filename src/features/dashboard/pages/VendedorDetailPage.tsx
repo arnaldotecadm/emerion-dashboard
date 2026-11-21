@@ -2,6 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { useVendedor } from "../hooks/useVendedor";
 import { formatCpfCnpj, formatCurrency, formatDate, initialsFrom } from "../utils/format";
 import PlaceholderPage from "../components/PlaceholderPage";
+import PresentationText from "../components/PresentationText";
 
 const BackLink = () => (
   <Link
@@ -38,7 +39,7 @@ function VendedorDetailPage() {
         <div className="bg-card rounded-xl shadow-card border border-line p-10 flex flex-col items-center text-center gap-3">
           <span className="material-symbols-outlined text-4xl text-danger-fg">error</span>
           <h3 className="text-lg font-bold text-fg-strong">Não foi possível carregar o vendedor</h3>
-          <p className="text-sm text-fg-subtle">{error}</p>
+          <p className="text-sm text-fg-subtle"><PresentationText>{error}</PresentationText></p>
         </div>
       </div>
     );
@@ -80,22 +81,22 @@ function VendedorDetailPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-xl bg-ink-solid text-white flex items-center justify-center font-bold text-xl shrink-0">
-              {initialsFrom(vendedor.nome)}
+              <PresentationText>{initialsFrom(vendedor.nome)}</PresentationText>
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-2xl font-bold text-fg-strong tracking-tight">{vendedor.nome.trim()}</h2>
+                <h2 className="text-2xl font-bold text-fg-strong tracking-tight"><PresentationText>{vendedor.nome.trim()}</PresentationText></h2>
                 {vendedor.ativo && (
                   <span
                     className={`px-2.5 py-1 text-xs font-bold rounded-full ${
                       isActive ? "bg-emerald-100 text-emerald-700" : "bg-surface-2 text-fg-muted"
                     }`}
                   >
-                    {vendedor.ativo}
+                    <PresentationText alwaysVisible>{vendedor.ativo}</PresentationText>
                   </span>
                 )}
               </div>
-              {vendedor.apelido && <p className="text-fg-subtle text-sm mt-1">{vendedor.apelido}</p>}
+              {vendedor.apelido && <p className="text-fg-subtle text-sm mt-1"><PresentationText>{vendedor.apelido}</PresentationText></p>}
             </div>
           </div>
         </div>
@@ -107,15 +108,15 @@ function VendedorDetailPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Codigo</p>
-            <p className="text-sm font-bold text-fg-strong">{vendedor.externalId}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{vendedor.externalId}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Nome</p>
-            <p className="text-sm font-bold text-fg-strong">{vendedor.nome.trim()}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{vendedor.nome.trim()}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Apelido</p>
-            <p className="text-sm font-bold text-fg-strong">{vendedor.apelido || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{vendedor.apelido || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">CPF/CNPJ</p>
@@ -125,20 +126,20 @@ function VendedorDetailPage() {
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Telefone</p>
-            <p className="text-sm font-bold text-fg-strong">{vendedor.telefone || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{vendedor.telefone || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Celular</p>
-            <p className="text-sm font-bold text-fg-strong">{vendedor.celular || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{vendedor.celular || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">E-mail</p>
-            <p className="text-sm font-bold text-fg-strong">{vendedor.email || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{vendedor.email || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Cidade/UF</p>
             <p className="text-sm font-bold text-fg-strong">
-              {vendedor.cidade ? `${vendedor.cidade}${vendedor.uf ? `/${vendedor.uf}` : ""}` : "—"}
+              <PresentationText>{vendedor.cidade ? `${vendedor.cidade}${vendedor.uf ? `/${vendedor.uf}` : ""}` : "—"}</PresentationText>
             </p>
           </div>
           <div>

@@ -11,6 +11,9 @@ import {
 } from "recharts";
 import { useDashboardOverview } from "../hooks/useDashboardOverview";
 import type { DashboardTrendByMonth } from "../types/dashboardTopTrends";
+import { formatNumber } from "../utils/format";
+import { getPresentationModeEnabled } from "../utils/presentationMasking";
+import PresentationText from "./PresentationText";
 
 type TrendPeriod = "month" | "quarter";
 
@@ -120,7 +123,7 @@ function SalesTrendChart() {
       </div>
       <p className="text-xs text-fg-subtle mb-3">Quantidade de pedidos e orçamentos por período</p>
 
-      {error && <p className="flex-1 flex items-center justify-center text-sm text-danger-fg">{error}</p>}
+      {error && <p className="flex-1 flex items-center justify-center text-sm text-danger-fg"><PresentationText>{error}</PresentationText></p>}
 
       {!error && loading && (
         <div className="flex-1 flex items-center animate-pulse">
@@ -136,7 +139,7 @@ function SalesTrendChart() {
 
       {!error && !loading && points.length > 0 && (
         <div className="relative flex-1 min-h-0">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" className={getPresentationModeEnabled() ? "presentation-chart presentation-chart-dates" : undefined}>
             <LineChart
               data={points}
               margin={{ top: 16, right: 12, bottom: 8, left: 8 }}
@@ -173,13 +176,13 @@ function SalesTrendChart() {
                   const quotationCount = Number(payload.find((entry) => entry.dataKey === "quotations")?.value ?? 0);
                   return (
                     <div className="rounded-lg bg-ink-solid px-3 py-2 text-white shadow-lg">
-                      <p className="text-xs font-bold mb-1">{label}</p>
+                      <p className="text-xs font-bold mb-1"><PresentationText alwaysVisible>{label}</PresentationText></p>
                       <p className="text-[11px]">
-                        <span className="text-[#92ccff]">Pedidos:</span> {orderCount.toLocaleString("pt-BR")}
+                        <span className="text-[#92ccff]">Pedidos:</span> {formatNumber(orderCount)}
                       </p>
                       <p className="text-[11px]">
                         <span className="text-fg-faint">Orçamentos:</span>{" "}
-                        {quotationCount.toLocaleString("pt-BR")}
+                        {formatNumber(quotationCount)}
                       </p>
                     </div>
                   );

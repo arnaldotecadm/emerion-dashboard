@@ -1,19 +1,8 @@
 import { Link, useParams } from "react-router-dom";
 import { useCustomer } from "../hooks/useCustomer";
-import { formatCpfCnpj, initialsFrom } from "../utils/format";
+import { formatCpfCnpj, formatCurrency, formatDate, initialsFrom } from "../utils/format";
 import PlaceholderPage from "../components/PlaceholderPage";
-
-function formatDate(value: string | null | undefined): string {
-  if (!value) return "—";
-  const d = new Date(value);
-  if (isNaN(d.getTime())) return value;
-  return d.toLocaleDateString("pt-BR");
-}
-
-function formatCurrency(value: number | null | undefined): string {
-  if (value == null) return "—";
-  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
+import PresentationText from "../components/PresentationText";
 
 const BackLink = () => (
   <Link
@@ -50,7 +39,7 @@ function ClienteDetailPage() {
         <div className="bg-card rounded-xl shadow-card border border-line p-10 flex flex-col items-center text-center gap-3">
           <span className="material-symbols-outlined text-4xl text-danger-fg">error</span>
           <h3 className="text-lg font-bold text-fg-strong">Não foi possível carregar o cliente</h3>
-          <p className="text-sm text-fg-subtle">{error}</p>
+          <p className="text-sm text-fg-subtle"><PresentationText>{error}</PresentationText></p>
         </div>
       </div>
     );
@@ -92,20 +81,20 @@ function ClienteDetailPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-xl bg-ink-solid text-white flex items-center justify-center font-bold text-xl shrink-0">
-              {initialsFrom(cliente.nomeFantasia)}
+              <PresentationText>{initialsFrom(cliente.nomeFantasia)}</PresentationText>
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-2xl font-bold text-fg-strong tracking-tight">{cliente.nomeFantasia.trim()}</h2>
+                <h2 className="text-2xl font-bold text-fg-strong tracking-tight"><PresentationText>{cliente.nomeFantasia.trim()}</PresentationText></h2>
                 <span
                   className={`px-2.5 py-1 text-xs font-bold rounded-full ${
                     isBlocked ? "bg-danger-soft text-danger-ink" : "bg-emerald-100 text-emerald-700"
                   }`}
                 >
-                  {isBlocked ? "Bloqueado" : "Ativo"}
+                  <PresentationText alwaysVisible>{isBlocked ? "Bloqueado" : "Ativo"}</PresentationText>
                 </span>
               </div>
-              <p className="text-fg-subtle text-sm mt-1">{cliente.razaoSocial}</p>
+              <p className="text-fg-subtle text-sm mt-1"><PresentationText>{cliente.razaoSocial}</PresentationText></p>
             </div>
           </div>
         </div>
@@ -131,15 +120,15 @@ function ClienteDetailPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Código</p>
-            <p className="text-sm font-bold text-fg-strong">{cliente.externalId}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText alwaysVisible>{cliente.externalId}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Razão Social</p>
-            <p className="text-sm font-bold text-fg-strong">{cliente.razaoSocial}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{cliente.razaoSocial}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Nome Fantasia</p>
-            <p className="text-sm font-bold text-fg-strong">{cliente.nomeFantasia.trim()}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{cliente.nomeFantasia.trim()}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">CPF/CNPJ</p>
@@ -149,24 +138,24 @@ function ClienteDetailPage() {
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">
               Inscrição Estadual
             </p>
-            <p className="text-sm font-bold text-fg-strong">{cliente.inscricaoEstadual || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText alwaysVisible>{cliente.inscricaoEstadual || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">
               Regime Tributário
             </p>
-            <p className="text-sm font-bold text-fg-strong">{cliente.regimeTributario || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText alwaysVisible>{cliente.regimeTributario || "—"}</PresentationText></p>
           </div>
           {cliente.cnae && (
             <div>
               <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">CNAE</p>
-              <p className="text-sm font-bold text-fg-strong">{cliente.cnae}</p>
+              <p className="text-sm font-bold text-fg-strong"><PresentationText>{cliente.cnae}</PresentationText></p>
             </div>
           )}
           {cliente.cnpjEmpresa && (
             <div>
               <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">CNPJ Empresa</p>
-              <p className="text-sm font-bold text-fg-strong">{cliente.cnpjEmpresa}</p>
+              <p className="text-sm font-bold text-fg-strong"><PresentationText alwaysVisible>{cliente.cnpjEmpresa}</PresentationText></p>
             </div>
           )}
           <div>
@@ -192,11 +181,11 @@ function ClienteDetailPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">E-mail 1</p>
-            <p className="text-sm font-bold text-fg-strong">{cliente.email1 || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{cliente.email1 || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">E-mail 2</p>
-            <p className="text-sm font-bold text-fg-strong">{cliente.email2 || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{cliente.email2 || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Website</p>
@@ -207,7 +196,7 @@ function ClienteDetailPage() {
                 rel="noopener noreferrer"
                 className="text-sm font-bold text-accent hover:underline break-all"
               >
-                {cliente.website}
+                <PresentationText>{cliente.website}</PresentationText>
               </a>
             ) : (
               <p className="text-sm font-bold text-fg-strong">—</p>
@@ -227,22 +216,23 @@ function ClienteDetailPage() {
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Vendedor</p>
             <p className="text-sm font-bold text-fg-strong">
-              {cliente.nomeVendedor
+              <PresentationText>{cliente.nomeVendedor
                 ? `${cliente.nomeVendedor}${cliente.vendedorExternalId ? ` (${cliente.vendedorExternalId})` : ""}`
                 : "—"}
+              </PresentationText>
             </p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Tipo de Cliente</p>
-            <p className="text-sm font-bold text-fg-strong">{cliente.codigoTipoCliente || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{cliente.codigoTipoCliente || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Grupo de Cliente</p>
-            <p className="text-sm font-bold text-fg-strong">{cliente.codigoGrupoCliente || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{cliente.codigoGrupoCliente || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Categoria de Cliente</p>
-            <p className="text-sm font-bold text-fg-strong">{cliente.codigoCategoriaCliente || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{cliente.codigoCategoriaCliente || "—"}</PresentationText></p>
           </div>
         </div>
       </section>
@@ -250,7 +240,7 @@ function ClienteDetailPage() {
       {cliente.observacoes && (
         <section className="bg-card rounded-xl shadow-card border border-line p-6">
           <h3 className="font-bold text-fg-strong text-lg mb-4">Observações</h3>
-          <p className="text-sm text-fg-strong whitespace-pre-wrap">{cliente.observacoes}</p>
+          <p className="text-sm text-fg-strong whitespace-pre-wrap"><PresentationText>{cliente.observacoes}</PresentationText></p>
         </section>
       )}
     </div>

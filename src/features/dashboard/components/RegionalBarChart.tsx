@@ -3,6 +3,9 @@ import { useState } from "react";
 import { Bar, BarChart, CartesianGrid, Cell, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useDashboardOverview } from "../hooks/useDashboardOverview";
 import type { DashboardOrdersByRegion } from "../types/dashboardTopTrends";
+import { formatCurrency } from "../utils/format";
+import { getPresentationModeEnabled } from "../utils/presentationMasking";
+import PresentationText from "./PresentationText";
 
 type RegionalSeriesKey = keyof Omit<DashboardOrdersByRegion, "region">;
 
@@ -19,10 +22,6 @@ const SERIES: { key: RegionalSeriesKey; label: string; color: string }[] = [
 
 const REGION_SLOT_WIDTH = 88;
 
-function formatCurrency(value: number): string {
-  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
-
 /** Bar chart card showing billed, cancelled and other order values per region. */
 function RegionalBarChart() {
   const inkColor = useTheme().theme === "dark" ? "#f1f5f9" : "#041627";
@@ -35,7 +34,7 @@ function RegionalBarChart() {
       <h3 className="text-xl font-semibold text-fg-strong">Situação dos Pedidos por Região</h3>
       <p className="text-xs text-fg-subtle mt-1 mb-4">Valores em reais</p>
 
-      {error && <p className="flex-1 flex items-center justify-center text-sm text-danger-fg">{error}</p>}
+      {error && <p className="flex-1 flex items-center justify-center text-sm text-danger-fg"><PresentationText>{error}</PresentationText></p>}
 
       {!error && loading && (
         <div className="flex-1 flex items-center animate-pulse">
@@ -55,7 +54,7 @@ function RegionalBarChart() {
             className="h-full w-full"
             style={{ minWidth: ordersByRegion.length * REGION_SLOT_WIDTH }}
           >
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" className={getPresentationModeEnabled() ? "presentation-chart" : undefined}>
               <BarChart
                 data={ordersByRegion}
                 margin={{ top: 8, right: 8, bottom: 24, left: 8 }}
@@ -90,7 +89,7 @@ function RegionalBarChart() {
                     const value = Number(item.value ?? 0);
                     return (
                       <div className="rounded-lg bg-ink-solid px-3 py-2 text-white shadow-lg">
-                        <p className="text-xs font-bold mb-1">{label}</p>
+                        <p className="text-xs font-bold mb-1"><PresentationText>{label}</PresentationText></p>
                         <p className="text-[11px] flex items-center gap-2">
                           <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: item.color }} />
                           {series?.label}: {formatCurrency(value)}

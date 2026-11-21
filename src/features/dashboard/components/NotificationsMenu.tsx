@@ -4,7 +4,8 @@ import Tooltip from "../../../components/Tooltip";
 import { useNotificationPreferences } from "../hooks/useNotificationPreferences";
 import { useNotifications } from "../hooks/useNotifications";
 import { dismissNotification } from "../services/notificationService";
-import { formatDateTime } from "../utils/format";
+import { formatDateTime, formatNumber } from "../utils/format";
+import PresentationText from "./PresentationText";
 import type { Notification } from "../types/notification";
 
 function iconByCategory(category: Notification["category"]): string {
@@ -120,7 +121,7 @@ function NotificationsMenu() {
           <span className="material-symbols-outlined">notifications</span>
           {unreadCount > 0 && (
             <span className="absolute top-1 right-1 h-4 min-w-4 px-1 rounded-full bg-danger-solid text-white text-[9px] font-bold flex items-center justify-center">
-              {unreadCount}
+              {formatNumber(unreadCount)}
             </span>
           )}
         </button>
@@ -135,12 +136,12 @@ function NotificationsMenu() {
             <h3 className="text-sm font-semibold text-fg-strong">Notificações</h3>
             {unreadCount > 0 && (
               <span className="text-[10px] font-bold uppercase tracking-wide text-accent bg-accent-soft px-2 py-0.5 rounded-full">
-                {unreadCount} novas
+                {formatNumber(unreadCount)} novas
               </span>
             )}
           </div>
           <div className="max-h-96 overflow-y-auto divide-y divide-line-soft">
-            {dismissError && <div className="px-4 py-2 text-xs text-danger-fg">{dismissError}</div>}
+            {dismissError && <div className="px-4 py-2 text-xs text-danger-fg"><PresentationText>{dismissError}</PresentationText></div>}
             {!hasAtLeastOneCategoryEnabled && (
               <div className="p-4 text-center text-xs text-fg-subtle space-y-2">
                 <p>Você desabilitou todos os tipos de notificações.</p>
@@ -164,7 +165,7 @@ function NotificationsMenu() {
 
             {!notificationsLoading && notificationsError && (
               <div className="p-4 text-center">
-                <p className="text-xs text-danger-fg mb-2">{notificationsError}</p>
+                <p className="text-xs text-danger-fg mb-2"><PresentationText>{notificationsError}</PresentationText></p>
                 <button
                   onClick={refetchNotifications}
                   className="text-xs font-semibold text-accent hover:underline"
@@ -197,8 +198,8 @@ function NotificationsMenu() {
                         <span className="material-symbols-outlined text-lg">{iconByCategory(item.category)}</span>
                       </span>
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-fg truncate">{item.name}</p>
-                        <p className="text-xs text-fg-muted line-clamp-2">{item.description}</p>
+                        <p className="text-sm font-semibold text-fg truncate"><PresentationText>{item.name}</PresentationText></p>
+                        <p className="text-xs text-fg-muted line-clamp-2"><PresentationText>{item.description}</PresentationText></p>
                         <p className="text-[10px] text-fg-subtle mt-1">{formatDateTime(item.createdAt)}</p>
                       </div>
                       {unread && <span className="w-2 h-2 rounded-full bg-accent-solid shrink-0 mt-1.5" aria-hidden />}

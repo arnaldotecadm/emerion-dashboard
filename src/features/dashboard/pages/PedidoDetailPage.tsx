@@ -4,8 +4,9 @@ import { useCustomerOrder } from "../hooks/useCustomerOrder";
 import { useCustomerByExternalId } from "../hooks/useCustomerByExternalId";
 import { useProductsByExternalId } from "../hooks/useProductsByExternalId";
 import { useVendedorByExternalId } from "../hooks/useVendedorByExternalId";
-import { formatCpfCnpj, formatCurrency, formatDate, formatPercent } from "../utils/format";
+import { formatCpfCnpj, formatCurrency, formatDate, formatNumber, formatPercent } from "../utils/format";
 import PlaceholderPage from "../components/PlaceholderPage";
+import PresentationText from "../components/PresentationText";
 
 const BackLink = () => (
   <Link
@@ -21,7 +22,7 @@ const BackLink = () => (
 const DetailField = ({ label, value }: { label: string; value: string }) => (
   <div>
     <p className="text-[10px] font-semibold text-fg-subtle mb-0.5 uppercase tracking-wider">{label}</p>
-    <p className="text-xs font-semibold text-fg-strong">{value}</p>
+    <p className="text-xs font-semibold text-fg-strong"><PresentationText>{value}</PresentationText></p>
   </div>
 );
 
@@ -72,7 +73,7 @@ function PedidoDetailPage() {
         <div className="bg-card rounded-xl shadow-card border border-line p-10 flex flex-col items-center text-center gap-3">
           <span className="material-symbols-outlined text-4xl text-danger-fg">error</span>
           <h3 className="text-lg font-bold text-fg-strong">Não foi possível carregar o pedido</h3>
-          <p className="text-sm text-fg-subtle">{error}</p>
+          <p className="text-sm text-fg-subtle"><PresentationText>{error}</PresentationText></p>
         </div>
       </div>
     );
@@ -117,11 +118,11 @@ function PedidoDetailPage() {
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-2xl font-bold text-fg-strong tracking-tight">
-                  Pedido #{pedido.numeroPedido ?? pedido.externalId}
+                  Pedido #<PresentationText>{pedido.numeroPedido ?? pedido.externalId}</PresentationText>
                 </h2>
                 {pedido.statusPedido && (
                   <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-accent-solid/10 text-accent">
-                    {pedido.statusPedido}
+                    <PresentationText alwaysVisible>{pedido.statusPedido}</PresentationText>
                   </span>
                 )}
               </div>
@@ -131,10 +132,10 @@ function PedidoDetailPage() {
                   "carregando..."
                 ) : cliente ? (
                   <Link to={`/dashboard/clientes/${cliente.id}`} className="text-accent hover:underline">
-                    {cliente.nomeFantasia.trim()}
+                    <PresentationText>{cliente.nomeFantasia.trim()}</PresentationText>
                   </Link>
                 ) : (
-                  pedido.codigoCliente ?? "—"
+                  <PresentationText alwaysVisible>{pedido.codigoCliente ?? "—"}</PresentationText>
                 )}{" "}
                 · {formatDate(pedido.dataPedido)}
               </p>
@@ -149,7 +150,7 @@ function PedidoDetailPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Número do Pedido</p>
-            <p className="text-sm font-bold text-fg-strong">{pedido.externalId}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{pedido.externalId}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Cliente (código)</p>
@@ -158,17 +159,18 @@ function PedidoDetailPage() {
                 "Carregando..."
               ) : cliente ? (
                 <Link to={`/dashboard/clientes/${cliente.id}`} className="text-accent hover:underline">
-                  {cliente.nomeFantasia.trim()} ({pedido.codigoCliente})
+                  <PresentationText>{cliente.nomeFantasia.trim()}</PresentationText>{" "}
+                  (<PresentationText alwaysVisible>{pedido.codigoCliente}</PresentationText>)
                 </Link>
               ) : (
-                pedido.codigoCliente ?? "—"
+                <PresentationText alwaysVisible>{pedido.codigoCliente ?? "—"}</PresentationText>
               )}
             </p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">CNPJ da Empresa</p>
             <p className="text-sm font-bold text-fg-strong">
-              {pedido.codigoEmpresa ?? "—"}
+              <PresentationText>{pedido.codigoEmpresa ?? "—"}</PresentationText>
             </p>
           </div>
           <div>
@@ -177,7 +179,7 @@ function PedidoDetailPage() {
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">NF-e</p>
-            <p className="text-sm font-bold text-fg-strong">{pedido.numeroPedido || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{pedido.numeroPedido || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Data</p>
@@ -185,7 +187,7 @@ function PedidoDetailPage() {
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Status</p>
-            <p className="text-sm font-bold text-fg-strong">{pedido.statusPedido || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText alwaysVisible>{pedido.statusPedido || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Total Geral</p>
@@ -236,7 +238,7 @@ function PedidoDetailPage() {
                 "Carregando..."
               ) : vendedor ? (
                 <Link to={`/dashboard/vendedores/${vendedor.id}`} className="text-accent hover:underline">
-                  {vendedor.nome.trim()} ({pedido.vendedorExternalId})
+                  <PresentationText>{vendedor.nome.trim()} ({pedido.vendedorExternalId})</PresentationText>
                 </Link>
               ) : (
                 pedido.vendedorExternalId
@@ -257,7 +259,7 @@ function PedidoDetailPage() {
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">
               Código Transportadora
             </p>
-            <p className="text-sm font-bold text-fg-strong">{pedido.codigoTransportadora || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{pedido.codigoTransportadora || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Linha Reserva</p>
@@ -265,7 +267,7 @@ function PedidoDetailPage() {
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Pedido Anterior</p>
-            <p className="text-sm font-bold text-fg-strong">{pedido.pedidoAnterior || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{pedido.pedidoAnterior || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">
@@ -281,13 +283,13 @@ function PedidoDetailPage() {
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Regime Tributário</p>
-            <p className="text-sm font-bold text-fg-strong">{pedido.regimeTributario || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText alwaysVisible>{pedido.regimeTributario || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">
               Nome do Regime Tributário
             </p>
-            <p className="text-sm font-bold text-fg-strong">{pedido.nomeRegimeTributario || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText alwaysVisible>{pedido.nomeRegimeTributario || "—"}</PresentationText></p>
           </div>
         </div>
       </section>
@@ -340,20 +342,20 @@ function PedidoDetailPage() {
                       <td className="px-6 py-4 text-sm font-semibold text-fg-strong">
                         {productId ? (
                           <Link to={`/dashboard/produtos/${productId}`} className="text-accent hover:underline">
-                            {item.produto}
+                            <PresentationText alwaysVisible>{item.produto}</PresentationText>
                           </Link>
                         ) : (
-                          <span title="Produto não encontrado no catálogo cadastrado">{item.produto}</span>
+                          <span title="Produto não encontrado no catálogo cadastrado"><PresentationText alwaysVisible>{item.produto}</PresentationText></span>
                         )}
                       </td>
                       <td
                         onClick={() => toggleItem(index)}
                         className="px-6 py-4 text-sm text-fg-muted cursor-pointer"
                       >
-                        {item.descricao || "—"}
+                        <PresentationText>{item.descricao || "—"}</PresentationText>
                       </td>
                       <td onClick={() => toggleItem(index)} className="px-6 py-4 text-sm text-fg-muted cursor-pointer">
-                        {item.quantidade}
+                        {formatNumber(item.quantidade)}
                       </td>
                       <td
                         onClick={() => toggleItem(index)}
@@ -482,10 +484,10 @@ function PedidoDetailPage() {
                                 Quantidades e Pesos
                               </h4>
                               <div className="grid grid-cols-2 gap-3">
-                                <DetailField label="Qtd. Faturada" value={item.quantidadeFaturada?.toString() ?? "—"} />
-                                <DetailField label="Qtd. Separada" value={item.quantidadeSeparada?.toString() ?? "—"} />
-                                <DetailField label="Peso Líquido" value={item.pesoLiquido?.toString() ?? "—"} />
-                                <DetailField label="Peso Bruto" value={item.pesoBruto?.toString() ?? "—"} />
+                                <DetailField label="Qtd. Faturada" value={formatNumber(item.quantidadeFaturada)} />
+                                <DetailField label="Qtd. Separada" value={formatNumber(item.quantidadeSeparada)} />
+                                <DetailField label="Peso Líquido" value={formatNumber(item.pesoLiquido)} />
+                                <DetailField label="Peso Bruto" value={formatNumber(item.pesoBruto)} />
                               </div>
                             </div>
 
@@ -494,7 +496,7 @@ function PedidoDetailPage() {
                                 <h4 className="text-xs font-bold text-fg-strong uppercase tracking-wider mb-2">
                                   Descrição para NF-e
                                 </h4>
-                                <p className="text-xs text-fg-muted">{item.descricaoNFe}</p>
+                                <p className="text-xs text-fg-muted"><PresentationText>{item.descricaoNFe}</PresentationText></p>
                               </div>
                             )}
 
@@ -517,7 +519,7 @@ function PedidoDetailPage() {
                                 <h4 className="text-xs font-bold text-fg-strong uppercase tracking-wider mb-2">
                                   Observação
                                 </h4>
-                                <p className="text-xs text-fg-muted">{item.observacao}</p>
+                                <p className="text-xs text-fg-muted"><PresentationText>{item.observacao}</PresentationText></p>
                               </div>
                             )}
                           </div>

@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useVendedores } from "../hooks/useVendedores";
-import { formatCurrency } from "../utils/format";
+import { formatCurrency, formatNumber } from "../utils/format";
+import PresentationText from "./PresentationText";
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
 
@@ -93,7 +94,7 @@ function VendedoresDirectoryTable() {
       {error ? (
         <div className="p-10 flex flex-col items-center text-center gap-3">
           <span className="material-symbols-outlined text-4xl text-danger-fg">error</span>
-          <p className="text-sm text-fg-muted">{error}</p>
+          <p className="text-sm text-fg-muted"><PresentationText>{error}</PresentationText></p>
           <button
             onClick={refetch}
             className="px-4 py-2 text-sm font-semibold text-accent border border-accent rounded-lg hover:bg-accent-solid/5 transition-colors"
@@ -136,16 +137,15 @@ function VendedoresDirectoryTable() {
                       onClick={() => navigate(`/dashboard/vendedores/${row.id}`)}
                       className="hover:bg-canvas transition-colors cursor-pointer group"
                     >
-                      <td className="px-6 py-4 text-sm text-fg-subtle whitespace-nowrap">{row.externalId}</td>
+                      <td className="px-6 py-4 text-sm text-fg-subtle whitespace-nowrap"><PresentationText>{row.externalId}</PresentationText></td>
                       <td className="px-6 py-4 text-sm text-fg-muted">
-                        {row.nome}
-                        {row.apelido && <span className="text-fg-subtle"> ({row.apelido})</span>}
+                        <PresentationText>{row.nome}{row.apelido ? ` (${row.apelido})` : ""}</PresentationText>
                       </td>
                       <td className="px-6 py-4 text-sm text-fg-muted whitespace-nowrap">
-                        {row.email ?? row.celular ?? row.telefone ?? "—"}
+                        <PresentationText>{row.email ?? row.celular ?? row.telefone ?? "—"}</PresentationText>
                       </td>
                       <td className="px-6 py-4 text-sm text-fg-muted whitespace-nowrap">
-                        {row.cidade ? `${row.cidade}${row.uf ? `/${row.uf}` : ""}` : "—"}
+                        <PresentationText>{row.cidade ? `${row.cidade}${row.uf ? `/${row.uf}` : ""}` : "—"}</PresentationText>
                       </td>
                       <td className="px-6 py-4 text-sm text-fg-muted whitespace-nowrap">
                         {formatCurrency(row.saldo)}
@@ -158,7 +158,7 @@ function VendedoresDirectoryTable() {
                               : "bg-surface-2 text-fg-muted"
                           }`}
                         >
-                          {row.ativo ?? "—"}
+                          <PresentationText alwaysVisible>{row.ativo ?? "—"}</PresentationText>
                         </span>
                       </td>
                     </tr>
@@ -180,12 +180,12 @@ function VendedoresDirectoryTable() {
           <div className="px-6 py-4 bg-canvas border-t border-line flex flex-col sm:flex-row justify-between items-center gap-3">
             <span className="text-sm text-fg-subtle">
               {totalElements > 0
-                ? `Exibindo ${data?.data.length ?? 0} de ${totalElements.toLocaleString("pt-BR")} vendedores`
+                ? `Exibindo ${formatNumber(data?.data.length)} de ${formatNumber(totalElements)} vendedores`
                 : "—"}
             </span>
             <div className="flex items-center gap-3">
               <span className="text-sm text-fg-muted">
-                Página {totalPages === 0 ? 0 : currentPage + 1} de {totalPages}
+                Página {formatNumber(totalPages === 0 ? 0 : currentPage + 1)} de {formatNumber(totalPages)}
               </span>
               <div className="flex gap-2">
                 <button

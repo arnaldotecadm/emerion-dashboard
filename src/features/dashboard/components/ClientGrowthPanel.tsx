@@ -1,6 +1,9 @@
 import { useTheme } from "../../../theme/ThemeContext";
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { DashboardTrendByMonth } from "../types/dashboardTopTrends";
+import { formatNumber } from "../utils/format";
+import { getPresentationModeEnabled } from "../utils/presentationMasking";
+import PresentationText from "./PresentationText";
 
 interface ClientGrowthPanelProps {
   data: DashboardTrendByMonth[];
@@ -28,17 +31,17 @@ function ClientGrowthPanel({ data, loading, error }: ClientGrowthPanelProps) {
       <div className="flex justify-between items-start mb-2">
         <h3 className="font-bold text-fg-strong text-lg">Novos Clientes por Mês</h3>
         <div className="text-right shrink-0">
-          <p className="text-2xl font-black text-accent">{total.toLocaleString("pt-BR")}</p>
+          <p className="text-2xl font-black text-accent">{formatNumber(total)}</p>
           <p className="text-[9px] text-fg-subtle font-bold uppercase">Novos no período</p>
         </div>
       </div>
       <div className="min-h-32 mt-6 flex-1">
         {loading || error || data.length === 0 ? (
           <div className="h-full min-h-32 flex items-center justify-center text-xs text-fg-subtle">
-            {loading ? "Carregando novos clientes..." : error ?? "Nenhum dado mensal disponível."}
+            {loading ? "Carregando novos clientes..." : error ? <PresentationText>{error}</PresentationText> : "Nenhum dado mensal disponível."}
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" className={getPresentationModeEnabled() ? "presentation-chart presentation-chart-dates" : undefined}>
             <BarChart data={points} margin={{ top: 4, right: 4, bottom: 0, left: 4 }} accessibilityLayer>
               <XAxis
                 dataKey="label"
@@ -55,8 +58,8 @@ function ClientGrowthPanel({ data, loading, error }: ClientGrowthPanelProps) {
                   if (!active || !point) return null;
                   return (
                     <div className="rounded-lg bg-ink-solid px-3 py-2 text-white shadow-lg">
-                      <p className="text-xs font-bold">{point.label}</p>
-                      <p className="text-[11px]">{point.count} novos clientes</p>
+                      <p className="text-xs font-bold"><PresentationText alwaysVisible>{point.label}</PresentationText></p>
+                      <p className="text-[11px]">{formatNumber(point.count)} novos clientes</p>
                     </div>
                   );
                 }}

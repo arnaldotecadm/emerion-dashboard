@@ -1,3 +1,5 @@
+import { formatCurrency as formatValueCurrency } from "../utils/format";
+
 /**
  * Mock data for the "Clientes" (Customer Management) area — a strictly read-only view for managers.
  * Aggregated customer metrics, revenue rankings, regional distribution and monthly acquisitions
@@ -5,8 +7,7 @@
  * The company has no customer "segment" taxonomy (retail/wholesale/industry).
  */
 
-export const formatCurrency = (value: number) =>
-  value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+export const formatCurrency = formatValueCurrency;
 
 export interface ClienteKpi {
   icon: string;

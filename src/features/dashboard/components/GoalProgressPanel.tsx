@@ -1,4 +1,6 @@
 import { PolarAngleAxis, RadialBar, RadialBarChart, ResponsiveContainer, Tooltip } from "recharts";
+import { formatPercent } from "../utils/format";
+import { getPresentationModeEnabled } from "../utils/presentationMasking";
 
 export interface GoalProgressPanelProps {
   /** Percentage of the period's target already achieved (0-100). */
@@ -17,7 +19,7 @@ function GoalProgressPanel({ progressPct, remainingLabel, targetLabel }: GoalPro
     <div className="bg-card rounded-xl shadow-card border border-line p-6 h-full flex flex-col items-center text-center">
       <h3 className="font-bold text-fg-strong mb-6 w-full text-left">Metas vs Realizado</h3>
       <div className="relative w-32 h-32 flex items-center justify-center mb-4 shrink-0">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="100%" className={getPresentationModeEnabled() ? "presentation-chart" : undefined}>
           <RadialBarChart
             data={data}
             startAngle={90}
@@ -40,14 +42,14 @@ function GoalProgressPanel({ progressPct, remainingLabel, targetLabel }: GoalPro
                 if (!active || !payload?.length) return null;
                 return (
                   <div className="rounded-lg bg-ink-solid px-3 py-2 text-white shadow-lg">
-                    <p className="text-[11px]">Meta atingida: {progressPct}%</p>
+                    <p className="text-[11px]">Meta atingida: {formatPercent(progressPct)}</p>
                   </div>
                 );
               }}
             />
           </RadialBarChart>
         </ResponsiveContainer>
-        <span className="absolute text-2xl font-black text-fg-strong pointer-events-none">{progressPct}%</span>
+        <span className="absolute text-2xl font-black text-fg-strong pointer-events-none">{formatPercent(progressPct)}</span>
       </div>
       <p className="text-xs font-bold text-fg-subtle uppercase tracking-widest mb-1">Status da Meta</p>
       <p className="text-xs text-fg-subtle leading-relaxed px-2">

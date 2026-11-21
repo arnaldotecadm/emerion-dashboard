@@ -9,7 +9,7 @@ function isSalesCockpit(value: unknown): value is SalesCockpit {
   if (typeof value !== "object" || value === null) return false;
 
   const data = value as Record<string, unknown>;
-  const isCount = (candidate: unknown): candidate is number =>
+  const isNonNegativeInteger = (candidate: unknown): candidate is number =>
     typeof candidate === "number" && Number.isInteger(candidate) && candidate >= 0;
   const isOrderList = (items: unknown): items is SalesCockpit["recentOrders"] =>
     Array.isArray(items) &&
@@ -25,7 +25,7 @@ function isSalesCockpit(value: unknown): value is SalesCockpit {
         isNonNegativeNumber(item.totalAmount) &&
         typeof item.averageMarkup === "number" &&
         Number.isFinite(item.averageMarkup) &&
-        typeof item.orderNumber === "string" &&
+        isNonNegativeInteger(item.orderNumber) &&
         typeof item.status === "string" &&
         (typeof item.salesmanName === "string" || item.salesmanName === null)
     );
@@ -34,11 +34,11 @@ function isSalesCockpit(value: unknown): value is SalesCockpit {
     isNonNegativeNumber(data.monthlySalesTotal) &&
     typeof data.averageMarkup === "number" &&
     Number.isFinite(data.averageMarkup) &&
-    isCount(data.unpaidInvoicesCount) &&
+    isNonNegativeInteger(data.unpaidInvoicesCount) &&
     isNonNegativeNumber(data.unpaidInvoicesAmount) &&
-    isCount(data.customerQuotations) &&
-    isCount(data.customerOrders) &&
-    isCount(data.invoices) &&
+    isNonNegativeInteger(data.customerQuotations) &&
+    isNonNegativeInteger(data.customerOrders) &&
+    isNonNegativeInteger(data.invoices) &&
     isNonNegativeNumber(data.amountToReceiveThisMonth) &&
     isNonNegativeNumber(data.amountReceivedThisMonth) &&
     isNonNegativeNumber(data.amountDueThisMonth) &&

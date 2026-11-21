@@ -8,6 +8,9 @@ import TopSellersLeaderboard from "../components/TopSellersLeaderboard";
 import GoalProgressPanel from "../components/GoalProgressPanel";
 import { useDashboardDateRange } from "../hooks/useDashboardDateRange";
 import { formatDateRangeLabel } from "../utils/dateRange";
+import { formatNumber, formatPercent } from "../utils/format";
+import { getPresentationModeEnabled } from "../utils/presentationMasking";
+import PresentationText from "../components/PresentationText";
 
 type SalesGranularity = "mes" | "trimestre";
 
@@ -136,7 +139,7 @@ function VendasTotaisPage() {
                 {loading ? "Carregando..." : error ? "Indisponível" : formatCurrency(totalSales)}
               </h3>
             </div>
-            {error && <p role="alert" className="text-danger-fg text-xs mt-2">{error}</p>}
+            {error && <p role="alert" className="text-danger-fg text-xs mt-2"><PresentationText>{error}</PresentationText></p>}
             {!error && !loading && (
               <p className="text-fg-subtle text-xs mt-2 italic">
                 {granularity === "mes" ? "Agrupado por mês" : "Agrupado por trimestre"}
@@ -170,7 +173,7 @@ function VendasTotaisPage() {
 
         <div className="mt-10 h-[320px] w-full relative">
           {!error && !loading && summaryPeriods.length > 0 && (
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" className={getPresentationModeEnabled() ? "presentation-chart presentation-chart-dates" : undefined}>
               <AreaChart
                 key={granularity}
                 data={summaryPeriods}
@@ -213,9 +216,9 @@ function VendasTotaisPage() {
                     if (!active || !point) return null;
                     return (
                       <div className="rounded-lg bg-ink-solid px-3 py-2 text-white shadow-lg">
-                        <p className="text-xs font-bold mb-1">{point.label}</p>
+                        <p className="text-xs font-bold mb-1"><PresentationText alwaysVisible>{point.label}</PresentationText></p>
                         <p className="text-[11px]">Vendas: {formatCurrency(point.amountSold)}</p>
-                        <p className="text-[11px]">Pedidos: {point.orderCount.toLocaleString("pt-BR")}</p>
+                        <p className="text-[11px]">Pedidos: {formatNumber(point.orderCount)}</p>
                       </div>
                     );
                   }}
@@ -275,7 +278,7 @@ function VendasTotaisPage() {
         <StatCard
           icon="receipt_long"
           label="Total de Transações"
-          value={totalOrders.toLocaleString("pt-BR")}
+          value={formatNumber(totalOrders)}
           hint={`Pedidos entre ${summaryIntervalLabel}`}
         />
         <StatCard
@@ -365,14 +368,14 @@ function VendasTotaisPage() {
                     }
                   >
                     <td className="px-8 py-4 font-semibold text-fg-strong">
-                      {period.label}
+                      <PresentationText>{period.label}</PresentationText>
                       {isBest && <span className="text-accent font-normal"> (Pico)</span>}
                     </td>
                     <td className={`px-8 py-4 font-bold ${isBest ? "text-accent" : "text-fg-strong"}`}>
                       {formatCurrency(period.amountSold)}
                     </td>
                     <td className="px-8 py-4 text-center text-fg-muted">
-                      {period.orderCount.toLocaleString("pt-BR")}
+                      {formatNumber(period.orderCount)}
                     </td>
                     <td className="px-8 py-4 text-right">
                       <span
@@ -383,7 +386,7 @@ function VendasTotaisPage() {
                         <span className="material-symbols-outlined text-xs">
                           {isFlat ? "horizontal_rule" : isUp ? "arrow_upward" : "arrow_downward"}
                         </span>
-                        {variation === null ? "—" : `${Math.abs(variation).toFixed(1)}%`}
+                        {variation === null ? "—" : formatPercent(Math.abs(variation))}
                       </span>
                     </td>
                   </tr>
@@ -436,7 +439,7 @@ function StatCard({ icon, label, value, hint }: { icon: string; label: string; v
       <div>
         <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">{label}</p>
         <h4 className="text-xl font-bold text-fg-strong">{value}</h4>
-        <p className="text-[10px] text-fg-subtle mt-1">{hint}</p>
+        <p className="text-[10px] text-fg-subtle mt-1"><PresentationText>{hint}</PresentationText></p>
       </div>
     </div>
   );

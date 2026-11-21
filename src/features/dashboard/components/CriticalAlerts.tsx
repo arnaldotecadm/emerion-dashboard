@@ -1,6 +1,9 @@
+import { formatNumber } from "../utils/format";
+
 interface AlertItem {
   icon: string;
   title: string;
+  count: number;
   description: string;
   ctaLabel: string;
   severity: "error" | "warning";
@@ -10,21 +13,24 @@ const ALERTS: AlertItem[] = [
   {
     icon: "credit_card_off",
     title: "Clientes com Limite Excedido",
-    description: "8 clientes ativos acima do teto permitido.",
+    count: 8,
+    description: "clientes ativos acima do teto permitido.",
     ctaLabel: "REVISAR AGORA →",
     severity: "error",
   },
   {
     icon: "block",
     title: "Pedidos Bloqueados",
-    description: "15 ordens retidas por análise de crédito.",
+    count: 15,
+    description: "ordens retidas por análise de crédito.",
     ctaLabel: "REVISAR AGORA →",
     severity: "error",
   },
   {
     icon: "inventory_2",
     title: "Baixo Estoque (Curva A)",
-    description: "5 itens essenciais abaixo do estoque de segurança.",
+    count: 5,
+    description: "itens essenciais abaixo do estoque de segurança.",
     ctaLabel: "ABRIR COMPRAS →",
     severity: "warning",
   },
@@ -55,7 +61,9 @@ function CriticalAlerts() {
             </div>
             <div>
               <h4 className="text-sm font-bold text-fg-strong">{alert.title}</h4>
-              <p className="text-xs text-fg-muted">{alert.description}</p>
+              <p className="text-xs text-fg-muted">
+                {formatNumber(alert.count)} {alert.description}
+              </p>
               <a className="text-accent text-[10px] font-bold mt-2 inline-block" href="#">
                 {alert.ctaLabel}
               </a>

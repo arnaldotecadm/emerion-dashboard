@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { formatCurrency } from "../data/clientesData";
 import type { DashboardTopTrend } from "../types/dashboardTopTrends";
+import { formatPosition } from "../utils/format";
+import PresentationText from "./PresentationText";
 
 const MEDAL_BADGE: Record<number, string> = {
   1: "bg-yellow-400 text-white shadow-sm shadow-yellow-200",
@@ -49,16 +51,16 @@ function TopClientsTable({ data, loading, error }: TopClientsTableProps) {
                       MEDAL_BADGE[index + 1] ?? "bg-surface-2 text-fg-subtle"
                     }`}
                   >
-                    {index + 1}
+                    {formatPosition(index + 1)}
                   </span>
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-lg bg-ink-solid text-white flex items-center justify-center font-bold text-xs shrink-0">
-                      {client.name.slice(0, 2).toLocaleUpperCase("pt-BR")}
+                      <PresentationText>{client.name.slice(0, 2).toLocaleUpperCase("pt-BR")}</PresentationText>
                     </div>
                     <p className="text-sm font-bold text-fg-strong group-hover:text-accent transition-colors">
-                      {client.name.trim() || `Cliente ${client.identifier}`}
+                      <PresentationText>{client.name.trim() || `Cliente ${client.identifier}`}</PresentationText>
                     </p>
                   </div>
                 </td>
@@ -80,7 +82,7 @@ function TopClientsTable({ data, loading, error }: TopClientsTableProps) {
             {(loading || error) && (
               <tr>
                 <td colSpan={4} className="px-6 py-8 text-center text-sm text-fg-subtle">
-                  {loading ? "Carregando ranking..." : error}
+                  {loading ? "Carregando ranking..." : <PresentationText>{error}</PresentationText>}
                 </td>
               </tr>
             )}

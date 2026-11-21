@@ -128,3 +128,7 @@
     font-size: 1rem;
   }
 }
+.presentation-profile .profile-page__control {
+  filter: blur(4px);
+  user-select: none;
+}

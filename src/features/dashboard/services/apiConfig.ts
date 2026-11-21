@@ -14,8 +14,7 @@ export function setAuthToken(token: string | null): void {
 }
 
 /**
- * Thin wrapper around `fetch` that automatically attaches the current JWT as a
- * `Bearer` token, so the ERP backend can validate the caller's identity.
+ * Attaches the current JWT to requests made by the dashboard API services.
  */
 export function apiFetch(input: string, init: RequestInit = {}): Promise<Response> {
   const headers = new Headers(init.headers);

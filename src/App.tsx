@@ -22,10 +22,13 @@ import NotificacoesPage from "./features/dashboard/pages/NotificacoesPage";
 import NotificationDetailPage from "./features/dashboard/pages/NotificationDetailPage";
 import PerfilUsuario from "./features/account/PerfilUsuario";
 import { setAuthToken } from "./features/dashboard/services/apiConfig";
+import { usePresentationModeEnabled } from "./features/dashboard/utils/presentationMasking";
 
 const CockpitExecutivoPage = lazy(() => import("./features/dashboard/pages/CockpitExecutivoPage"));
 
 function App() {
+  // Re-render all route elements when presentation formatting changes.
+  usePresentationModeEnabled();
   const auth = useAuth();
   const navigate = useNavigate();
 

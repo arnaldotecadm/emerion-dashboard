@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import PresentationText from "./PresentationText";
 
 export interface UserMenuProps {
   userName: string;
@@ -43,7 +44,7 @@ function UserMenu({ userName, userEmail, userGroups, onSignOut }: UserMenuProps)
         aria-expanded={open}
       >
         <span className="h-8 w-8 rounded-full overflow-hidden border border-line-strong bg-surface-3 flex items-center justify-center text-[10px] font-bold text-fg-muted">
-          {initials}
+          <PresentationText>{initials}</PresentationText>
         </span>
         <span className="material-symbols-outlined text-lg text-fg-muted">expand_more</span>
       </button>
@@ -54,8 +55,8 @@ function UserMenu({ userName, userEmail, userGroups, onSignOut }: UserMenuProps)
           className="absolute right-0 mt-2 w-64 bg-card rounded-xl shadow-popover border border-line overflow-hidden z-50"
         >
           <div className="px-4 py-3 border-b border-line-soft">
-            <p className="text-sm font-semibold text-fg-strong truncate">{userName}</p>
-            {userEmail && <p className="text-xs text-fg-muted truncate">{userEmail}</p>}
+            <p className="text-sm font-semibold text-fg-strong truncate"><PresentationText>{userName}</PresentationText></p>
+            {userEmail && <p className="text-xs text-fg-muted truncate"><PresentationText>{userEmail}</PresentationText></p>}
             {userGroups && userGroups.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
                 {userGroups.map((group) => (
@@ -63,7 +64,7 @@ function UserMenu({ userName, userEmail, userGroups, onSignOut }: UserMenuProps)
                     key={group}
                     className="px-2 py-0.5 rounded-full bg-accent-tint text-accent text-[10px] font-semibold uppercase tracking-wide"
                   >
-                    {group}
+                    <PresentationText>{group}</PresentationText>
                   </span>
                 ))}
               </div>

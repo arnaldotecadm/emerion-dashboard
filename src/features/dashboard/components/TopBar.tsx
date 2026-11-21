@@ -6,6 +6,8 @@ import ThemeToggle from "../../../theme/ThemeToggle";
 import { useCustomer } from "../hooks/useCustomer";
 import { useNotification } from "../hooks/useNotification";
 import { useDashboardDateRange } from "../hooks/useDashboardDateRange";
+import { getPresentationModeEnabled, setPresentationModeEnabled } from "../utils/presentationMasking";
+import PresentationText from "./PresentationText";
 
 export interface TopBarProps {
   userName: string;
@@ -39,6 +41,7 @@ function TopBar({
   sidebarCollapsed,
 }: TopBarProps) {
   const location = useLocation();
+  const presentationModeEnabled = getPresentationModeEnabled();
   const { startDate, setStartDate, endDate, setEndDate } = useDashboardDateRange();
   const clienteMatch = location.pathname.match(/^\/dashboard\/clientes\/(.+)$/);
   const clienteId = clienteMatch?.[1];
@@ -60,8 +63,24 @@ function TopBar({
         sidebarCollapsed ? "pl-20" : "pl-72"
       }`}
     >
-      <h1 className="text-2xl font-semibold text-fg-strong">{title}</h1>
+      <h1 className="text-2xl font-semibold text-fg-strong">
+        {clienteId || notificacaoMatch ? <PresentationText>{title}</PresentationText> : title}
+      </h1>
       <div className="flex items-center gap-4">
+        <button
+          type="button"
+          aria-pressed={presentationModeEnabled}
+          aria-label={`${presentationModeEnabled ? "Desativar" : "Ativar"} Presentation Mode`}
+          title={`${presentationModeEnabled ? "Desativar" : "Ativar"} Presentation Mode`}
+          onClick={() => setPresentationModeEnabled(!presentationModeEnabled)}
+          className={`whitespace-nowrap rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-wide transition-colors ${
+            presentationModeEnabled
+              ? "border-amber-300 bg-amber-50 text-amber-800"
+              : "border-line bg-card text-fg-subtle hover:bg-surface-2"
+          }`}
+        >
+          PRESENTATION MODE
+        </button>
         <ThemeToggle />
         <div className="flex items-center gap-3">
           <label className="flex items-center gap-1.5 whitespace-nowrap text-xs font-semibold text-fg-subtle">

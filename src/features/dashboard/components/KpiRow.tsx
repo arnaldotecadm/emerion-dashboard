@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useDashboardOverview } from "../hooks/useDashboardOverview";
-import { formatCurrency } from "../utils/format";
+import { formatCurrency, formatNumber } from "../utils/format";
+import PresentationText from "./PresentationText";
 
 interface KpiCard {
   label: string;
@@ -19,7 +20,7 @@ function KpiRow() {
     return (
       <section className="bg-card p-6 rounded-xl shadow-card border border-line mb-8 flex items-center gap-3">
         <span className="material-symbols-outlined text-danger-fg">error</span>
-        <p className="text-sm text-fg-muted">{error}</p>
+        <p className="text-sm text-fg-muted"><PresentationText>{error}</PresentationText></p>
       </section>
     );
   }
@@ -46,7 +47,7 @@ function KpiRow() {
     },
     {
       label: "TOTAL DE PEDIDOS",
-      value: totalPedidos.toLocaleString("pt-BR"),
+      value: formatNumber(totalPedidos),
       to: "/dashboard/pedidos",
     },
     {
@@ -56,12 +57,12 @@ function KpiRow() {
     },
     {
       label: "TOTAL DE CLIENTES",
-      value: totalClientes.toLocaleString("pt-BR"),
+      value: formatNumber(totalClientes),
       to: "/dashboard/clientes",
     },
     {
       label: "TOTAL DE VENDEDORES",
-      value: totalVendedores.toLocaleString("pt-BR"),
+      value: formatNumber(totalVendedores),
       to: "/dashboard/vendedores",
     },
   ];

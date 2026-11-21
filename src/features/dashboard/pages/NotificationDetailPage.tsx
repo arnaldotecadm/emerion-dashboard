@@ -4,6 +4,7 @@ import PlaceholderPage from "../components/PlaceholderPage";
 import { useNotification } from "../hooks/useNotification";
 import { markNotificationAsRead } from "../services/notificationService";
 import { formatDateTime } from "../utils/format";
+import PresentationText from "../components/PresentationText";
 import type { Notification } from "../types/notification";
 
 const BackLink = () => (
@@ -91,7 +92,7 @@ function NotificationDetailPage() {
         <div className="bg-card rounded-xl shadow-card border border-line p-10 flex flex-col items-center text-center gap-3">
           <span className="material-symbols-outlined text-4xl text-danger-fg">error</span>
           <h3 className="text-lg font-bold text-fg-strong">Não foi possível carregar a notificação</h3>
-          <p className="text-sm text-fg-subtle">{error}</p>
+          <p className="text-sm text-fg-subtle"><PresentationText>{error}</PresentationText></p>
         </div>
       </div>
     );
@@ -151,38 +152,39 @@ function NotificationDetailPage() {
           </div>
         </div>
 
-        <h2 className="text-xl font-semibold text-fg-strong mb-1">{notification.name}</h2>
+        <h2 className="text-xl font-semibold text-fg-strong mb-1"><PresentationText>{notification.name}</PresentationText></h2>
         <p className="text-xs text-fg-subtle mb-6">{formatDateTime(notification.createdAt)}</p>
 
-        <p className="text-sm text-fg-muted leading-relaxed mb-8">{notification.description}</p>
+        <p className="text-sm text-fg-muted leading-relaxed mb-8"><PresentationText>{notification.description}</PresentationText></p>
 
         {updatingRead && <p className="text-xs text-fg-subtle mb-6">Marcando como lida...</p>}
 
         {mutationError && (
           <p className="text-xs text-danger-fg mb-4" role="alert">
-            {mutationError}
+            <PresentationText>{mutationError}</PresentationText>
           </p>
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 border-t border-line-soft pt-4">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-wide text-fg-subtle">Status</p>
-            <p className="text-sm text-fg">{notification.status}</p>
+            <p className="text-sm text-fg"><PresentationText alwaysVisible>{notification.status}</PresentationText></p>
           </div>
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-wide text-fg-subtle">Prioridade</p>
-            <p className="text-sm text-fg">{notification.priority}</p>
+            <p className="text-sm text-fg"><PresentationText>{notification.priority}</PresentationText></p>
           </div>
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-wide text-fg-subtle">Categoria</p>
-            <p className="text-sm text-fg">{categoryLabel(notification.category)}</p>
+            <p className="text-sm text-fg"><PresentationText>{categoryLabel(notification.category)}</PresentationText></p>
           </div>
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-wide text-fg-subtle">Referência</p>
             <p className="text-sm text-fg">
-              {notification.referenceType && notification.referenceId
+              <PresentationText>{notification.referenceType && notification.referenceId
                 ? `${notification.referenceType} #${notification.referenceId}`
                 : notification.referenceType ?? notification.referenceId ?? "—"}
+              </PresentationText>
             </p>
           </div>
           <div>

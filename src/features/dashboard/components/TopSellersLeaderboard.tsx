@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useSellerTopTrends } from "../hooks/useSellerTopTrends";
 import type { CustomerOrderBy } from "../types/dashboardTopTrends";
-import { formatCurrency } from "../utils/format";
+import { formatCurrency, formatNumber, formatPosition } from "../utils/format";
+import PresentationText from "./PresentationText";
 
 const ORDER_OPTIONS: { value: CustomerOrderBy; label: string }[] = [
   { value: "QUANTIDADEPEDIDO", label: "Quantidade de Pedidos" },
@@ -48,7 +49,7 @@ function TopSellersLeaderboard({ startDate, endDate }: { startDate: string; endD
         </div>
       </div>
 
-      {error && <p role="alert" className="py-6 text-center text-sm text-danger-fg">{error}</p>}
+      {error && <p role="alert" className="py-6 text-center text-sm text-danger-fg"><PresentationText>{error}</PresentationText></p>}
       {!error && loading && (
         <div className="space-y-4 animate-pulse">
           {Array.from({ length: 4 }).map((_, index) => (
@@ -64,22 +65,24 @@ function TopSellersLeaderboard({ startDate, endDate }: { startDate: string; endD
           {sellers.map((seller, index) => (
             <div key={seller.identifier} className="flex items-center gap-4">
               <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-sm font-bold text-accent">
-                {getSellerInitials(seller.name)}
+                <PresentationText>{getSellerInitials(seller.name)}</PresentationText>
                 {index < MEDAL_CLASS.length && (
                   <span
                     className={`material-symbols-outlined absolute -right-1 -top-1 text-lg ${MEDAL_CLASS[index]}`}
                     style={{ fontVariationSettings: "'FILL' 1" }}
-                    aria-label={`Posição ${index + 1}`}
+                    aria-label={`Posição ${formatPosition(index + 1)}`}
                   >
                     military_tech
                   </span>
                 )}
               </div>
               <div className="flex min-w-0 flex-1 flex-col gap-1">
-                <span className="truncate text-sm font-bold text-fg-strong">{seller.name.trim()}</span>
+                <span className="truncate text-sm font-bold text-fg-strong">
+                  <PresentationText>{seller.name.trim()}</PresentationText>
+                </span>
                 <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-0.5 text-xs">
                   <span className="text-fg-subtle">
-                    {seller.amountSales.toLocaleString("pt-BR")} pedidos
+                    {formatNumber(seller.amountSales)} pedidos
                   </span>
                   <span className={`font-bold ${orderBy === "TOTALFATURADO" ? "text-accent" : "text-fg-muted"}`}>
                     {formatCurrency(seller.totalSales)}

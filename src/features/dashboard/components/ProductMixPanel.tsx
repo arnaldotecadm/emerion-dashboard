@@ -2,7 +2,9 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { useProducts } from "../hooks/useProducts";
-import { formatCurrency } from "../utils/format";
+import { formatCurrency, formatPercent } from "../utils/format";
+import { getPresentationModeEnabled } from "../utils/presentationMasking";
+import PresentationText from "./PresentationText";
 
 const SLICE_COLORS = ["#006397", "#18a659", "#e28e00", "#ba1a1a"];
 const MAX_SLICES = 4;
@@ -52,7 +54,7 @@ function ProductMixPanel() {
       {!error && !loading && slices.length > 0 && (
         <div className="flex items-center gap-6">
           <div className="relative w-24 h-24 shrink-0">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" className={getPresentationModeEnabled() ? "presentation-chart" : undefined}>
               <PieChart accessibilityLayer>
                 <Pie
                   data={slices}
@@ -73,8 +75,8 @@ function ProductMixPanel() {
                     if (!active || !slice) return null;
                     return (
                       <div className="rounded-lg bg-ink-solid px-3 py-2 text-white shadow-lg">
-                        <p className="text-xs font-bold">{slice.label}</p>
-                        <p className="text-[11px]">{slice.pct.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%</p>
+                        <p className="text-xs font-bold"><PresentationText>{slice.label}</PresentationText></p>
+                        <p className="text-[11px]">{formatPercent(slice.pct)}</p>
                         <p className="text-[11px]">{formatCurrency(slice.preco)}</p>
                       </div>
                     );
@@ -92,7 +94,7 @@ function ProductMixPanel() {
               >
                 <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: slice.color }} />
                 <span className="text-[11px] font-medium text-fg-muted group-hover:text-accent group-hover:underline">
-                  {slice.label} ({formatCurrency(slice.preco)})
+                  <PresentationText>{slice.label}</PresentationText> ({formatCurrency(slice.preco)})
                 </span>
               </Link>
             ))}

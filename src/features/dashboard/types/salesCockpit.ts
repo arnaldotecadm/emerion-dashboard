@@ -4,7 +4,7 @@ export interface SalesCockpitOrder {
   orderDate: string;
   totalAmount: number;
   averageMarkup: number;
-  orderNumber: string;
+  orderNumber: number;
   status: string;
   salesmanName: string | null;
 }

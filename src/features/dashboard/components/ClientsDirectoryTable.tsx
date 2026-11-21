@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCustomers } from "../hooks/useCustomers";
-import { formatCpfCnpj } from "../utils/format";
+import { formatCpfCnpj, formatNumber } from "../utils/format";
+import PresentationText from "./PresentationText";
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
 
@@ -67,7 +68,7 @@ function ClientsDirectoryTable() {
       {error ? (
         <div className="p-10 flex flex-col items-center text-center gap-3">
           <span className="material-symbols-outlined text-4xl text-danger-fg">error</span>
-          <p className="text-sm text-fg-muted">{error}</p>
+          <p className="text-sm text-fg-muted"><PresentationText>{error}</PresentationText></p>
           <button
             onClick={refetch}
             className="px-4 py-2 text-sm font-semibold text-accent border border-accent rounded-lg hover:bg-accent-solid/5 transition-colors"
@@ -118,22 +119,22 @@ function ClientsDirectoryTable() {
                       onClick={() => navigate(`/dashboard/clientes/${row.id}`)}
                       className="hover:bg-canvas transition-colors cursor-pointer group"
                     >
-                      <td className="px-6 py-4 text-sm text-fg-subtle whitespace-nowrap">{row.externalId}</td>
-                      <td className="px-6 py-4 text-sm text-fg-muted">{row.razaoSocial}</td>
+                      <td className="px-6 py-4 text-sm text-fg-subtle whitespace-nowrap"><PresentationText alwaysVisible>{row.externalId}</PresentationText></td>
+                      <td className="px-6 py-4 text-sm text-fg-muted"><PresentationText>{row.razaoSocial}</PresentationText></td>
                       <td className="px-6 py-4 text-sm text-fg-muted whitespace-nowrap">
                         {formatCpfCnpj(row.cpfCnpj)}
                       </td>
                       <td className="px-6 py-4 text-sm text-fg-muted whitespace-nowrap">
-                        {row.inscricaoEstadual}
+                        <PresentationText alwaysVisible>{row.inscricaoEstadual}</PresentationText>
                       </td>
-                      <td className="px-6 py-4 text-sm text-fg-muted">{row.regimeTributario}</td>
+                      <td className="px-6 py-4 text-sm text-fg-muted"><PresentationText alwaysVisible>{row.regimeTributario}</PresentationText></td>
                       <td className="px-6 py-4">
                         <span
                           className={`px-2.5 py-1 text-xs font-bold rounded-full ${
                             row.bloqueado ? "bg-danger-soft text-danger-ink" : "bg-emerald-100 text-emerald-700"
                           }`}
                         >
-                          {row.bloqueado ? "Bloqueado" : "Ativo"}
+                          <PresentationText alwaysVisible>{row.bloqueado ? "Bloqueado" : "Ativo"}</PresentationText>
                         </span>
                       </td>
                     </tr>
@@ -155,12 +156,12 @@ function ClientsDirectoryTable() {
           <div className="px-6 py-4 bg-canvas border-t border-line flex flex-col sm:flex-row justify-between items-center gap-3">
             <span className="text-sm text-fg-subtle">
               {totalElements > 0
-                ? `Exibindo ${data?.data.length ?? 0} de ${totalElements.toLocaleString("pt-BR")} clientes`
+                ? `Exibindo ${formatNumber(data?.data.length)} de ${formatNumber(totalElements)} clientes`
                 : "—"}
             </span>
             <div className="flex items-center gap-3">
               <span className="text-sm text-fg-muted">
-                Página {totalPages === 0 ? 0 : currentPage + 1} de {totalPages}
+                Página {formatNumber(totalPages === 0 ? 0 : currentPage + 1)} de {formatNumber(totalPages)}
               </span>
               <div className="flex gap-2">
                 <button

@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { useNotificationPreferences } from "../hooks/useNotificationPreferences";
 import { useNotifications } from "../hooks/useNotifications";
 import { ALL_NOTIFICATION_CATEGORIES } from "../types/notificationPreferences";
-import { formatDateTime } from "../utils/format";
+import { formatDateTime, formatNumber } from "../utils/format";
 import type { Notification } from "../types/notification";
+import PresentationText from "../components/PresentationText";
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50];
 
@@ -116,7 +117,7 @@ function NotificacoesPage() {
         {error ? (
           <div className="p-10 flex flex-col items-center text-center gap-3">
             <span className="material-symbols-outlined text-4xl text-danger-fg">error</span>
-            <p className="text-sm text-fg-muted">{error}</p>
+            <p className="text-sm text-fg-muted"><PresentationText>{error}</PresentationText></p>
             <button
               onClick={refetch}
               className="px-4 py-2 text-sm font-semibold text-accent border border-accent rounded-lg hover:bg-accent-solid/5 transition-colors"
@@ -178,22 +179,23 @@ function NotificacoesPage() {
                         className="hover:bg-canvas transition-colors cursor-pointer"
                       >
                         <td className="px-6 py-4">
-                          <p className="text-sm font-semibold text-fg-strong">{row.name}</p>
-                          <p className="text-xs text-fg-subtle line-clamp-1">{row.description}</p>
+                          <p className="text-sm font-semibold text-fg-strong"><PresentationText>{row.name}</PresentationText></p>
+                          <p className="text-xs text-fg-subtle line-clamp-1"><PresentationText>{row.description}</PresentationText></p>
                         </td>
                         <td className="px-6 py-4 text-sm text-fg-muted whitespace-nowrap">
-                          {resolveCategoryLabel(row.category)}
+                          <PresentationText>{resolveCategoryLabel(row.category)}</PresentationText>
                         </td>
-                        <td className="px-6 py-4 text-sm text-fg-muted whitespace-nowrap">{row.priority}</td>
+                        <td className="px-6 py-4 text-sm text-fg-muted whitespace-nowrap"><PresentationText>{row.priority}</PresentationText></td>
                         <td className="px-6 py-4">
                           <span className={`px-2.5 py-1 text-xs font-bold rounded-full ${statusBadge(row.status)}`}>
-                            {row.status}
+                            <PresentationText alwaysVisible>{row.status}</PresentationText>
                           </span>
                         </td>
                         <td className="px-6 py-4 text-sm text-fg-muted whitespace-nowrap">
-                          {row.referenceType && row.referenceId
+                          <PresentationText>{row.referenceType && row.referenceId
                             ? `${row.referenceType} #${row.referenceId}`
                             : row.referenceType ?? row.referenceId ?? "—"}
+                          </PresentationText>
                         </td>
                         <td className="px-6 py-4 text-sm text-fg-muted whitespace-nowrap">
                           {formatDateTime(row.createdAt)}
@@ -220,13 +222,13 @@ function NotificacoesPage() {
                   ? "Nenhum tipo de notificação habilitado."
                   : allCategoriesEnabled
                     ? totalElements > 0
-                      ? `Exibindo ${data?.data.length ?? 0} de ${totalElements.toLocaleString("pt-BR")} notificações`
+                      ? `Exibindo ${formatNumber(data?.data.length)} de ${formatNumber(totalElements)} notificações`
                       : "—"
                     : `Exibindo ${visibleRows.length} notificações nesta página conforme suas preferências`}
               </span>
               <div className="flex items-center gap-3">
                 <span className="text-sm text-fg-muted">
-                  Página {totalPages === 0 ? 0 : currentPage + 1} de {totalPages}
+                  Página {formatNumber(totalPages === 0 ? 0 : currentPage + 1)} de {formatNumber(totalPages)}
                 </span>
                 <div className="flex gap-2">
                   <button

@@ -2,18 +2,13 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useSalesCockpit } from "../hooks/useSalesCockpit";
 import type { SalesCockpitOrder } from "../types/salesCockpit";
-
-const currencyFormatter = new Intl.NumberFormat("pt-BR", {
-  style: "currency",
-  currency: "BRL",
-});
-
-const numberFormatter = new Intl.NumberFormat("pt-BR");
+import { formatCurrency as formatValueCurrency, formatDate, formatNumber, formatPercent } from "../utils/format";
+import PresentationText from "../components/PresentationText";
 
 function formatCurrency(value: number | undefined, loading: boolean, error: string | null): string {
   if (loading) return "Carregando...";
   if (error || value === undefined) return "—";
-  return currencyFormatter.format(value);
+  return formatValueCurrency(value);
 }
 
 function CockpitExecutivoPage() {
@@ -62,7 +57,7 @@ function CockpitExecutivoPage() {
 
       {error && (
         <div role="alert" className="mb-6 rounded-xl border border-danger-line bg-danger-soft p-4 text-sm text-danger-ink">
-          {error}
+          <PresentationText>{error}</PresentationText>
         </div>
       )}
 
@@ -81,15 +76,15 @@ function CockpitExecutivoPage() {
           badge="Média real"
           badgeClass="bg-surface-2 text-fg-muted"
           title="Markup Médio Real"
-          value={loading ? "Carregando..." : error || !data ? "—" : `${data.averageMarkup.toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%`}
+          value={loading ? "Carregando..." : error || !data ? "—" : formatPercent(data.averageMarkup)}
         />
         <MetricCard
           icon="bolt"
           iconClass="bg-amber-50 text-amber-600"
-          badge={`${numberFormatter.format(data?.invoices ?? 0)} NF-e`}
+          badge={`${formatNumber(data?.invoices ?? 0)} NF-e`}
           badgeClass="bg-surface-2 text-fg-muted"
           title="Pedidos no Período"
-          value={loading ? "Carregando..." : error || !data ? "—" : numberFormatter.format(data.customerOrders)}
+          value={loading ? "Carregando..." : error || !data ? "—" : formatNumber(data.customerOrders)}
         />
         <MetricCard
           icon="warning"
@@ -99,7 +94,7 @@ function CockpitExecutivoPage() {
               ? "Carregando..."
               : error || !data
                 ? "—"
-                : `${numberFormatter.format(data.unpaidInvoicesCount)} faturas`
+                : `${formatNumber(data.unpaidInvoicesCount)} faturas`
           }
           badgeClass="bg-red-50 text-red-600"
           title="Inadimplência Total"
@@ -107,9 +102,9 @@ function CockpitExecutivoPage() {
           detail={
           data && !loading && !error ? (
             <>
-              <p>Recebido no mês: {currencyFormatter.format(data.amountReceivedThisMonth)}</p>
-              <p>Previsto a receber: {currencyFormatter.format(data.amountToReceiveThisMonth)}</p>
-              <p>Em aberto no mês: {currencyFormatter.format(data.amountDueThisMonth)}</p>
+              <p>Recebido no mês: {formatValueCurrency(data.amountReceivedThisMonth)}</p>
+              <p>Previsto a receber: {formatValueCurrency(data.amountToReceiveThisMonth)}</p>
+              <p>Em aberto no mês: {formatValueCurrency(data.amountDueThisMonth)}</p>
             </>
           ) : undefined
           }
@@ -141,7 +136,7 @@ function CockpitExecutivoPage() {
                     />
                     <span className="relative z-10 text-xs font-medium text-fg-strong sm:text-sm">{stage.label}</span>
                     <span className="relative z-10 text-xs font-bold text-fg-strong sm:text-base">
-                      {numberFormatter.format(stage.count)}
+                      {formatNumber(stage.count)}
                     </span>
                   </div>
                 );
@@ -151,7 +146,7 @@ function CockpitExecutivoPage() {
                   Cotações convertidas em NF-e
                 </div>
                 <div className="mt-0.5 text-3xl font-black text-fg-strong">
-                  {conversionRate === null ? "—" : `${conversionRate.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`}
+                  {conversionRate === null ? "—" : formatPercent(conversionRate)}
                 </div>
               </div>
             </div>
@@ -185,12 +180,12 @@ function CockpitExecutivoPage() {
             <p className="mt-0.5 text-xs text-fg-subtle">Pedidos recentes sincronizados com o sistema</p>
           </div>
           <div className="text-xs font-medium text-fg-subtle">
-            {loading ? "Carregando pedidos..." : `Mostrando ${numberFormatter.format(data?.recentOrders.length ?? 0)} pedidos`}
+            {loading ? "Carregando pedidos..." : `Mostrando ${formatNumber(data?.recentOrders.length ?? 0)} pedidos`}
           </div>
         </div>
 
         {error ? (
-          <p className="py-10 text-center text-sm text-danger-fg">{error}</p>
+          <p className="py-10 text-center text-sm text-danger-fg"><PresentationText>{error}</PresentationText></p>
         ) : loading ? (
           <p className="py-10 text-center text-sm text-fg-subtle">Carregando pedidos recentes...</p>
         ) : !data?.recentOrders.length ? (
@@ -213,23 +208,25 @@ function CockpitExecutivoPage() {
               <tbody className="divide-y divide-line-soft">
                 {data.recentOrders.map((order, index) => (
                   <tr key={`${order.orderNumber}-${index}`} className="transition hover:bg-canvas">
-                    <td className="px-4 py-3 font-mono font-bold text-accent">{order.orderNumber}</td>
+                    <td className="px-4 py-3 font-mono font-bold text-accent"><PresentationText>{order.orderNumber}</PresentationText></td>
                     <td className="px-4 py-3 text-fg-muted">
-                      {new Date(`${order.orderDate}T00:00:00`).toLocaleDateString("pt-BR")}
+                      {formatDate(order.orderDate)}
                     </td>
                     <td className="max-w-xs truncate px-4 py-3 font-medium text-fg">
-                      {order.customerName.trim() || `Cliente ${order.customerCode}`}
+                      {order.customerName.trim()
+                        ? <PresentationText>{order.customerName.trim()}</PresentationText>
+                        : <>Cliente <PresentationText alwaysVisible>{order.customerCode}</PresentationText></>}
                     </td>
-                    <td className="px-4 py-3 font-medium text-fg-muted">{order.salesmanName?.trim() || "—"}</td>
+                    <td className="px-4 py-3 font-medium text-fg-muted"><PresentationText>{order.salesmanName?.trim() || "—"}</PresentationText></td>
                     <td className="px-4 py-3 text-right font-mono font-bold text-fg">
-                      {currencyFormatter.format(order.totalAmount)}
+                      {formatValueCurrency(order.totalAmount)}
                     </td>
                     <td className="px-4 py-3 text-right font-semibold text-fg">
-                      {order.averageMarkup.toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%
+                      {formatPercent(order.averageMarkup)}
                     </td>
                     <td className="px-4 py-3">
                       <span className={`inline-block rounded-full border px-2.5 py-1 text-[11px] font-medium ${statusClass(order.status)}`}>
-                        {order.status}
+                        <PresentationText alwaysVisible>{order.status}</PresentationText>
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">

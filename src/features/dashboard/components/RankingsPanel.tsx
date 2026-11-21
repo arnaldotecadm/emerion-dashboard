@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDashboardOverview } from "../hooks/useDashboardOverview";
 import type { CustomerOrderBy } from "../types/dashboardTopTrends";
-import { formatCurrency } from "../utils/format";
+import { formatCurrency, formatNumber } from "../utils/format";
+import PresentationText from "./PresentationText";
 
 const RANKING_ORDER_OPTIONS: { value: CustomerOrderBy; label: string }[] = [
   { value: "QUANTIDADEPEDIDO", label: "Quantidade de pedidos" },
@@ -40,7 +41,7 @@ function RankingsPanel() {
         </button>
       </div>
       <div className="p-6">
-        {error && <p className="text-sm text-fg-subtle">{error}</p>}
+        {error && <p className="text-sm text-fg-subtle"><PresentationText>{error}</PresentationText></p>}
 
         <div className="flex justify-end gap-2 mb-4">
           {RANKING_ORDER_OPTIONS.map(({ value: orderBy, label }) => (
@@ -96,8 +97,8 @@ function RankingsPanel() {
                   onClick={() => navigate(`/dashboard/vendedores/${vendedor.identifier}`)}
                   className="border-b border-line-soft last:border-b-0 cursor-pointer hover:bg-canvas"
                 >
-                  <td className="p-3 font-bold">{vendedor.name.trim()}</td>
-                  <td className="p-3">{vendedor.amountSales.toLocaleString("pt-BR")}</td>
+                  <td className="p-3 font-bold"><PresentationText>{vendedor.name.trim()}</PresentationText></td>
+                  <td className="p-3">{formatNumber(vendedor.amountSales)}</td>
                   <td className="p-3 text-right">{formatCurrency(vendedor.totalSales)}</td>
                 </tr>
               ))}
@@ -141,8 +142,8 @@ function RankingsPanel() {
                   onClick={() => navigate(`/dashboard/clientes/${cliente.identifier}`)}
                   className="border-b border-line-soft last:border-b-0 cursor-pointer hover:bg-canvas"
                 >
-                  <td className="p-3 font-bold">{cliente.name}</td>
-                  <td className="p-3">{cliente.amountSales.toLocaleString("pt-BR")}</td>
+                  <td className="p-3 font-bold"><PresentationText>{cliente.name}</PresentationText></td>
+                  <td className="p-3">{formatNumber(cliente.amountSales)}</td>
                   <td className="p-3 text-right">{formatCurrency(cliente.totalSales)}</td>
                 </tr>
               ))}

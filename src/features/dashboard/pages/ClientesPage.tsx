@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { CLIENTES_KPIS, formatCurrency } from "../data/clientesData";
+import { formatNumber } from "../utils/format";
 import { useCustomerTopTrends } from "../hooks/useCustomerTopTrends";
 import TopClientsTable from "../components/TopClientsTable";
 import DelinquencyRiskPanel from "../components/DelinquencyRiskPanel";
@@ -16,7 +17,7 @@ function ClientesPage() {
     if (kpi.label === "Clientes Ativos") {
       return {
         ...kpi,
-        value: loading ? "Carregando..." : error ? "—" : (data?.activeCustomers.toLocaleString("pt-BR") ?? "—"),
+        value: loading ? "Carregando..." : error ? "—" : formatNumber(data?.activeCustomers),
         hint: error ? "Não foi possível carregar este indicador." : "Total de clientes ativos",
         trend: undefined,
       };

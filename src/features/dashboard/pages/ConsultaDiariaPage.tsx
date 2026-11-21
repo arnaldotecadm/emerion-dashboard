@@ -12,7 +12,8 @@ import {
   type ConsultaDiariaWidgetId,
   type ConsultaDiariaWidgetLayout,
 } from "../hooks/useConsultaDiariaLayout";
-import { formatCurrency, formatPercent } from "../utils/format";
+import { formatCurrency, formatNumber, formatPercent, formatPosition } from "../utils/format";
+import PresentationText from "../components/PresentationText";
 
 const COLUMN_SPAN_CLASSES: Record<ConsultaDiariaColumnSpan, string> = {
   4: "xl:col-span-4",
@@ -299,8 +300,8 @@ function ConsultaDiariaPage() {
         <div className="rounded-xl border border-line bg-card p-5 shadow-card">
           <p className="text-xs font-semibold uppercase tracking-wide text-fg-subtle">Clientes atendidos</p>
           <p className="mt-2 text-2xl font-bold text-fg-strong">
-            {portfolioTotals.attended.toLocaleString("pt-BR")}
-            <span className="ml-1 text-sm font-medium text-fg-subtle">/ {portfolioTotals.customers}</span>
+            {formatNumber(portfolioTotals.attended)}
+            <span className="ml-1 text-sm font-medium text-fg-subtle">/ {formatNumber(portfolioTotals.customers)}</span>
           </p>
           <p className="mt-1 text-xs text-fg-subtle">Cobertura da carteira: {formatPercent(attendanceRate)}</p>
         </div>
@@ -335,13 +336,13 @@ function ConsultaDiariaPage() {
               <tbody className="divide-y divide-line">
                 {topProducts.map((product, index) => (
                   <tr key={`${product.codigoGrupo}-${product.codigoSubGrupo}-${product.codigoProduto}`} className="text-fg-muted">
-                    <td className="whitespace-nowrap px-5 py-3 font-semibold text-fg-strong">{index + 1}</td>
+                    <td className="whitespace-nowrap px-5 py-3 font-semibold text-fg-strong">{formatPosition(index + 1)}</td>
                     <td className="whitespace-nowrap px-3 py-3 font-mono text-xs">
-                      {[product.codigoGrupo, product.codigoSubGrupo, product.codigoProduto].join(".")}
+                      <PresentationText alwaysVisible>{[product.codigoGrupo, product.codigoSubGrupo, product.codigoProduto].join(".")}</PresentationText>
                     </td>
-                    <td className="px-3 py-3 font-medium text-fg-strong">{product.descricaoItemLiberacao.trim()}</td>
+                    <td className="px-3 py-3 font-medium text-fg-strong"><PresentationText>{product.descricaoItemLiberacao.trim()}</PresentationText></td>
                     <td className="whitespace-nowrap px-5 py-3 text-right font-semibold text-fg-strong">
-                      {product.totalSeparado.toLocaleString("pt-BR")} un.
+                      {formatNumber(product.totalSeparado)} un.
                     </td>
                   </tr>
                 ))}
@@ -363,7 +364,7 @@ function ConsultaDiariaPage() {
               return (
                 <div key={item.uf} className="py-3">
                   <div className="flex items-center justify-between gap-3 text-sm">
-                    <span className="w-10 font-bold text-fg-strong">{item.uf}</span>
+                    <span className="w-10 font-bold text-fg-strong"><PresentationText>{item.uf}</PresentationText></span>
                     <span className="flex-1 text-right font-medium text-fg-strong">{formatCurrency(item.amount)}</span>
                     <span className="w-14 text-right text-xs text-fg-subtle">{formatPercent(item.representationPercentage)}</span>
                   </div>
@@ -400,8 +401,8 @@ function ConsultaDiariaPage() {
               <tbody className="divide-y divide-line">
                 {topCustomers.map((customer, index) => (
                   <tr key={customer.codigoCliente} className="text-fg-muted">
-                    <td className="whitespace-nowrap px-5 py-3 font-semibold text-fg-strong">{index + 1}</td>
-                    <td className="px-3 py-3 font-medium text-fg-strong">{customer.nomeFantasia.trim()}</td>
+                    <td className="whitespace-nowrap px-5 py-3 font-semibold text-fg-strong">{formatPosition(index + 1)}</td>
+                    <td className="px-3 py-3 font-medium text-fg-strong"><PresentationText>{customer.nomeFantasia.trim()}</PresentationText></td>
                     <td className="whitespace-nowrap px-5 py-3 text-right font-semibold text-fg-strong">
                       {formatCurrency(customer.totalLiberadoComImpostos)}
                     </td>
@@ -434,9 +435,9 @@ function ConsultaDiariaPage() {
                 {sellerPortfolios.map((item) => {
                   return (
                     <tr key={item.codigoVendedor} className="text-fg-muted">
-                      <td className="whitespace-nowrap px-5 py-3 font-medium text-fg-strong">{item.nomeVendedor}</td>
-                      <td className="px-3 py-3 text-right">{item.clientesResponsaveis}</td>
-                      <td className="px-3 py-3 text-right">{item.clientesComCompra}</td>
+                      <td className="whitespace-nowrap px-5 py-3 font-medium text-fg-strong"><PresentationText>{item.nomeVendedor}</PresentationText></td>
+                      <td className="px-3 py-3 text-right">{formatNumber(item.clientesResponsaveis)}</td>
+                      <td className="px-3 py-3 text-right">{formatNumber(item.clientesComCompra)}</td>
                       <td className="whitespace-nowrap px-5 py-3 text-right font-semibold text-fg-strong">
                         {formatPercent(item.representationPercentage)}
                       </td>
@@ -472,7 +473,7 @@ function ConsultaDiariaPage() {
             <tbody className="divide-y divide-line">
               {sellerDailyRevenue.map((item) => (
                 <tr key={item.codigoVendedor} className="text-fg-muted">
-                  <td className="whitespace-nowrap px-5 py-3 font-semibold text-fg-strong">{item.nomeVendedor}</td>
+                  <td className="whitespace-nowrap px-5 py-3 font-semibold text-fg-strong"><PresentationText>{item.nomeVendedor}</PresentationText></td>
                   <td className="whitespace-nowrap px-3 py-3 text-right font-semibold text-fg-strong">
                     {formatCurrency(item.totalFaturado)}
                   </td>

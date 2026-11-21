@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { formatCurrency } from "../data/clientesData";
 import type { OverdueInvoice } from "../types/customerTopTrends";
+import PresentationText from "./PresentationText";
 
 interface DelinquencyRiskPanelProps {
   data: OverdueInvoice[];
@@ -22,7 +23,7 @@ function DelinquencyRiskPanel({ data, loading, error }: DelinquencyRiskPanelProp
         {loading ? (
           <p className="py-6 text-center text-sm text-fg-subtle">Carregando faturas vencidas...</p>
         ) : error ? (
-          <p role="alert" className="py-6 text-center text-sm text-danger-fg">{error}</p>
+          <p role="alert" className="py-6 text-center text-sm text-danger-fg"><PresentationText>{error}</PresentationText></p>
         ) : data.length === 0 ? (
           <p className="py-6 text-center text-sm text-fg-subtle">Nenhuma fatura vencida encontrada.</p>
         ) : (
@@ -40,12 +41,11 @@ function DelinquencyRiskPanel({ data, loading, error }: DelinquencyRiskPanelProp
                     <Link
                       to={`/dashboard/clientes/codigo/${encodeURIComponent(String(invoice.customerCode))}`}
                       className="block truncate text-sm font-bold text-fg-strong hover:text-accent hover:underline"
-                      title={invoice.customerName}
                     >
-                      {invoice.customerName || "Cliente sem nome"}
+                      <PresentationText>{invoice.customerName || "Cliente sem nome"}</PresentationText>
                     </Link>
-                    <p className="text-xs text-fg-subtle" title={invoice.description}>
-                      {invoice.description}
+                    <p className="text-xs text-fg-subtle">
+                      <PresentationText>{invoice.description}</PresentationText>
                     </p>
                   </div>
                 </div>

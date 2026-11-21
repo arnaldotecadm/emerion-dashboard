@@ -1,3 +1,5 @@
+import { formatCurrency as formatValueCurrency } from "../utils/format";
+
 /** Mock sales datasets for the "Vendas Totais" detail page, keyed by chart granularity. */
 export type Granularity = "dia" | "semana" | "mes";
 
@@ -30,8 +32,7 @@ export interface SalesDataset {
   };
 }
 
-export const formatCurrency = (value: number) =>
-  value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+export const formatCurrency = formatValueCurrency;
 
 export const VENDAS_DATASETS: Record<Granularity, SalesDataset> = {
   dia: {

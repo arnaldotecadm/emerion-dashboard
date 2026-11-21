@@ -1,7 +1,8 @@
 import { Link, useParams } from "react-router-dom";
 import { useProduct } from "../hooks/useProduct";
-import { formatCurrency, formatDate } from "../utils/format";
+import { formatCurrency, formatDate, formatNumber } from "../utils/format";
 import PlaceholderPage from "../components/PlaceholderPage";
+import PresentationText from "../components/PresentationText";
 
 const BackLink = () => (
   <Link
@@ -38,7 +39,7 @@ function ProdutoDetailPage() {
         <div className="bg-card rounded-xl shadow-card border border-line p-10 flex flex-col items-center text-center gap-3">
           <span className="material-symbols-outlined text-4xl text-danger-fg">error</span>
           <h3 className="text-lg font-bold text-fg-strong">Não foi possível carregar o produto</h3>
-          <p className="text-sm text-fg-subtle">{error}</p>
+          <p className="text-sm text-fg-subtle"><PresentationText>{error}</PresentationText></p>
         </div>
       </div>
     );
@@ -84,16 +85,16 @@ function ProdutoDetailPage() {
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-2xl font-bold text-fg-strong tracking-tight">{produto.nome}</h2>
+                <h2 className="text-2xl font-bold text-fg-strong tracking-tight"><PresentationText>{produto.nome}</PresentationText></h2>
                 <span
                   className={`px-2.5 py-1 text-xs font-bold rounded-full ${
                     isDiscontinued ? "bg-danger-soft text-danger-ink" : "bg-emerald-100 text-emerald-700"
                   }`}
                 >
-                  {isDiscontinued ? "Descontinuado" : "Ativo"}
+                  <PresentationText alwaysVisible>{isDiscontinued ? "Descontinuado" : "Ativo"}</PresentationText>
                 </span>
               </div>
-              <p className="text-fg-subtle text-sm mt-1">Código {produto.externalId}</p>
+              <p className="text-fg-subtle text-sm mt-1">Código <PresentationText alwaysVisible>{produto.externalId}</PresentationText></p>
             </div>
           </div>
         </div>
@@ -119,39 +120,39 @@ function ProdutoDetailPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Código</p>
-            <p className="text-sm font-bold text-fg-strong">{produto.externalId}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText alwaysVisible>{produto.externalId}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Nome</p>
-            <p className="text-sm font-bold text-fg-strong">{produto.nome}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{produto.nome}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Descrição Reduzida</p>
-            <p className="text-sm font-bold text-fg-strong">{produto.descricaoReduzida || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{produto.descricaoReduzida || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">CNPJ Empresa</p>
-            <p className="text-sm font-bold text-fg-strong">{produto.cnpjEmpresa || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText alwaysVisible>{produto.cnpjEmpresa || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Referência Interna</p>
-            <p className="text-sm font-bold text-fg-strong">{produto.referenciaInterna || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{produto.referenciaInterna || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Marca</p>
-            <p className="text-sm font-bold text-fg-strong">{produto.marca || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{produto.marca || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Categoria</p>
-            <p className="text-sm font-bold text-fg-strong">{produto.categoria || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{produto.categoria || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Tipo</p>
-            <p className="text-sm font-bold text-fg-strong">{produto.tipo || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{produto.tipo || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Unidade</p>
-            <p className="text-sm font-bold text-fg-strong">{produto.unidade || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{produto.unidade || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Preço</p>
@@ -173,33 +174,33 @@ function ProdutoDetailPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">NCM</p>
-            <p className="text-sm font-bold text-fg-strong">{produto.ncm || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{produto.ncm || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">CEST</p>
-            <p className="text-sm font-bold text-fg-strong">{produto.cest || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{produto.cest || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Origem do Produto</p>
-            <p className="text-sm font-bold text-fg-strong">{produto.origemProduto || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{produto.origemProduto || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Peso Líquido</p>
-            <p className="text-sm font-bold text-fg-strong">{produto.pesoLiquido ?? "—"}</p>
+            <p className="text-sm font-bold text-fg-strong">{formatNumber(produto.pesoLiquido)}</p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Peso Bruto</p>
-            <p className="text-sm font-bold text-fg-strong">{produto.pesoBruto ?? "—"}</p>
+            <p className="text-sm font-bold text-fg-strong">{formatNumber(produto.pesoBruto)}</p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">Código de Barras</p>
-            <p className="text-sm font-bold text-fg-strong">{produto.codigoBarras || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{produto.codigoBarras || "—"}</PresentationText></p>
           </div>
           <div>
             <p className="text-xs font-semibold text-fg-subtle mb-1 uppercase tracking-wider">
               Código de Barras Próprio
             </p>
-            <p className="text-sm font-bold text-fg-strong">{produto.codigoBarrasProprio || "—"}</p>
+            <p className="text-sm font-bold text-fg-strong"><PresentationText>{produto.codigoBarrasProprio || "—"}</PresentationText></p>
           </div>
         </div>
       </section>

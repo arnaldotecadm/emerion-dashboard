@@ -201,6 +201,21 @@
 }
 
 /* Recharts draws with SVG attributes; CSS overrides them in dark mode. */
+.presentation-chart svg text,
+.presentation-chart .recharts-tooltip-wrapper {
+  filter: blur(4px);
+}
+
+.presentation-chart-dates svg text,
+.presentation-chart-dates .recharts-tooltip-wrapper {
+  filter: none;
+}
+
+.presentation-text-blurred {
+  filter: blur(4px);
+  user-select: none;
+}
+
 .dark .recharts-cartesian-grid line { stroke: var(--app-line); }
 .dark .recharts-cartesian-axis-tick text,
 .dark .recharts-cartesian-axis-tick-value { fill: var(--app-fg-muted); }
